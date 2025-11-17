@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <title>User Registration</title>
+        <link href="CSS/style.css" rel="stylesheet" type="text/css"/>
+    </h:head>
+
+    <h:body>
+        <h:form>
+            <div class="form-container">
+                <h3> Staff Registration</h3>
+
+                <!-- Username -->
+                <div class="form-field">
+                    <h:inputText id="uname" value="#{adminCDIBean.username}" 
+                                 required="true"
+                                 requiredMessage="Username cannot be blank!"
+                                 a:placeholder="Username" />
+                    <h:message for="uname" styleClass="error-msg" />
+                </div>
+
+                <!--Password-->
+                <div class="form-field">
+                    <h:inputSecret id="pass" 
+                                   value="#{adminCDIBean.password}" 
+                                   required="true"
+                                   redisplay="true"
+                                   requiredMessage="Password cannot be blank!"
+                                   validatorMessage="Password must contain uppercase, lowercase, digit, special char and min 8 chars!"
+                                   a:placeholder="Password">
+                        <f:validateRegex pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@$!%*?&amp;]).{8,}$" />
+                    </h:inputSecret>
+                    <h:message for="pass" styleClass="error-msg"/>
+                </div>
+
+
+
+                <!-- Full Name -->
+                <div class="form-field">
+                    <h:inputText id="fname" value="#{adminCDIBean.name}" 
+                                 required="true"
+                                 requiredMessage="Full Name is required!"
+                                 a:placeholder="Full Name" />
+                    <h:message for="fname" styleClass="error-msg"/>
+                </div>
+
+                <!-- Date of Birth -->
+                <div class="form-field">
+                    <h:inputText id="dob" value="#{adminCDIBean.date}"
+                                 required="true"
+                                 requiredMessage="Date of Birth is required!"
+                                 a:placeholder="Date of Birth"
+                                 a:oninput="updateDateColor(this)"
+                                 a:onchange="updateDateColor(this)">
+                        <f:convertDateTime pattern="yyyy-MM-dd" />
+                        <f:passThroughAttribute name="type" value="date" />
+                    </h:inputText>
+                    <h:message for="dob" styleClass="error-msg" />
+                </div>
+
+                <!-- Mobile -->
+                <div class="form-field">
+                    <h:inputText id="mobile" value="#{adminCDIBean.mobile}" 
+                                 required="true"
+                                 requiredMessage="Mobile Number is required!"
+                                 validatorMessage="Enter valid 10 digit mobile number!"
+                                 a:placeholder="Mobile Number">
+                        <f:validateRegex pattern="^[0-9]{10}$" />
+                    </h:inputText>
+                    <h:message for="mobile" styleClass="error-msg" />
+
+                </div>
+
+                <!-- Email -->
+                <div class="form-field">
+                    <h:inputText id="email" value="#{adminCDIBean.email}" 
+                                 required="true"
+                                 requiredMessage="Email is required!"
+                                 validatorMessage="Enter a valid email!"
+                                 a:placeholder="Email">
+                        <f:validateRegex pattern="^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$" />
+                    </h:inputText>
+                    <h:message for="email" styleClass="error-msg" />
+                </div>
+
+                <!-- Button -->
+                <h:commandButton value="Sign Up" 
+                                 action="#{adminCDIBean.insertRegiStration}" 
+                                 styleClass="btn"/>
+
+                <div class="login-link">
+                    Already have an account? <a href="login.jsf">Login</a>
+                </div>
+            </div>
+        </h:form>
+
+        <script>
+            function updateDateColor(input) {
+                if (input.value) {
+                    input.classList.add("selected-date");
+                } else {
+                    input.classList.remove("selected-date");
+                }
+            }
+        </script>
+
+    </h:body>
+</html>

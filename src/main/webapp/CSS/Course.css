@@ -1,0 +1,51 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : 16 Nov 2025, 4:34:11 pm
+    Author     : PRAKRUTI
+*/
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #fafbfc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* Top align */
+    height: 100vh;
+    margin: 0;
+    padding-top: 50px;
+}
+
+
+h1 {
+    margin-bottom: 40px;
+    color: #34495e;
+    margin-top: 1px;
+}
+
+.btn-container {
+    display: flex;
+    gap: 30px;
+}
+
+.btn {
+    padding: 20px 40px;
+    font-size: 20px;
+    font-weight: 700;
+    color: white;
+    background: #4da6ff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+    text-decoration: none;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.15);
+}
+
+.btn:hover {
+    background: #1a73e8;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+}

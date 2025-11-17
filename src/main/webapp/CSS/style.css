@@ -1,0 +1,161 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    /*    min-height: 100vh;
+        align-items: flex-start;
+        padding-top: 40px;
+        padding-bottom: 40px;*/
+    margin: 0;
+}
+
+.form-container {
+    background: white;
+    border-radius: 12px;
+    padding: 5px 30px;
+    padding-right: 50px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    width: 400px;
+    text-align: center;
+    padding-bottom: 15px;
+}
+
+h2 {
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 30px;
+    font-weight: 500;
+}
+
+.form-field {
+    margin-bottom: 4px;
+    position: relative;
+}
+
+.form-field input {
+    width: 105%;
+    padding: 12px 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 14px;
+}
+
+.form-field input::placeholder {
+    color: #999;
+}
+/* Default gray */
+input[type="date"] {
+    color: gray;
+}
+
+/* When JS adds .selected-date */
+input[type="date"].selected-date {
+    color: black !important;
+}
+
+
+
+
+.btn {
+    background-color: #cddc39; /* lime green */
+    color: #fff;
+    padding: 12px;
+    width: 105%;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    margin-top: 10px;
+    font-size: 20px;
+}
+
+.btn:hover {
+    background-color: #b0ca2d;
+}
+
+.login-link {
+    margin-top: 15px;
+    font-size: 13px;
+    color: #666;
+}
+
+.login-link a {
+    color: #cddc39;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 15px;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+.error-msg {
+    color: red;
+    text-align: left !important;
+    display: block;
+    width: 100%;
+    font-size: 14px;
+}
+
+
+.login-error-msg
+{
+      color: red;
+    text-align: center !important;
+    display: block;
+    width: 108%;
+    margin: auto;
+    margin-top: 4px;
+    font-size: 15px;
+}
+/* Button Row side-by-side */
+.button-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 25px;
+    margin-top: 10px;
+    margin-left: 15px;
+}
+
+/* Smaller Buttons */
+.btn-login {
+    background-color: #cddc39;
+    color: #fff;
+    padding: 10px 0px;
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 16px; /* smaller */
+}
+
+/* Hover Effect */
+.btn-login:hover {
+    background-color: #b0ca2d;
+}
+
+/* Reset Button Style */
+.reset-btn {
+    background: #777 !important;
+}
+
+.reset-btn:hover {
+    background: #5a5a5a !important;
+}
+.form-container2{
+    background: white;
+    border-radius: 12px;
+    padding: 5px 30px;
+    padding-right: 50px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    width:350px;
+    text-align: center;
+    padding-bottom: 35px;
+
+}
+
