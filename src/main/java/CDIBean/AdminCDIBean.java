@@ -1,45 +1,32 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSF/JSFManagedBean.java to edit this template
- */
 package CDIBean;
 
-import Client.AdminClient;
 import EJB.AdminBeanLocal;
 import Entity.Course;
 import Entity.Users;
+import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
-import jakarta.inject.Named;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Named;
 import jakarta.ws.rs.core.GenericType;
-import jakarta.ws.rs.core.Response;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.glassfish.soteria.identitystores.hash.PasswordHashCompare;
-import org.glassfish.soteria.identitystores.hash.Pbkdf2PasswordHashImpl;
 
-/**
- *
- * @author PRAKRUTI
- */
-@Named(value = "adminCDIBean")
+@Named("adminCDIBean")
 @RequestScoped
-public class AdminCDIBean {
+public class AdminCDIBean implements Serializable {
 
     @EJB
     AdminBeanLocal abl;
 
-    AdminClient ac = new AdminClient();
-    Pbkdf2PasswordHashImpl pb;
-    PasswordHashCompare phc;
-    Response rs;
-
-    //Register 
+    // Users
     Collection<Users> user;
     GenericType<Collection<Users>> guser;
+
     String username;
     String password;
     String name;
@@ -48,55 +35,68 @@ public class AdminCDIBean {
     String email;
 
     public AdminCDIBean() {
-        pb = new Pbkdf2PasswordHashImpl();
-        phc = new PasswordHashCompare();
-
-        user = new ArrayList();
+        user = new ArrayList<>();
         guser = new GenericType<Collection<Users>>() {
         };
     }
 
+    // Email validation
     private static boolean isValidEmail(String email) {
-
         String emailRegex = "^[a-zA-Z0-9_+&-]+(?:\\.[a-zA-Z0-9_+&-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
         Pattern pattern = Pattern.compile(emailRegex);
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
-
     }
 
+    // Register new admin/user
     public String insertRegiStration() {
-
         if (!isValidEmail(email)) {
             System.out.println("Invalid email format");
             return null;
         }
         try {
             abl.registerUser(username, password, name, date, mobile, email, 2);
-
-            System.out.println("User registered successfully via EJB!");
             return "Login.jsf";
-
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
+//Course
+    private String message;
+    private String courseName;
 
-    public Collection<Users> getUser() {
-        return user;
+    public String getCourseName() {
+        return courseName;
     }
 
-    public void setUser(Collection<Users> user) {
-        this.user = user;
+    public void setCourseName(String courseName) {
+        this.courseName = courseName;
     }
 
-    public GenericType<Collection<Users>> getGuser() {
-        return guser;
+    public String getMessage() {
+        return message;
     }
 
-    public void setGuser(GenericType<Collection<Users>> guser) {
-        this.guser = guser;
+    // Get all courses
+    public Collection<Course> getAllCourses() {
+        return abl.getAllCourse();
+    }
+
+    // Delete course
+    public String deleteCourse(Integer id) {
+        abl.deleteCourse(id);
+        return "ViewCourse?faces-redirect=true";
+    }
+
+    public void addCourse() {
+        try {
+            abl.addCourse(courseName);
+            message = "Course added suSccessfully!";
+            courseName = ""; // Clear form
+        } catch (Exception e) {
+            message = "Error: " + e.getMessage();
+        }
     }
 
     public String getUsername() {
@@ -147,31 +147,61 @@ public class AdminCDIBean {
         this.email = email;
     }
 
-    // Course fields
-    private String message;
-    private String courseName;
+    //Semester
+    private Integer selectedCourseId;
+    private Integer semesterNumber;
 
-    // Getter & Setter
-    public String getCourseName() {
-        return courseName;
+    private Collection<Course> courseList;
+    private Collection<Integer> semesterNumbers;
+    private String successMessage;
+
+    @PostConstruct
+    public void init() {
+        courseList = new ArrayList<>(abl.getAllCourse());
+        semesterNumbers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
 
-    public void setCourseName(String courseName) {
-        this.courseName = courseName;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    // Method called from form
-    public void addCourse() {
+    public String insertSemester() {
         try {
-            abl.addCourse(courseName);
-            message = "Course added suSccessfully!";
-            courseName = ""; // Clear form
+            abl.addSemester(String.valueOf(semesterNumber), selectedCourseId);
+            successMessage = "Semester Added Successfully!";
+            return null;
         } catch (Exception e) {
-            message = "Error: " + e.getMessage();
+            e.printStackTrace();
+            successMessage = "Something went wrong!";
+            return null;
         }
+    }
+
+    public String getSuccessMessage() {
+        return successMessage;
+    }
+
+    public void setSuccessMessage(String successMessage) {
+        this.successMessage = successMessage;
+    }
+
+    public Integer getSelectedCourseId() {
+        return selectedCourseId;
+    }
+
+    public void setSelectedCourseId(Integer id) {
+        this.selectedCourseId = id;
+    }
+
+    public Integer getSemesterNumber() {
+        return semesterNumber;
+    }
+
+    public void setSemesterNumber(Integer n) {
+        this.semesterNumber = n;
+    }
+
+    public Collection<Course> getCourseList() {
+        return courseList;
+    }
+
+    public Collection<Integer> getSemesterNumbers() {
+        return semesterNumbers;
     }
 }

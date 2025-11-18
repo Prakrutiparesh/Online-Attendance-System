@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core">
+
+
+      <h:head>
+        <title>All Courses</title>
+        <link href="CSS/showCourse.css" rel="stylesheet" type="text/css"/>
+    </h:head>
+
+    <h:body>
+
+        <h2>Course List</h2>
+
+        <h:form id="courseForm">
+            <table>
+                <tr>
+                    <th>Course ID</th>
+                    <th>Course Name</th>
+                    <th>Actions</th>
+                </tr>
+
+                <h:panelGroup rendered="#{adminCDIBean.allCourses.size() == 0}">
+                    <tr>
+                        <td colspan="3" style="text-align:center; padding:15px; font-size:17px; color:#777;">
+                            No Courses Found
+                        </td>
+                    </tr>
+                </h:panelGroup>
+
+                <ui:repeat value="#{adminCDIBean.allCourses}" var="c">
+                    <tr>
+                        <td>#{c.courseId}</td>
+                        <td>#{c.courseName}</td>
+
+                        <td>
+                            <h:commandButton value="Update"
+                                             styleClass="btn btn-update"
+                                             action="#{updateCDIBean.setSelectedCourse(c)}">
+                                <f:ajax execute="@this" render="updateForm" onevent="popupEvent"/>
+                            </h:commandButton>
+
+                            <h:commandButton value="Delete"
+                                             styleClass="btn btn-delete"
+                                             action="#{adminCDIBean.deleteCourse(c.courseId)}" />
+                        </td>
+                    </tr>
+                </ui:repeat>
+
+            </table>
+        </h:form>
+
+
+        <!-- POPUP -->
+        <div class="popup-bg" id="popup">
+
+            <div class="popup-box">
+
+                <h3>Update Course</h3>
+
+                <h:form id="updateForm">
+
+                    <h:panelGrid columns="1">
+                        <h:inputText value="#{updateCDIBean.courseId}" readonly="true" />
+                        <h:inputText value="#{updateCDIBean.courseName}" />
+                    </h:panelGrid>
+
+                    <div class="popup-buttons">
+
+                        <h:commandButton value="Save Update"
+                                         styleClass="btn btn-update btn-full"
+                                         action="#{updateCDIBean.updateCourse}">
+                            <f:ajax execute="@form" render="courseForm" onevent="hidePopupEvent"/>
+                        </h:commandButton>
+
+                        <h:commandButton value="Cancel"
+                                         styleClass="btn btn-cancel btn-full"
+                                         onclick="hidePopup()"
+                                         type="button" />
+                    </div>
+
+
+                </h:form>
+
+            </div>
+
+        </div>
+
+        <script>
+            function popupEvent(data) {
+                if (data.status === "success") {
+                    document.getElementById("popup").style.display = "flex";
+                }
+            }
+
+            function hidePopupEvent(data) {
+                if (data.status === "success") {
+                    document.getElementById("popup").style.display = "none";
+                }
+            }
+
+            function hidePopup() {
+                document.getElementById("popup").style.display = "none";
+            }
+        </script>
+
+    </h:body>
+</html>

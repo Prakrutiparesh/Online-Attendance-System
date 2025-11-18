@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core">
+
+    <h:head>
+        <title>Add Semester</title>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <link href="CSS/addSemester.css" rel="stylesheet" type="text/css"/>
+    </h:head>
+
+    <h:body>
+
+        <!-- SUCCESS POPUP -->
+        <h:panelGroup rendered="#{not empty adminCDIBean.successMessage}">
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: '#{adminCDIBean.successMessage}',
+                    confirmButtonColor: '#4da6ff',
+                    confirmButtonText: 'OK'
+                });
+            </script>
+        </h:panelGroup>
+
+
+        <div class="form-box">
+
+            <h2>Add Semester</h2>
+
+            <h:form>
+
+                <!-- COURSE DROPDOWN -->
+                <h:selectOneMenu id="course"
+                                 value="#{adminCDIBean.selectedCourseId}"
+                                 required="true"
+                                 requiredMessage="Please select a course">
+
+                    <f:selectItem itemLabel="Select Course" itemValue="" />
+                    <f:selectItems value="#{adminCDIBean.courseList}"
+                                   var="c"
+                                   itemLabel="#{c.courseName}"
+                                   itemValue="#{c.courseId}" />
+                </h:selectOneMenu>
+                <h:message for="course" style="color:red; display:block; width:100%; text-align:left;" />
+
+
+                <!-- SEMESTER DROPDOWN -->
+                <h:selectOneMenu id="semester"
+                                 value="#{adminCDIBean.semesterNumber}"
+                                 required="true"
+                                 requiredMessage="Please select a semester">
+
+                    <f:selectItem itemLabel="Select Semester" itemValue="" />
+                    <f:selectItems value="#{adminCDIBean.semesterNumbers}" />
+                </h:selectOneMenu>
+                <h:message for="semester" style="color:red; display:block; width:100%; text-align:left;" />
+
+
+                <!-- BUTTON -->
+                <h:commandButton value="Add Semester"
+                                 action="#{adminCDIBean.insertSemester}"
+                                 styleClass="btn" />
+
+            </h:form>
+        </div>
+
+    </h:body>
+</html>
