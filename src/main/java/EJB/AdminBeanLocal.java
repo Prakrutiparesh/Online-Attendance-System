@@ -46,7 +46,7 @@ public interface AdminBeanLocal {
     public Collection<Semester> getSemestersByCourse(Integer courseId);
 
 //Subject Method
-    public void addSubject(String subName, Integer courseId);
+    public void addSubject(String subName, Integer courseId, Integer semId);
 
     public void updateSubject(Integer subId, String subName, Integer courseId);
 

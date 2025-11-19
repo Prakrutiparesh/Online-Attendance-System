@@ -184,15 +184,21 @@ public class AdminRest {
         }
     }
 
-    //Subject Rest
+    // Subject REST
     @POST
-    @Path("addsubject/{subname}/{courseid}")
+    @Path("addsubject/{subname}/{courseid}/{semid}")
     @Produces(MediaType.APPLICATION_JSON)
-    public String addSubject(@PathParam("subname") String subName,
-            @PathParam("courseid") Integer courseId) {
+    public String addSubject(
+            @PathParam("subname") String subName,
+            @PathParam("courseid") Integer courseId,
+            @PathParam("semid") Integer semId) {
         try {
-            abl.addSubject(subName, courseId);
-            return "{\"status\":\"success\",\"message\":\"Subject added successfully: " + subName + " (Course ID: " + courseId + ")\"}";
+            // Call EJB method with course + semester
+            abl.addSubject(subName, courseId, semId);
+
+            return "{\"status\":\"success\",\"message\":\"Subject added successfully: " + subName
+                    + " (Course ID: " + courseId + ", Semester ID: " + semId + ")\"}";
+
         } catch (IllegalArgumentException e) {
             return "{\"status\":\"error\",\"message\":\"" + e.getMessage() + "\"}";
         } catch (Exception e) {

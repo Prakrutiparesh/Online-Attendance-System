@@ -220,24 +220,35 @@ public class AdminBean implements AdminBeanLocal {
 //Subject Logic
 
     @Override
-    public void addSubject(String subName, Integer courseId
-    ) {
+    public void addSubject(String subName, Integer courseId, Integer semId) {
         try {
             Course c = em.find(Course.class, courseId);
             if (c == null) {
                 throw new IllegalArgumentException("Invalid Course ID: " + courseId);
             }
 
+            Semester sem = em.find(Semester.class, semId);
+            if (sem == null) {
+                throw new IllegalArgumentException("Invalid Semester ID: " + semId);
+            }
+
             Subject s = new Subject();
             s.setSubName(subName);
             s.setCourse(c);
+            s.setSemester(sem);
 
             Collection<Subject> subjects = c.getSubjectCollection();
             subjects.add(s);
             c.setSubjectCollection(subjects);
 
+            Collection<Subject> semSubjects = sem.getSubjectCollection();
+            semSubjects.add(s);
+            sem.setSubjectCollection(semSubjects);
+
             em.persist(s);
             em.merge(c);
+            em.merge(sem);
+
             System.out.println("Subject added successfully: " + subName);
 
         } catch (IllegalArgumentException e) {

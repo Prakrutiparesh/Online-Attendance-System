@@ -50,6 +50,10 @@ public class Subject implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "subject")
     private Collection<Attendance> attendanceCollection;
 
+    @JoinColumn(name = "sem_id", referencedColumnName = "sem_id")
+    @ManyToOne
+    private Semester semester;
+
     public Subject() {
     }
 
@@ -87,6 +91,14 @@ public class Subject implements Serializable {
 
     public void setAttendanceCollection(Collection<Attendance> attendanceCollection) {
         this.attendanceCollection = attendanceCollection;
+    }
+
+    public Semester getSemester() {
+        return semester;
+    }
+
+    public void setSemester(Semester semester) {
+        this.semester = semester;
     }
 
     @Override

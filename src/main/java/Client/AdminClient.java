@@ -7,7 +7,6 @@ package Client;
 import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.WebTarget;
-import java.util.Date;
 
 /**
  * Jersey REST client generated for REST resource:AdminRest [Admin]<br>
@@ -25,26 +24,11 @@ public class AdminClient {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "https://localhost:8181/Online-Attendance-System/resources";
+    private static final String BASE_URI = "http://localhost:8080/Online-Attendance-System/resources";
 
     public AdminClient() {
         client = jakarta.ws.rs.client.ClientBuilder.newClient();
         webTarget = client.target(BASE_URI).path("Admin");
-    }
-
-    static {
-        //for localhost testing only
-        javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier(
-                new javax.net.ssl.HostnameVerifier() {
-
-            public boolean verify(String hostname,
-                    javax.net.ssl.SSLSession sslSession) {
-                if (hostname.equals("localhost")) {
-                    return true;
-                }
-                return false;
-            }
-        });
     }
 
     public <T> T getAllSubjects(Class<T> responseType) throws ClientErrorException {
@@ -156,8 +140,8 @@ public class AdminClient {
         return resource.request(jakarta.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public String addSubject(String subname, String courseid) throws ClientErrorException {
-        return webTarget.path(java.text.MessageFormat.format("addsubject/{0}/{1}", new Object[]{subname, courseid})).request().post(null, String.class);
+    public String addSubject(String subname, String courseid, String semid) throws ClientErrorException {
+        return webTarget.path(java.text.MessageFormat.format("addsubject/{0}/{1}/{2}", new Object[]{subname, courseid, semid})).request().post(null, String.class);
     }
 
     public <T> T getSummaryBySem(Class<T> responseType, String semId) throws ClientErrorException {
@@ -170,7 +154,7 @@ public class AdminClient {
         return webTarget.path(java.text.MessageFormat.format("deletesubject/{0}/{1}", new Object[]{subid, courseid})).request().delete(String.class);
     }
 
-    public String registerUser(String username, String password, String name, Date dob, String mobile, String email, Integer groupId) throws ClientErrorException {
+    public String registerUser(String username, String password, String name, String dob, String mobile, String email, String groupId) throws ClientErrorException {
         return webTarget.path(java.text.MessageFormat.format("register/{0}/{1}/{2}/{3}/{4}/{5}/{6}", new Object[]{username, password, name, dob, mobile, email, groupId})).request().post(null, String.class);
     }
 
@@ -223,5 +207,5 @@ public class AdminClient {
     public void close() {
         client.close();
     }
-
+    
 }
