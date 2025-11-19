@@ -6,7 +6,7 @@
       xmlns:f="jakarta.faces.core">
 
 
-      <h:head>
+    <h:head>
         <title>All Courses</title>
         <link href="CSS/showCourse.css" rel="stylesheet" type="text/css"/>
     </h:head>
@@ -38,8 +38,9 @@
 
                         <td>
                             <h:commandButton value="Update"
-                                             styleClass="btn btn-update"
-                                             action="#{updateCDIBean.setSelectedCourse(c)}">
+                                             styleClass="btn btn-update">
+                                <f:setPropertyActionListener target="#{updateCDIBean.courseId}" value="#{c.courseId}" />
+                                <f:setPropertyActionListener target="#{updateCDIBean.courseName}" value="#{c.courseName}" />
                                 <f:ajax execute="@this" render="updateForm" onevent="popupEvent"/>
                             </h:commandButton>
 

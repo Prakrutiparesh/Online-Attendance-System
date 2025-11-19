@@ -21,9 +21,7 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.UriInfo;
 import java.sql.Date;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,8 +37,6 @@ public class AdminRest {
     //Course REST
     @EJB
     AdminBeanLocal abl;
-    @Context
-    private UriInfo context;
 
     @POST
     @Path("addcourse/{coursename}")
@@ -149,11 +145,10 @@ public class AdminRest {
 
     @DELETE
     @Path("deletesemester/{semid}/{courseid}")
-    public String deleteSemester(@PathParam("semid") Integer semId,
-            @PathParam("courseid") Integer courseId) {
+    public String deleteSemester(@PathParam("semid") Integer semId, @PathParam("courseid") Integer courseId) {
         try {
             abl.deleteSemester(semId, courseId);
-            return "{\"message\": \"Semester deleted successfully: ID=" + semId + " (Course ID: " + courseId + ")\"}";
+            return "{\"message\": \"Semester deleted successfully: ID=" + semId + "}";
         } catch (IllegalArgumentException e) {
             return "{\"error\": \"" + e.getMessage() + "\"}";
         } catch (Exception e) {

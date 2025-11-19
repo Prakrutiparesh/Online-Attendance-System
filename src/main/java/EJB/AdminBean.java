@@ -22,6 +22,7 @@ import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.security.enterprise.identitystore.Pbkdf2PasswordHash;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -132,9 +133,7 @@ public class AdminBean implements AdminBeanLocal {
     }
 
     @Override
-    public void updateSemester(Integer semId, String semName,
-            Integer courseId
-    ) {
+    public void updateSemester(Integer semId, String semName, Integer courseId) {
         try {
             Semester s = em.find(Semester.class, semId);
             if (s == null) {
@@ -152,6 +151,10 @@ public class AdminBean implements AdminBeanLocal {
             }
 
             em.merge(s);
+            em.flush();
+            em.clear();
+
+            System.out.println("Semester updated in DB: " + semId + " -> " + semName);
 
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Invalid Semester ID: " + semId);
@@ -161,38 +164,27 @@ public class AdminBean implements AdminBeanLocal {
     }
 
     @Override
-    public void deleteSemester(Integer semId, Integer courseId
-    ) {
+    public void deleteSemester(Integer semId, Integer courseId) {
         try {
+            // Direct find and remove
             Semester s = em.find(Semester.class, semId);
             if (s == null) {
                 throw new IllegalArgumentException("Invalid Semester ID: " + semId);
             }
 
-            if (courseId != null) {
-                Course c = em.find(Course.class, courseId);
-                if (c == null) {
-                    throw new IllegalArgumentException("Invalid Course ID: " + courseId);
-                }
-
-                if (c.getSemesterCollection().contains(s)) {
-                    c.getSemesterCollection().remove(s);
-                    em.merge(c);
-                } else {
-                    throw new IllegalArgumentException("Semester does not belong to the provided Course ID.");
-                }
-            }
-
             em.remove(s);
+            em.flush();
+            em.clear();
+            System.out.println("Semester " + semId + " deleted successfully");
 
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Error while deleting semester: " + e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Delete error: " + e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 
     @Override
+
     public Collection<Semester> getAllSemesters() {
         try {
             return em.createNamedQuery("Semester.findAll", Semester.class)
@@ -208,27 +200,28 @@ public class AdminBean implements AdminBeanLocal {
     }
 
     @Override
-    public Collection<Semester> getSemestersByCourse(Integer courseId
-    ) {
+    public Collection<Semester> getSemestersByCourse(Integer courseId) {
         try {
-            Course c = em.find(Course.class, courseId);
-            if (c == null) {
-                throw new IllegalArgumentException("Invalid Course ID: " + courseId);
-            }
-            return c.getSemesterCollection();
+            // DIRECT QUERY - No entity caching
+            String jpql = "SELECT s FROM Semester s WHERE s.course.courseId = :courseId ORDER BY s.semId";
+            TypedQuery<Semester> query = em.createQuery(jpql, Semester.class);
+            query.setParameter("courseId", courseId);
 
-        } catch (IllegalArgumentException e) {
-            System.out.println("Error while fetching semesters: " + e.getMessage());
-            return java.util.Collections.emptyList();
+            List<Semester> result = query.getResultList();
+            System.out.println("DB Query returned: " + result.size() + " semesters for course: " + courseId);
+
+            return result;
+
         } catch (Exception e) {
-            e.printStackTrace();
-            return java.util.Collections.emptyList();
+            System.out.println("Error in getSemestersByCourse: " + e.getMessage());
+            return new ArrayList<>();
         }
     }
-
 //Subject Logic
+
     @Override
-    public void addSubject(String subName, Integer courseId) {
+    public void addSubject(String subName, Integer courseId
+    ) {
         try {
             Course c = em.find(Course.class, courseId);
             if (c == null) {
@@ -257,7 +250,9 @@ public class AdminBean implements AdminBeanLocal {
     }
 
     @Override
-    public void updateSubject(Integer subId, String subName, Integer courseId) {
+    public void updateSubject(Integer subId, String subName,
+            Integer courseId
+    ) {
         try {
             Subject s = em.find(Subject.class, subId);
             if (s == null) {
@@ -286,7 +281,8 @@ public class AdminBean implements AdminBeanLocal {
     }
 
     @Override
-    public void deleteSubject(Integer subId, Integer courseId) {
+    public void deleteSubject(Integer subId, Integer courseId
+    ) {
         try {
             Course c = em.find(Course.class, courseId);
             Subject s = em.find(Subject.class, subId);
@@ -325,7 +321,8 @@ public class AdminBean implements AdminBeanLocal {
     }
 
     @Override
-    public Collection<Subject> getSubjectsByCourse(Integer courseId) {
+    public Collection<Subject> getSubjectsByCourse(Integer courseId
+    ) {
         try {
             Course c = em.find(Course.class, courseId);
             if (c == null) {
@@ -343,7 +340,9 @@ public class AdminBean implements AdminBeanLocal {
 //Division Logic
 
     @Override
-    public void addDivision(String divName, Integer semId, Integer courseId) {
+    public void addDivision(String divName, Integer semId,
+            Integer courseId
+    ) {
         Course c = em.find(Course.class, courseId);
         Semester s = em.find(Semester.class, semId);
 
@@ -362,7 +361,9 @@ public class AdminBean implements AdminBeanLocal {
     }
 
     @Override
-    public void updateDivision(Integer divId, String divName, Integer semId, Integer courseId) {
+    public void updateDivision(Integer divId, String divName,
+            Integer semId, Integer courseId
+    ) {
         Division d = em.find(Division.class, divId);
         if (d == null) {
             throw new IllegalArgumentException("Invalid Division ID: " + divId);
@@ -390,7 +391,9 @@ public class AdminBean implements AdminBeanLocal {
     }
 
     @Override
-    public void deleteDivision(Integer divId, Integer semId, Integer courseId) {
+    public void deleteDivision(Integer divId, Integer semId,
+            Integer courseId
+    ) {
         Division d = em.find(Division.class, divId);
         if (d == null) {
             throw new IllegalArgumentException("Invalid Division ID: " + divId);
@@ -426,7 +429,8 @@ public class AdminBean implements AdminBeanLocal {
     }
 
     @Override
-    public Collection<Division> getDivisionsByCourse(Integer courseId) {
+    public Collection<Division> getDivisionsByCourse(Integer courseId
+    ) {
         Course c = em.find(Course.class, courseId);
         if (c == null) {
             throw new IllegalArgumentException("Invalid Course ID: " + courseId);
@@ -435,7 +439,8 @@ public class AdminBean implements AdminBeanLocal {
     }
 
     @Override
-    public Collection<Division> getDivisionsBySemester(Integer semId) {
+    public Collection<Division> getDivisionsBySemester(Integer semId
+    ) {
         Semester s = em.find(Semester.class, semId);
         if (s == null) {
             throw new IllegalArgumentException("Invalid Semester ID: " + semId);
@@ -445,7 +450,10 @@ public class AdminBean implements AdminBeanLocal {
 // Student Logic
 
     @Override
-    public void addStudent(Integer userId, Integer rollNo, Integer courseId, Integer semId, Integer divId) {
+    public void addStudent(Integer userId, Integer rollNo,
+            Integer courseId, Integer semId,
+            Integer divId
+    ) {
         try {
             Users u = em.find(Users.class, userId);
             Course c = em.find(Course.class, courseId);
@@ -485,7 +493,9 @@ public class AdminBean implements AdminBeanLocal {
     }
 
     @Override
-    public void updateStudent(Integer studId, Integer rollNo, Integer semId, Integer divId) {
+    public void updateStudent(Integer studId, Integer rollNo,
+            Integer semId, Integer divId
+    ) {
         try {
             Student st = em.find(Student.class, studId);
             if (st == null) {
@@ -525,7 +535,8 @@ public class AdminBean implements AdminBeanLocal {
     }
 
     @Override
-    public void deleteStudent(Integer studId) {
+    public void deleteStudent(Integer studId
+    ) {
         try {
             Student st = em.find(Student.class, studId);
             if (st == null) {
@@ -571,7 +582,8 @@ public class AdminBean implements AdminBeanLocal {
     }
 
     @Override
-    public Student findStudentById(Integer studId) {
+    public Student findStudentById(Integer studId
+    ) {
         try {
             return em.find(Student.class, studId);
         } catch (Exception e) {
@@ -581,7 +593,8 @@ public class AdminBean implements AdminBeanLocal {
     }
 
     @Override
-    public Collection<Student> getStudentsByCourse(Integer courseId) {
+    public Collection<Student> getStudentsByCourse(Integer courseId
+    ) {
         try {
             Course c = em.find(Course.class, courseId);
             if (c != null && c.getStudentCollection() != null) {
@@ -595,7 +608,8 @@ public class AdminBean implements AdminBeanLocal {
     }
 
     @Override
-    public Collection<Student> getStudentsBySem(Integer semId) {
+    public Collection<Student> getStudentsBySem(Integer semId
+    ) {
         try {
             Semester s = em.find(Semester.class, semId);
             if (s != null && s.getStudentCollection() != null) {
@@ -610,7 +624,8 @@ public class AdminBean implements AdminBeanLocal {
 //Attendance Summary Logic
 
     @Override
-    public void updateSummary(Integer studId) {
+    public void updateSummary(Integer studId
+    ) {
         try {
             Student st = em.find(Student.class, studId);
             if (st == null) {
@@ -688,7 +703,8 @@ public class AdminBean implements AdminBeanLocal {
     }
 
     @Override
-    public AttendanceSummary findSummaryByStudent(Integer studId) {
+    public AttendanceSummary findSummaryByStudent(Integer studId
+    ) {
         try {
             TypedQuery<AttendanceSummary> query = em.createQuery(
                     "SELECT s FROM AttendanceSummary s WHERE s.student.studId = :studId", AttendanceSummary.class);
@@ -721,7 +737,8 @@ public class AdminBean implements AdminBeanLocal {
     }
 
     @Override
-    public Collection<AttendanceSummary> getSummaryByCourse(Integer courseId) {
+    public Collection<AttendanceSummary> getSummaryByCourse(Integer courseId
+    ) {
         try {
             Course c = em.find(Course.class, courseId);
             if (c == null) {
@@ -749,7 +766,8 @@ public class AdminBean implements AdminBeanLocal {
     }
 
     @Override
-    public Collection<AttendanceSummary> getSummaryBySemester(Integer semId) {
+    public Collection<AttendanceSummary> getSummaryBySemester(Integer semId
+    ) {
         try {
             Semester s = em.find(Semester.class, semId);
             if (s == null) {
@@ -778,7 +796,11 @@ public class AdminBean implements AdminBeanLocal {
 
 //Register User Logic
     @Override
-    public void registerUser(String username, String password, String name, Date dob, String mobile, String email, Integer groupId) {
+    public void registerUser(String username, String password,
+            String name, Date dob,
+            String mobile, String email,
+            Integer groupId
+    ) {
         try {
             Groupmaster g = em.find(Groupmaster.class, groupId);
 

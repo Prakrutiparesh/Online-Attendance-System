@@ -4,10 +4,10 @@
  */
 package Client;
 
-import client.MyRestFilter;
 import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.WebTarget;
+import java.util.Date;
 
 /**
  * Jersey REST client generated for REST resource:AdminRest [Admin]<br>
@@ -29,12 +29,6 @@ public class AdminClient {
 
     public AdminClient() {
         client = jakarta.ws.rs.client.ClientBuilder.newClient();
-        webTarget = client.target(BASE_URI).path("Admin");
-    }
-
-    public AdminClient(String token) {
-        client = jakarta.ws.rs.client.ClientBuilder.newClient();
-        client.register(new MyRestFilter(token));
         webTarget = client.target(BASE_URI).path("Admin");
     }
 
@@ -176,7 +170,7 @@ public class AdminClient {
         return webTarget.path(java.text.MessageFormat.format("deletesubject/{0}/{1}", new Object[]{subid, courseid})).request().delete(String.class);
     }
 
-    public String registerUser(String username, String password, String name, String dob, String mobile, String email, String groupId) throws ClientErrorException {
+    public String registerUser(String username, String password, String name, Date dob, String mobile, String email, Integer groupId) throws ClientErrorException {
         return webTarget.path(java.text.MessageFormat.format("register/{0}/{1}/{2}/{3}/{4}/{5}/{6}", new Object[]{username, password, name, dob, mobile, email, groupId})).request().post(null, String.class);
     }
 

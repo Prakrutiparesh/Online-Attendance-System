@@ -40,7 +40,6 @@ public class MyRestFilter implements ClientRequestFilter {
 
     @Override
     public void filter(ClientRequestContext requestContext) throws IOException {
-     
 
         System.out.println(" In form Auth Client Filter " + mytoken);
 

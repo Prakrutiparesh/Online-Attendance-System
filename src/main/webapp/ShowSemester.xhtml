@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <h:head>
+        <title>Show Semesters</title>
+        <link href="CSS/showSemester.css" rel="stylesheet" type="text/css"/>
+    </h:head>
+
+    <h:body>
+
+        <h:form id="courseForm">
+
+            <h2>Select Course</h2>
+
+            <h:selectOneMenu value="#{updateCDIBean.selectedCourseId}" styleClass="menu">
+                <f:selectItem itemLabel="--Select Course--" itemValue="" />
+                <f:selectItems value="#{updateCDIBean.courseList}" var="c"
+                               itemValue="#{c.courseId}" itemLabel="#{c.courseName}" />
+                <f:ajax listener="#{updateCDIBean.loadSemesters()}"
+                        render="semesterPanel" />
+            </h:selectOneMenu>
+
+            <br/><br/>
+
+            <h:panelGroup id="semesterPanel">
+
+                <h:panelGroup rendered="#{not empty updateCDIBean.semesterList}">
+                    <h:dataTable id="semesterTable" value="#{updateCDIBean.semesterList}" var="s">
+
+                        <h:column>
+                            <f:facet name="header">Semester ID</f:facet>
+                                #{s.semId}
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Semester Name</f:facet>
+                                #{s.semName}
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Actions</f:facet>
+
+                            <h:commandButton value="Update"
+                                             action="#{updateCDIBean.editSemester(s.semId, s.semName)}">
+                                <f:ajax execute="@this" render=":updateForm" />
+                            </h:commandButton>
+
+                            <h:commandButton value="Delete"
+                                             action="#{updateCDIBean.deleteSemester(s.semId)}">
+                                <f:ajax execute="@form" render="@form" />
+                            </h:commandButton>
+
+                        </h:column>
+
+                    </h:dataTable>
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{empty updateCDIBean.semesterList}">
+                    <h3 style="text-align:center; color:#777; margin-top:20px;">
+                        No Semesters Found
+                    </h3>
+                </h:panelGroup>
+
+            </h:panelGroup>
+
+        </h:form>
+
+
+
+        <h:panelGroup id="updateForm">
+            <h:panelGroup rendered="#{updateCDIBean.showUpdateForm}">
+
+                <div class="popup-overlay">
+                    <div class="popup-box">
+
+                        <h2 class="popup-heading">Update Semester</h2>
+
+                        <h:form id="updatePopupForm">
+
+                            <!-- ✅ IMPROVED INPUT WITH LABELS -->
+                            <div style="text-align: left; margin-bottom: 5px;">
+                                <span class="input-label">Semester ID</span>
+                            </div>
+                            <h:inputText readonly="true"
+                                         value="#{updateCDIBean.updateSemId}"
+                                         class="popup-input" />
+
+                            <div style="text-align: left; margin-bottom: 5px;">
+                                <span class="input-label">Semester Name</span>
+                            </div>
+                            <h:inputText value="#{updateCDIBean.updateSemName}"
+                                         class="popup-input" />
+
+                            <div class="btn-container">
+
+                                <h:commandButton value="Save Update"
+                                                 styleClass="save-btn"
+                                                 action="#{updateCDIBean.updateSemester()}">
+                                    <f:ajax execute="@form"
+                                            render=":courseForm:semesterTable :updateForm" />
+                                </h:commandButton>
+
+                                <h:commandButton value="Cancel"
+                                                 styleClass="cancel-btn"
+                                                 action="#{updateCDIBean.cancelUpdate()}">
+                                    <f:ajax execute="@this" render=":updateForm" />
+                                </h:commandButton>
+
+                            </div>
+
+                        </h:form>
+
+                    </div>
+                </div>
+
+            </h:panelGroup>
+        </h:panelGroup>
+
+    </h:body>
+</html>

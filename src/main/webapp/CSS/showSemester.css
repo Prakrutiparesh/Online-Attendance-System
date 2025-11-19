@@ -1,0 +1,222 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : 19 Nov 2025, 8:09:29 pm
+    Author     : PRAKRUTI
+*/
+
+body {
+    font-family: "Poppins", sans-serif;
+    background: #f5f7fa;
+    margin: 0;
+    padding: 20px;
+}
+
+h2 {
+    text-align:center;
+    margin-bottom:20px;
+    font-weight:600;
+}
+
+table {
+    width:70%;
+    margin:30px auto;
+    border-collapse:collapse;
+    background:white;
+    border-radius:10px;
+    box-shadow:0 3px 15px rgba(0,0,0,0.1);
+}
+
+th {
+    background:#4a90e2;
+    padding:12px;
+    color:white;
+}
+td {
+    padding:12px;
+    border-bottom:1px solid #eee;
+}
+
+
+input[value="Update"] {
+    background:#4da6ff;
+    color:white;
+    border:none;
+    padding:8px 16px;
+    border-radius:8px;
+    margin-right: 12px; /* ✅ SPACE ADDED */
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+input[value="Update"]:hover {
+    background:#2673d8;
+    transform: translateY(-1px);
+}
+
+input[value="Delete"] {
+    background:#ff4b4b;
+    color:white;
+    border:none;
+    padding:8px 16px;
+    border-radius:8px;
+    margin-left: 12px; /* ✅ SPACE ADDED */
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+input[value="Delete"]:hover {
+    background:#e03333;
+    transform: translateY(-1px);
+}
+
+/* ==================== POPUP DESIGN IMPROVED ===================== */
+
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    backdrop-filter: blur(4px);
+}
+
+.popup-box {
+    width: 420px;
+    background: #fff;
+    border-radius: 18px;
+    padding: 30px 28px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.2);
+    animation: zoomIn 0.25s ease-out;
+    text-align: center;
+}
+
+@keyframes zoomIn {
+    from {
+        transform: scale(0.85);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* ✅ IMPROVED INPUT FIELDS - CLASSIC MODERN DESIGN */
+.popup-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #e1e5e9;
+    border-radius: 12px;
+    font-size: 16px;
+    margin-bottom: 20px;
+    outline: none;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+    font-family: "Poppins", sans-serif;
+    box-sizing: border-box;
+}
+
+.popup-input:focus {
+    border-color: #4a90e2;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    transform: translateY(-2px);
+}
+
+.popup-input[readonly] {
+    background: #f0f2f5;
+    border-color: #d1d9e0;
+    color: #666;
+    cursor: not-allowed;
+}
+
+/* ✅ IMPROVED LABELS */
+.input-label {
+    display: block;
+    text-align: left;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #333;
+    font-size: 14px;
+}
+
+/* ✅ BUTTONS CONTAINER */
+.btn-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 16px; /* ✅ SPACE BETWEEN BUTTONS */
+}
+
+.save-btn {
+    background: linear-gradient(135deg, #4da6ff, #2673d8);
+    color: white;
+    padding: 12px 28px;
+    border: none;
+    font-size: 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    min-width: 120px;
+}
+
+.save-btn:hover {
+    background: linear-gradient(135deg, #2673d8, #1a5bb8);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+}
+
+.cancel-btn {
+    background: linear-gradient(135deg, #b3b3b3, #8e8e8e);
+    color: white;
+    padding: 12px 28px;
+    border: none;
+    font-size: 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    min-width: 120px;
+}
+
+.cancel-btn:hover {
+    background: linear-gradient(135deg, #8e8e8e, #6e6e6e);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* ✅ POPUP HEADING */
+.popup-heading {
+    margin: 0 0 25px 0;
+    color: #2c3e50;
+    font-weight: 600;
+    font-size: 24px;
+}
+.menu {
+    width: 70%;
+    padding: 12px 16px;
+    border: 1.8px solid #ddd;
+    border-radius: 10px;
+    font-size: 16px;
+    outline: none;
+    transition: 0.2s;
+    display: block;
+    margin: 0 auto;
+    background: #fff;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+}
+.menu:focus {
+    border-color: #4a90e2;
+    box-shadow: 0 0 8px rgba(74,144,226,0.3);
+}

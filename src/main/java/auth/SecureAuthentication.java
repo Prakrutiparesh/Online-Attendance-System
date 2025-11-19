@@ -5,7 +5,7 @@
  */
 package auth;
 
-import beans.LoginBean;
+import CDIBean.LoginBean;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.security.enterprise.authentication.mechanism.http.HttpAuthenticationMechanism;
 import java.io.Serializable;

@@ -2,12 +2,13 @@ package CDIBean;
 
 import EJB.AdminBeanLocal;
 import Entity.Course;
-import Entity.Users;
+import Entity.Semester;
+
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Named;
-import jakarta.ws.rs.core.GenericType;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,85 +21,108 @@ import java.util.regex.Pattern;
 @RequestScoped
 public class AdminCDIBean implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     @EJB
-    AdminBeanLocal abl;
+    private AdminBeanLocal abl;
 
-    // Users
-    Collection<Users> user;
-    GenericType<Collection<Users>> guser;
+    // ===== User Registration Fields =====
+    private String username;
+    private String password;
+    private String name;
+    private Date date;
+    private String mobile;
+    private String email;
 
-    String username;
-    String password;
-    String name;
-    Date date;
-    String mobile;
-    String email;
+    private static final int DEFAULT_GROUP_ID = 2;
 
-    public AdminCDIBean() {
-        user = new ArrayList<>();
-        guser = new GenericType<Collection<Users>>() {
-        };
+    // ===== Course & Semester Fields =====
+    private Collection<Course> courseList;
+    private Collection<Integer> semesterNumbers;
+    private Integer selectedCourseId;
+    private Integer semesterNumber;
+    private String courseName;
+    private String message;
+    private String successMessage;
+// ===== Semester List =====
+    private Collection<Semester> semesterList = new ArrayList<>();
+
+    // ===== Initialization =====
+    @PostConstruct
+    public void init() {
+        courseList = new ArrayList<>(abl.getAllCourse());
+        semesterNumbers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
 
-    // Email validation
+    public Collection<Semester> getSemesterList() {
+        return semesterList;
+    }
+
+    // ===== Email Validation =====
     private static boolean isValidEmail(String email) {
-        String emailRegex = "^[a-zA-Z0-9_+&-]+(?:\\.[a-zA-Z0-9_+&-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+        String emailRegex = "^[a-zA-Z0-9_+&-]+(?:\\.[a-zA-Z0-9_+&-]+)*@"
+                + "(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
         Pattern pattern = Pattern.compile(emailRegex);
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
     }
 
-    // Register new admin/user
+    // ===== Register New User =====
     public String insertRegiStration() {
         if (!isValidEmail(email)) {
-            System.out.println("Invalid email format");
+            message = "Invalid email format!";
+            System.out.println(message);
             return null;
         }
         try {
-            abl.registerUser(username, password, name, date, mobile, email, 2);
-            return "Login.jsf";
+            // Directly call EJB method
+            abl.registerUser(username, password, name, date, mobile, email, DEFAULT_GROUP_ID);
+            message = "User registered successfully!";
+            return "Login.jsf?faces-redirect=true";
         } catch (Exception e) {
             e.printStackTrace();
+            message = "Error during registration: " + e.getMessage();
             return null;
         }
     }
-//Course
-    private String message;
-    private String courseName;
 
-    public String getCourseName() {
-        return courseName;
-    }
-
-    public void setCourseName(String courseName) {
-        this.courseName = courseName;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    // Get all courses
+    // ===== Courses =====
     public Collection<Course> getAllCourses() {
         return abl.getAllCourse();
-    }
-
-    // Delete course
-    public String deleteCourse(Integer id) {
-        abl.deleteCourse(id);
-        return "ViewCourse?faces-redirect=true";
     }
 
     public void addCourse() {
         try {
             abl.addCourse(courseName);
-            message = "Course added suSccessfully!";
-            courseName = ""; // Clear form
+            message = "Course added successfully!";
+            courseName = "";
+            // Refresh course list
+            courseList = new ArrayList<>(abl.getAllCourse());
         } catch (Exception e) {
-            message = "Error: " + e.getMessage();
+            message = "Error adding course: " + e.getMessage();
         }
     }
 
+    public String deleteCourse(Integer id) {
+        abl.deleteCourse(id);
+        courseList = new ArrayList<>(abl.getAllCourse());
+        return "ViewCourse?faces-redirect=true";
+    }
+
+    // ===== Semesters =====
+    public String insertSemester() {
+        try {
+            abl.addSemester(String.valueOf(semesterNumber), selectedCourseId);
+            successMessage = "Semester added successfully!";
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            successMessage = "Something went wrong! " + e.getMessage();
+            return null;
+        }
+    }
+
+    // ===== Getters & Setters =====
     public String getUsername() {
         return username;
     }
@@ -147,30 +171,44 @@ public class AdminCDIBean implements Serializable {
         this.email = email;
     }
 
-    //Semester
-    private Integer selectedCourseId;
-    private Integer semesterNumber;
-
-    private Collection<Course> courseList;
-    private Collection<Integer> semesterNumbers;
-    private String successMessage;
-
-    @PostConstruct
-    public void init() {
-        courseList = new ArrayList<>(abl.getAllCourse());
-        semesterNumbers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+    public Collection<Course> getCourseList() {
+        return courseList;
     }
 
-    public String insertSemester() {
-        try {
-            abl.addSemester(String.valueOf(semesterNumber), selectedCourseId);
-            successMessage = "Semester Added Successfully!";
-            return null;
-        } catch (Exception e) {
-            e.printStackTrace();
-            successMessage = "Something went wrong!";
-            return null;
-        }
+    public Collection<Integer> getSemesterNumbers() {
+        return semesterNumbers;
+    }
+
+    public Integer getSelectedCourseId() {
+        return selectedCourseId;
+    }
+
+    public void setSelectedCourseId(Integer selectedCourseId) {
+        this.selectedCourseId = selectedCourseId;
+    }
+
+    public Integer getSemesterNumber() {
+        return semesterNumber;
+    }
+
+    public void setSemesterNumber(Integer semesterNumber) {
+        this.semesterNumber = semesterNumber;
+    }
+
+    public String getCourseName() {
+        return courseName;
+    }
+
+    public void setCourseName(String courseName) {
+        this.courseName = courseName;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public String getSuccessMessage() {
@@ -179,29 +217,5 @@ public class AdminCDIBean implements Serializable {
 
     public void setSuccessMessage(String successMessage) {
         this.successMessage = successMessage;
-    }
-
-    public Integer getSelectedCourseId() {
-        return selectedCourseId;
-    }
-
-    public void setSelectedCourseId(Integer id) {
-        this.selectedCourseId = id;
-    }
-
-    public Integer getSemesterNumber() {
-        return semesterNumber;
-    }
-
-    public void setSemesterNumber(Integer n) {
-        this.semesterNumber = n;
-    }
-
-    public Collection<Course> getCourseList() {
-        return courseList;
-    }
-
-    public Collection<Integer> getSemesterNumbers() {
-        return semesterNumbers;
     }
 }
