@@ -44,18 +44,74 @@ public class AdminCDIBean implements Serializable {
     private String courseName;
     private String message;
     private String successMessage;
-// ===== Semester List =====
+
+    // ===== Semester List =====
     private Collection<Semester> semesterList = new ArrayList<>();
+
+    // ===== Subject Fields =====
+    private Integer selectedSemesterId;
+    private String subjectName;
 
     // ===== Initialization =====
     @PostConstruct
     public void init() {
         courseList = new ArrayList<>(abl.getAllCourse());
         semesterNumbers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        semesterList = new ArrayList<>(abl.getAllSemesters()); // initialize semester list
     }
 
     public Collection<Semester> getSemesterList() {
         return semesterList;
+    }
+
+    public void insertSubject() {
+        try {
+            if (subjectName == null || subjectName.trim().isEmpty()) {
+                successMessage = "Please enter a subject name!";
+                return;
+            }
+            if (selectedCourseId == null) {
+                successMessage = "Please select a course!";
+                return;
+            }
+            if (selectedSemesterId == null) {
+                successMessage = "Please select a semester!";
+                return;
+            }
+
+            abl.addSubject(subjectName, selectedCourseId, selectedSemesterId);
+
+            successMessage = "Subject added successfully: " + subjectName;
+
+            // Reset fields
+            subjectName = null;
+            selectedCourseId = null;
+            selectedSemesterId = null;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            successMessage = "Error adding subject: " + e.getMessage();
+        }
+    }
+
+    public Integer getSelectedSemesterId() {
+        return selectedSemesterId;
+    }
+
+    public void setSelectedSemesterId(Integer selectedSemesterId) {
+        this.selectedSemesterId = selectedSemesterId;
+    }
+
+    public String getSubjectName() {
+        return subjectName;
+    }
+
+    public void setSubjectName(String subjectName) {
+        this.subjectName = subjectName;
+    }
+
+    public void setSemesterList(Collection<Semester> semesterList) {
+        this.semesterList = semesterList;
     }
 
     // ===== Email Validation =====

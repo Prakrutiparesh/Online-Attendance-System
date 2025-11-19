@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -261,16 +262,20 @@ public class AdminBean implements AdminBeanLocal {
     }
 
     @Override
-    public void updateSubject(Integer subId, String subName,
-            Integer courseId
-    ) {
+    public void updateSubject(Integer subId, String subName, Integer courseId, Integer semId) {
         try {
+            // 1. Find subject
             Subject s = em.find(Subject.class, subId);
             if (s == null) {
                 throw new IllegalArgumentException("Subject not found with ID: " + subId);
             }
 
-            s.setSubName(subName);
+            // 2. Update subject name
+            if (subName != null && !subName.trim().isEmpty()) {
+                s.setSubName(subName);
+            }
+
+            // 3. Update course if provided
             if (courseId != null) {
                 Course c = em.find(Course.class, courseId);
                 if (c == null) {
@@ -279,8 +284,19 @@ public class AdminBean implements AdminBeanLocal {
                 s.setCourse(c);
             }
 
+            // 4. Update semester if provided
+            if (semId != null) {
+                Semester sem = em.find(Semester.class, semId);
+                if (sem == null) {
+                    throw new IllegalArgumentException("Invalid Semester ID: " + semId);
+                }
+                s.setSemester(sem);
+            }
+
+            // 5. Merge updated entity
             em.merge(s);
-            System.out.println("Subject updated successfully: " + subName);
+
+            System.out.println("Subject updated successfully: " + s.getSubName());
 
         } catch (IllegalArgumentException e) {
             System.err.println("Error updating subject: " + e.getMessage());
@@ -292,8 +308,7 @@ public class AdminBean implements AdminBeanLocal {
     }
 
     @Override
-    public void deleteSubject(Integer subId, Integer courseId
-    ) {
+    public void deleteSubject(Integer subId, Integer courseId, Integer semId) {
         try {
             Course c = em.find(Course.class, courseId);
             Subject s = em.find(Subject.class, subId);
@@ -306,7 +321,11 @@ public class AdminBean implements AdminBeanLocal {
             if (subjects.contains(s)) {
                 subjects.remove(s);
                 c.setSubjectCollection(subjects);
-                em.remove(em.merge(s));
+
+                s.setCourse(null);
+
+                em.remove(s);
+
                 System.out.println("Subject deleted successfully: ID " + subId);
             } else {
                 throw new IllegalArgumentException("Subject does not belong to this course");
@@ -332,19 +351,23 @@ public class AdminBean implements AdminBeanLocal {
     }
 
     @Override
-    public Collection<Subject> getSubjectsByCourse(Integer courseId
-    ) {
+    public Collection<Subject> getSubjectsByCourseandSemester(Integer courseId, Integer semId) {
         try {
             Course c = em.find(Course.class, courseId);
             if (c == null) {
                 throw new IllegalArgumentException("Invalid Course ID: " + courseId);
             }
-            return c.getSubjectCollection();
+
+            // Filter subjects belonging to the given semester
+            return c.getSubjectCollection().stream()
+                    .filter(s -> s.getSemester() != null && semId.equals(s.getSemester().getSemId()))
+                    .collect(Collectors.toList());
+
         } catch (IllegalArgumentException e) {
             System.err.println(e.getMessage());
             throw e;
         } catch (Exception e) {
-            System.err.println("Error fetching subjects by course: " + e.getMessage());
+            System.err.println("Error fetching subjects by course and semester: " + e.getMessage());
             return Collections.emptyList();
         }
     }

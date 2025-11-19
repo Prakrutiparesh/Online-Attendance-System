@@ -48,13 +48,13 @@ public interface AdminBeanLocal {
 //Subject Method
     public void addSubject(String subName, Integer courseId, Integer semId);
 
-    public void updateSubject(Integer subId, String subName, Integer courseId);
+    public void updateSubject(Integer subId, String subName, Integer courseId, Integer semId);
 
-    public void deleteSubject(Integer subId, Integer courseId);
+    public void deleteSubject(Integer subId, Integer courseId, Integer semId);
 
     public Collection<Subject> getAllSubjects();
 
-    public Collection<Subject> getSubjectsByCourse(Integer courseId);
+    public Collection<Subject> getSubjectsByCourseandSemester(Integer courseId, Integer semId);
 
     //Division Method
     public void addDivision(String divName, Integer semId, Integer courseId);

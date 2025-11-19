@@ -207,14 +207,15 @@ public class AdminRest {
     }
 
     @PUT
-    @Path("updatesubject/{subid}/{subname}/{courseid}")
+    @Path("updatesubject/{subid}/{subname}/{courseid}/{semid}")
     @Produces(MediaType.APPLICATION_JSON)
     public String updateSubject(@PathParam("subid") Integer subId,
             @PathParam("subname") String subName,
-            @PathParam("courseid") Integer courseId) {
+            @PathParam("courseid") Integer courseId,
+            @PathParam("semid") Integer semId) {
         try {
-            abl.updateSubject(subId, subName, courseId);
-            return "{\"status\":\"success\",\"message\":\"Subject updated successfully: ID=" + subId + ", Name=" + subName + ", Course ID=" + courseId + "\"}";
+            abl.updateSubject(subId, subName, courseId, semId);
+            return "{\"status\":\"success\",\"message\":\"Subject updated successfully: ID=" + subId + ", Name=" + subName + ", Course ID=" + courseId + ", Sem ID=" + semId + "\"}";
         } catch (IllegalArgumentException e) {
             return "{\"status\":\"error\",\"message\":\"" + e.getMessage() + "\"}";
         } catch (Exception e) {
@@ -223,13 +224,13 @@ public class AdminRest {
     }
 
     @DELETE
-    @Path("deletesubject/{subid}/{courseid}")
+    @Path("deletesubject/{subid}/{courseid}/{semid}")
     @Produces(MediaType.APPLICATION_JSON)
     public String deleteSubject(@PathParam("subid") Integer subId,
-            @PathParam("courseid") Integer courseId) {
+            @PathParam("courseid") Integer courseId, @PathParam("semid") Integer semId) {
         try {
-            abl.deleteSubject(subId, courseId);
-            return "{\"status\":\"success\",\"message\":\"Subject deleted successfully: ID=" + subId + " (Course ID=" + courseId + ")\"}";
+            abl.deleteSubject(subId, courseId, semId);
+            return "{\"status\":\"success\",\"message\":\"Subject deleted successfully: ID=" + subId + " (Course ID and Sem Id" + courseId + semId + ")\"}";
         } catch (IllegalArgumentException e) {
             return "{\"status\":\"error\",\"message\":\"" + e.getMessage() + "\"}";
         } catch (Exception e) {
@@ -250,11 +251,11 @@ public class AdminRest {
     }
 
     @GET
-    @Path("subjectsbycourse/{courseid}")
+    @Path("subjectsbycourseandsem/{courseid}/{semid}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Object getSubjectsByCourse(@PathParam("courseid") Integer courseId) {
+    public Object getSubjectsByCourse(@PathParam("courseid") Integer courseId, @PathParam("semid") Integer semId) {
         try {
-            Collection<Subject> list = abl.getSubjectsByCourse(courseId);
+            Collection<Subject> list = abl.getSubjectsByCourseandSemester(courseId, semId);
             return list;
         } catch (IllegalArgumentException e) {
             return "{\"status\":\"error\",\"message\":\"" + e.getMessage() + "\"}";

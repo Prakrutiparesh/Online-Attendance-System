@@ -1,0 +1,163 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
+
+    <h:head>
+        <title>Add Subject</title>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        <style>
+            body {
+                font-family: 'Poppins', sans-serif;
+                background: #f0f2f5;
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+                padding-top: 60px;
+                margin: 0;
+            }
+
+            .form-box {
+                background: #fff;
+                padding: 35px 40px;
+                border-radius: 12px;
+                box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+                width: 400px;
+            }
+
+            h2 {
+                text-align: center;
+                color: #34495e;
+                margin-bottom: 10px;
+            }
+
+            .form-field {
+                display: flex;
+                flex-direction: column;
+                margin-bottom: 15px;
+            }
+
+            .form-field label {
+                margin-bottom: 6px;
+                font-weight: 500;
+                color: #555;
+            }
+
+            .form-field select,
+            .form-field input[type="text"] {
+                padding: 12px;
+                font-size: 16px;
+                border: 1px solid #ccc;
+                border-radius: 6px;
+                outline: none;
+                transition: border 0.3s;
+            }
+
+            .form-field select:focus,
+            .form-field input[type="text"]:focus {
+                border-color: #4da6ff;
+            }
+
+            .btn {
+                width: 100%;
+                padding: 12px;
+                font-size: 16px;
+                font-weight: 600;
+                color: #fff;
+                background: #4da6ff;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                transition: background 0.3s;
+            }
+
+            .btn:hover {
+                background: #1a73e8;
+            }
+
+            /* RED COLOR FOR REQUIRED MESSAGES */
+            .error-msg {
+                color: red;
+                font-size: 14px;
+                margin-top: 5px;
+            }
+        </style>
+    </h:head>
+
+    <h:body>
+
+        <!-- SUCCESS POPUP -->
+        <h:panelGroup rendered="#{adminCDIBean.successMessage != null}">
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: '#{adminCDIBean.successMessage}',
+                    confirmButtonColor: '#4da6ff',
+                    confirmButtonText: 'OK'
+                });
+            </script>
+        </h:panelGroup>
+
+        <div class="form-box">
+            <h2>Add Subject</h2>
+
+            <h:form>
+
+                <!-- COURSE DROPDOWN -->
+                <div class="form-field">
+                    <h:outputLabel value="Select Course:" for="course"/>
+                    <h:selectOneMenu id="course"
+                                     value="#{adminCDIBean.selectedCourseId}"
+                                     required="true"
+                                     requiredMessage="Please select a course">
+                        <f:selectItem itemLabel="Select Course" itemValue="" />
+                        <f:selectItems value="#{adminCDIBean.courseList}"
+                                       var="c"
+                                       itemLabel="#{c.courseName}"
+                                       itemValue="#{c.courseId}" />
+                    </h:selectOneMenu>
+                    <h:message for="course" styleClass="error-msg"/>
+                </div>
+
+                <!-- SEMESTER DROPDOWN -->
+                <div class="form-field">
+                    <h:outputLabel value="Select Semester:" for="semester"/>
+                    <h:selectOneMenu id="semester"
+                                     value="#{adminCDIBean.selectedSemesterId}"
+                                     required="true"
+                                     requiredMessage="Please select a semester">
+                        <f:selectItem itemLabel="Select Semester" itemValue="" />
+                        <f:selectItems value="#{adminCDIBean.semesterList}"
+                                       var="s"
+                                       itemLabel="#{s.semName}"
+                                       itemValue="#{s.semId}" />
+                    </h:selectOneMenu>
+                    <h:message for="semester" styleClass="error-msg"/>
+                </div>
+
+                <!-- SUBJECT NAME -->
+                <div class="form-field">
+                    <h:outputLabel value="Subject Name:" for="subName"/>
+                    <h:inputText id="subName"
+                                 value="#{adminCDIBean.subjectName}"
+                                 required="true"
+                                 requiredMessage="Please enter subject name"
+                                 a:placeholder="Enter Subject Name"/>
+                    <h:message for="subName" styleClass="error-msg"/>
+                </div>
+
+                <!-- BUTTON -->
+                <h:commandButton value="Add Subject"
+                                 action="#{adminCDIBean.insertSubject}"
+                                 styleClass="btn"/>
+
+            </h:form>
+        </div>
+
+    </h:body>
+</html>
