@@ -3,6 +3,7 @@ package CDIBean;
 import EJB.AdminBeanLocal;
 import Entity.Course;
 import Entity.Semester;
+import Entity.Subject;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
 import jakarta.faces.context.FacesContext;
@@ -19,9 +20,6 @@ public class UpdateCDIBean implements Serializable {
     @EJB
     AdminBeanLocal abl;
 
-    /* -----------------------------
-       COURSE UPDATE VARIABLES
-    ------------------------------*/
     private Integer courseId;
     private String courseName;
 
@@ -36,9 +34,94 @@ public class UpdateCDIBean implements Serializable {
     private Integer updateSemId;
     private String updateSemName;
 
+// ==========================
+// SUBJECT VARIABLES
+// ==========================
+    private Integer selectedSemId;
+    private Collection<Subject> subjectList;
+
+    private Integer updateSubId;
+    private String updateSubName;
+
     @PostConstruct
     public void init() {
         courseList = (Collection<Course>) abl.getAllCourse();
+        semesterList = new ArrayList<>();
+        subjectList = new ArrayList<>();
+    }
+
+    public void loadSubjects() {
+        if (selectedCourseId != null && selectedSemId != null) {
+            subjectList = abl.getSubjectsByCourseandSemester(selectedCourseId, selectedSemId);
+            System.out.println("Loaded subjects: " + (subjectList != null ? subjectList.size() : 0));
+        } else {
+            subjectList = new ArrayList<>();
+        }
+    }
+    // Unified save/update handler for popup
+
+    public void cancelPopup() {
+        showUpdateForm = false;
+        updateSemId = null;
+        updateSemName = null;
+        updateSubId = null;
+        updateSubName = null;
+    }
+
+    public void saveUpdate() {
+        if (updateSemId != null) {
+            updateSemester();
+        } else if (updateSubId != null) {
+            updateSubject();
+        }
+    }
+
+    // Edit subject popup
+    public void editSubject(Integer subId, String subName) {
+        updateSubId = subId;
+        updateSubName = subName;
+        showUpdateForm = true;
+    }
+
+    public void updateSubject() {
+        abl.updateSubject(updateSubId, updateSubName, selectedCourseId, selectedSemId);
+        loadSubjects(); // refresh list
+        showUpdateForm = false;
+    }
+
+    public void deleteSubject(Integer subId) {
+        abl.deleteSubject(subId, selectedCourseId, selectedSemId);
+        loadSubjects(); // refresh list
+    }
+
+    public Integer getSelectedSemId() {
+        return selectedSemId;
+    }
+
+    public void setSelectedSemId(Integer selectedSemId) {
+        this.selectedSemId = selectedSemId;
+    }
+
+    public Collection<Subject> getSubjectList() {
+        return subjectList;
+    }
+
+    public Integer getUpdateSubId() {
+        return updateSubId;
+    }
+
+    public String getUpdateSubName() {
+        return updateSubName;
+    }
+
+    public void setUpdateSubName(String updateSubName) {
+        this.updateSubName = updateSubName;
+    }
+
+    public void cancelSubjectUpdate() {
+        showUpdateForm = false;
+        updateSubId = null;
+        updateSubName = null;
     }
 
     public void loadSemesters() {
