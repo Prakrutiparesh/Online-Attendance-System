@@ -11,6 +11,7 @@ import Entity.Division;
 import Entity.Semester;
 import Entity.Student;
 import Entity.Subject;
+import Entity.Users;
 import jakarta.annotation.security.DeclareRoles;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ejb.EJB;
@@ -309,6 +310,22 @@ public class AdminRest {
     }
 
     @GET
+    @Path("divisionsbycourseandsem/{semid}/{courseid}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Object getDivisionsByCourseAndSem(
+            @PathParam("courseid") Integer courseId,
+            @PathParam("semid") Integer semId) {
+        try {
+            Collection<Division> list = abl.getDivisionsByCourseAndSemester(semId, courseId);
+            return list;
+        } catch (IllegalArgumentException e) {
+            return "{\"status\":\"error\",\"message\":\"" + e.getMessage() + "\"}";
+        } catch (Exception e) {
+            return "{\"status\":\"error\",\"message\":\"Error fetching divisions by course and semester: " + e.getMessage() + "\"}";
+        }
+    }
+
+    @GET
     @Path("getdivisionsbycourse/{courseId}")
     public Collection<Division> getDivisionsByCourse(@PathParam("courseId") Integer courseId) {
         try {
@@ -544,6 +561,25 @@ public class AdminRest {
             System.out.println("REST API Error: " + e.getMessage());
 
             return "Error while registering user: " + e.getMessage();
+        }
+    }
+
+    @GET
+    @Path("getallusers")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Object getAllUsers() {
+        try {
+            Collection<Users> list = abl.getAllUsers();
+
+            if (list == null || list.isEmpty()) {
+                return Collections.singletonMap("message", "No users found");
+            }
+
+            return list;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Collections.singletonMap("error", "Error fetching users: " + e.getMessage());
         }
     }
 

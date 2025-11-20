@@ -46,6 +46,7 @@ public class Division implements Serializable {
     @JoinColumn(name = "course_id", referencedColumnName = "course_id")
     @ManyToOne
     private Course course;
+
     @JsonbTransient
     @JoinColumn(name = "sem_id", referencedColumnName = "sem_id")
     @ManyToOne

@@ -2,6 +2,7 @@ package CDIBean;
 
 import EJB.AdminBeanLocal;
 import Entity.Course;
+import Entity.Division;
 import Entity.Semester;
 import Entity.Subject;
 import jakarta.annotation.PostConstruct;
@@ -43,11 +44,50 @@ public class UpdateCDIBean implements Serializable {
     private Integer updateSubId;
     private String updateSubName;
 
+    //Division
+    private Integer selectedDivisionSemId;        // For which semester we load divisions
+    private Collection<Division> divisionList;
+
+    private Integer updateDivId;
+    private String updateDivName;
+
     @PostConstruct
     public void init() {
         courseList = (Collection<Course>) abl.getAllCourse();
         semesterList = new ArrayList<>();
         subjectList = new ArrayList<>();
+        divisionList = new ArrayList<>();
+
+    }
+
+    public void loadDivisions() {
+        if (selectedCourseId != null && selectedSemId != null) {
+            divisionList = abl.getDivisionsByCourseAndSemester(selectedSemId, selectedCourseId);
+            System.out.println("Loaded divisions: " + (divisionList != null ? divisionList.size() : 0));
+        } else {
+            divisionList = new ArrayList<>();
+        }
+    }
+
+    public void editDivision(Integer divId, String divName) {
+        updateDivId = divId;
+        updateDivName = divName;
+        showUpdateForm = true;
+
+        System.out.println("=== EDIT DIVISION ===");
+        System.out.println("Div ID: " + updateDivId);
+        System.out.println("Div Name: " + updateDivName);
+    }
+
+    public void updateDivision() {
+        abl.updateDivision(updateDivId, updateDivName, selectedSemId, selectedCourseId);
+        loadDivisions();
+        showUpdateForm = false;
+    }
+
+    public void deleteDivision(Integer divId) {
+        abl.deleteDivision(divId, selectedSemId, selectedCourseId);
+        loadDivisions();
     }
 
     public void loadSubjects() {
@@ -66,6 +106,10 @@ public class UpdateCDIBean implements Serializable {
         updateSemName = null;
         updateSubId = null;
         updateSubName = null;
+
+        // Division reset
+        updateDivId = null;
+        updateDivName = null;
     }
 
     public void saveUpdate() {
@@ -73,6 +117,8 @@ public class UpdateCDIBean implements Serializable {
             updateSemester();
         } else if (updateSubId != null) {
             updateSubject();
+        } else if (updateDivId != null) {
+            updateDivision();
         }
     }
 
@@ -229,6 +275,22 @@ public class UpdateCDIBean implements Serializable {
     /* -----------------------------
        GETTERS & SETTERS  
     ------------------------------*/
+    public Collection<Division> getDivisionList() {
+        return divisionList;
+    }
+
+    public Integer getUpdateDivId() {
+        return updateDivId;
+    }
+
+    public String getUpdateDivName() {
+        return updateDivName;
+    }
+
+    public void setUpdateDivName(String updateDivName) {
+        this.updateDivName = updateDivName;
+    }
+
     public Integer getSelectedCourseId() {
         return selectedCourseId;
     }

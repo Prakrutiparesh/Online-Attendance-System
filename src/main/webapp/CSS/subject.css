@@ -1,0 +1,75 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 60px;
+    margin: 0;
+}
+
+.form-box {
+    background: #fff;
+    padding: 35px 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    width: 400px;
+}
+
+h2 {
+    text-align: center;
+    color: #34495e;
+    margin-bottom: 10px;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.form-field label {
+    margin-bottom: 6px;
+    font-weight: 500;
+    color: #555;
+}
+
+.form-field select,
+.form-field input[type="text"] {
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    outline: none;
+    transition: border 0.3s;
+}
+
+.form-field select:focus,
+.form-field input[type="text"]:focus {
+    border-color: #4da6ff;
+}
+
+.btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    background: #4da6ff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn:hover {
+    background: #1a73e8;
+}
+
+/* RED COLOR FOR REQUIRED MESSAGES */
+.error-msg {
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
+}
+

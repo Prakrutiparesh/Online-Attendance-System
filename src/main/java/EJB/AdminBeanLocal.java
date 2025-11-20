@@ -10,6 +10,7 @@ import Entity.Division;
 import Entity.Semester;
 import Entity.Student;
 import Entity.Subject;
+import Entity.Users;
 import jakarta.ejb.Local;
 import java.sql.Date;
 import java.util.Collection;
@@ -63,6 +64,8 @@ public interface AdminBeanLocal {
 
     public void deleteDivision(Integer divId, Integer semId, Integer courseId);
 
+    public Collection<Division> getDivisionsByCourseAndSemester(Integer semId, Integer courseId);
+
     public Collection<Division> getDivisionsByCourse(Integer courseId);
 
     public Collection<Division> getDivisionsBySemester(Integer semId);
@@ -95,6 +98,8 @@ public interface AdminBeanLocal {
 
 //Register User Method
     public void registerUser(String username, String password, String name, java.util.Date dob, String mobile, String email, Integer groupId);
+
+    public Collection<Users> getAllUsers();
 
     public String saySecureHello();
 

@@ -449,7 +449,6 @@ public class AdminBean implements AdminBeanLocal {
             }
         }
 
-        // Maintain bidirectional relation cleanup
         Course parentCourse = d.getCourse();
         if (parentCourse != null && parentCourse.getDivisionCollection() != null) {
             parentCourse.getDivisionCollection().remove(d);
@@ -460,6 +459,29 @@ public class AdminBean implements AdminBeanLocal {
         }
 
         em.remove(d);
+    }
+
+    @Override
+    public Collection<Division> getDivisionsByCourseAndSemester(Integer semId, Integer courseId) {
+        try {
+            // Find course by ID
+            Course c = em.find(Course.class, courseId);
+            if (c == null) {
+                throw new IllegalArgumentException("Invalid Course ID: " + courseId);
+            }
+
+            // Filter divisions associated with the given semester
+            return c.getDivisionCollection().stream()
+                    .filter(d -> d.getSemester() != null && semId.equals(d.getSemester().getSemId()))
+                    .collect(Collectors.toList());
+
+        } catch (IllegalArgumentException e) {
+            System.err.println(e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            System.err.println("Error fetching divisions by course and semester: " + e.getMessage());
+            return Collections.emptyList();
+        }
     }
 
     @Override
@@ -860,6 +882,17 @@ public class AdminBean implements AdminBeanLocal {
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error while registering user: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public Collection<Users> getAllUsers() {
+        try {
+            return em.createQuery("SELECT u FROM Users u", Users.class)
+                    .getResultList();
+        } catch (Exception e) {
+            System.err.println("Unexpected error in getAllUsers(): " + e.getMessage());
+            throw new RuntimeException("Error fetching all users: " + e.getMessage());
         }
     }
 

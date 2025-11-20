@@ -6,8 +6,8 @@
       xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
 
     <h:head>
-        <title>Add Subject</title>
-        <link href="CSS/subject.css" rel="stylesheet" type="text/css"/>
+        <title>Add Division</title>
+        <link href="CSS/Division.css" rel="stylesheet" type="text/css"/>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     </h:head>
@@ -28,15 +28,15 @@
         </h:panelGroup>
 
         <div class="form-box">
-            <h2>Add Subject</h2>
+            <h2>Add Division</h2>
 
             <h:form>
 
-                <!-- COURSE DROPDOWN -->
+                <!-- Course Dropdown -->
                 <div class="form-field">
-                    <h:outputLabel value="Select Course:" for="course"/>
+                    <h:outputLabel value="Select Course:" for="course" />
                     <h:selectOneMenu id="course"
-                                     value="#{adminCDIBean.selectedCourseId}"
+                                     value="#{adminCDIBean.selectedDivisionCourseId}"
                                      required="true"
                                      requiredMessage="Please select a course">
                         <f:selectItem itemLabel="Select Course" itemValue="" />
@@ -45,14 +45,14 @@
                                        itemLabel="#{c.courseName}"
                                        itemValue="#{c.courseId}" />
                     </h:selectOneMenu>
-                    <h:message for="course" styleClass="error-msg"/>
+                    <h:message for="course" styleClass="error-msg" />
                 </div>
 
-                <!-- SEMESTER DROPDOWN -->
+                <!-- Semester Dropdown -->
                 <div class="form-field">
-                    <h:outputLabel value="Select Semester:" for="semester"/>
+                    <h:outputLabel value="Select Semester:" for="semester" />
                     <h:selectOneMenu id="semester"
-                                     value="#{adminCDIBean.selectedSemesterId}"
+                                     value="#{adminCDIBean.selectedDivisionSemesterId}"
                                      required="true"
                                      requiredMessage="Please select a semester">
                         <f:selectItem itemLabel="Select Semester" itemValue="" />
@@ -61,24 +61,23 @@
                                        itemLabel="#{s.semName}"
                                        itemValue="#{s.semId}" />
                     </h:selectOneMenu>
-                    <h:message for="semester" styleClass="error-msg"/>
+                    <h:message for="semester" styleClass="error-msg" />
                 </div>
 
-                <!-- SUBJECT NAME -->
+                <!-- Division Name -->
                 <div class="form-field">
-                    <h:outputLabel value="Subject Name:" for="subName"/>
-                    <h:inputText id="subName"
-                                 value="#{adminCDIBean.subjectName}"
+                    <h:outputLabel value="Division Name:" for="divName" />
+                    <h:inputText id="divName"
+                                 value="#{adminCDIBean.divisionName}"
                                  required="true"
-                                 requiredMessage="Please enter subject name"
-                                 a:placeholder="Enter Subject Name"/>
-                    <h:message for="subName" styleClass="error-msg"/>
+                                 requiredMessage="Please enter division name"
+                                 a:placeholder="Enter Division Name" />
+                    <h:message for="divName" styleClass="error-msg" />
                 </div>
 
-                <!-- BUTTON -->
-                <h:commandButton value="Add Subject"
-                                 action="#{adminCDIBean.insertSubject}"
-                                 styleClass="btn"/>
+                <h:commandButton value="Add Division"
+                                 action="#{adminCDIBean.insertDivision}"
+                                 styleClass="btn" />
 
             </h:form>
         </div>

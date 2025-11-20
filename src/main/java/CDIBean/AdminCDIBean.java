@@ -51,6 +51,10 @@ public class AdminCDIBean implements Serializable {
     // ===== Subject Fields =====
     private Integer selectedSemesterId;
     private String subjectName;
+// ===== Division Fields =====
+    private Integer selectedDivisionCourseId;
+    private Integer selectedDivisionSemesterId;
+    private String divisionName;
 
     // ===== Initialization =====
     @PostConstruct
@@ -145,6 +149,37 @@ public class AdminCDIBean implements Serializable {
     // ===== Courses =====
     public Collection<Course> getAllCourses() {
         return abl.getAllCourse();
+    }
+
+    public void insertDivision() {
+        try {
+            if (divisionName == null || divisionName.trim().isEmpty()) {
+                successMessage = "Please enter division name!";
+                return;
+            }
+            if (selectedDivisionCourseId == null) {
+                successMessage = "Please select a course!";
+                return;
+            }
+            if (selectedDivisionSemesterId == null) {
+                successMessage = "Please select a semester!";
+                return;
+            }
+
+            // Call EJB
+            abl.addDivision(divisionName, selectedDivisionSemesterId, selectedDivisionCourseId);
+
+            successMessage = "Division added successfully: " + divisionName;
+
+            // Reset fields
+            divisionName = null;
+            selectedDivisionCourseId = null;
+            selectedDivisionSemesterId = null;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            successMessage = "Error adding division: " + e.getMessage();
+        }
     }
 
     public void addCourse() {
@@ -274,4 +309,29 @@ public class AdminCDIBean implements Serializable {
     public void setSuccessMessage(String successMessage) {
         this.successMessage = successMessage;
     }
+
+    public Integer getSelectedDivisionCourseId() {
+        return selectedDivisionCourseId;
+    }
+
+    public void setSelectedDivisionCourseId(Integer selectedDivisionCourseId) {
+        this.selectedDivisionCourseId = selectedDivisionCourseId;
+    }
+
+    public Integer getSelectedDivisionSemesterId() {
+        return selectedDivisionSemesterId;
+    }
+
+    public void setSelectedDivisionSemesterId(Integer selectedDivisionSemesterId) {
+        this.selectedDivisionSemesterId = selectedDivisionSemesterId;
+    }
+
+    public String getDivisionName() {
+        return divisionName;
+    }
+
+    public void setDivisionName(String divisionName) {
+        this.divisionName = divisionName;
+    }
+
 }
