@@ -2,6 +2,7 @@ package CDIBean;
 
 import EJB.AdminBeanLocal;
 import Entity.Course;
+import Entity.Division;
 import Entity.Semester;
 
 import jakarta.annotation.PostConstruct;
@@ -55,6 +56,12 @@ public class AdminCDIBean implements Serializable {
     private Integer selectedDivisionCourseId;
     private Integer selectedDivisionSemesterId;
     private String divisionName;
+// ===== Student Fields =====
+    private String studentName;
+    private Integer studentRoll;
+    private Integer studentCourseId;
+    private Integer studentSemesterId;
+    private Integer studentDivisionId;
 
     // ===== Initialization =====
     @PostConstruct
@@ -62,6 +69,49 @@ public class AdminCDIBean implements Serializable {
         courseList = new ArrayList<>(abl.getAllCourse());
         semesterNumbers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         semesterList = new ArrayList<>(abl.getAllSemesters()); // initialize semester list
+    }
+
+    public void insertStudent() {
+        try {
+            if (studentName == null || studentName.trim().isEmpty()) {
+                successMessage = "Please enter student name!";
+                return;
+            }
+            if (studentRoll == null) {
+                successMessage = "Please enter roll number!";
+                return;
+            }
+            if (studentCourseId == null) {
+                successMessage = "Select a course!";
+                return;
+            }
+            if (studentSemesterId == null) {
+                successMessage = "Select a semester!";
+                return;
+            }
+            if (studentDivisionId == null) {
+                successMessage = "Select a division!";
+                return;
+            }
+
+            abl.addStudent(studentName, studentRoll, studentCourseId, studentSemesterId, studentDivisionId);
+
+            successMessage = "Student added successfully: " + studentName;
+
+            // Reset fields
+            studentName = null;
+            studentRoll = null;
+            studentCourseId = null;
+            studentSemesterId = null;
+            studentDivisionId = null;
+
+        } catch (Exception e) {
+            successMessage = "Error adding student: " + e.getMessage();
+        }
+    }
+
+    public Collection<Division> getAllDivision() {
+        return abl.getAllDivision();
     }
 
     public Collection<Semester> getSemesterList() {
@@ -332,6 +382,46 @@ public class AdminCDIBean implements Serializable {
 
     public void setDivisionName(String divisionName) {
         this.divisionName = divisionName;
+    }
+
+    public String getStudentName() {
+        return studentName;
+    }
+
+    public void setStudentName(String studentName) {
+        this.studentName = studentName;
+    }
+
+    public Integer getStudentRoll() {
+        return studentRoll;
+    }
+
+    public void setStudentRoll(Integer studentRoll) {
+        this.studentRoll = studentRoll;
+    }
+
+    public Integer getStudentCourseId() {
+        return studentCourseId;
+    }
+
+    public void setStudentCourseId(Integer studentCourseId) {
+        this.studentCourseId = studentCourseId;
+    }
+
+    public Integer getStudentSemesterId() {
+        return studentSemesterId;
+    }
+
+    public void setStudentSemesterId(Integer studentSemesterId) {
+        this.studentSemesterId = studentSemesterId;
+    }
+
+    public Integer getStudentDivisionId() {
+        return studentDivisionId;
+    }
+
+    public void setStudentDivisionId(Integer studentDivisionId) {
+        this.studentDivisionId = studentDivisionId;
     }
 
 }

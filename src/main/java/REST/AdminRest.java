@@ -295,17 +295,51 @@ public class AdminRest {
         }
     }
 
+    @PUT
+    @Path("updatestudent/{studId}/{studName}/{rollNo}/{courseId}/{semId}/{divId}")
+    public String updateStudent(
+            @PathParam("studId") Integer studId,
+            @PathParam("studName") String studName,
+            @PathParam("rollNo") Integer rollNo,
+            @PathParam("courseId") Integer courseId,
+            @PathParam("semId") Integer semId,
+            @PathParam("divId") Integer divId) {
+
+        try {
+            abl.updateStudent(studId, studName, rollNo, courseId, semId, divId);
+            return "{\"message\": \"Student updated successfully\"}";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "{\"error\": \"" + e.getMessage() + "\"}";
+        }
+    }
+
     @DELETE
     @Path("deletedivision/{divId}/{semId}/{courseId}")
-    public String deleteDivision(@PathParam("divId") Integer divId,
+    public String deleteDivision(
+            @PathParam("divId") Integer divId,
             @PathParam("semId") Integer semId,
             @PathParam("courseId") Integer courseId) {
         try {
             abl.deleteDivision(divId, semId, courseId);
             return "{\"message\": \"Division deleted successfully\"}";
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             e.printStackTrace();
             return "{\"error\": \"" + e.getMessage() + "\"}";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "{\"error\": \"Unexpected error: " + e.getMessage() + "\"}";
+        }
+    }
+
+    @GET
+    @Path("alldivision")
+    public Collection<Division> getAllDivision() {
+        try {
+            return abl.getAllDivision();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return java.util.Collections.emptyList(); // safe fallback
         }
     }
 
@@ -356,35 +390,73 @@ public class AdminRest {
     }
 
     //Student Rest
+    // ADD STUDENT REST API
     @POST
-    @Path("addstudent/{userId}/{rollNo}/{courseId}/{semId}/{divId}")
-    @Produces("application/json")
+    @Path("addstudent/{name}/{roll}/{courseId}/{semId}/{divId}")
+    @Produces(MediaType.APPLICATION_JSON)
     public String addStudent(
-            @PathParam("userId") Integer userId,
-            @PathParam("rollNo") Integer rollNo,
+            @PathParam("name") String studentName,
+            @PathParam("roll") Integer rollNo,
             @PathParam("courseId") Integer courseId,
             @PathParam("semId") Integer semId,
             @PathParam("divId") Integer divId) {
-
         try {
-            abl.addStudent(userId, rollNo, courseId, semId, divId);
-            return "{\"status\":\"success\",\"message\":\"Student added successfully\"}";
+
+            // Validations
+            if (studentName == null || studentName.trim().isEmpty()) {
+                return "{\"status\":\"error\",\"message\":\"Student name is required!\"}";
+            }
+            if (rollNo == null || rollNo <= 0) {
+                return "{\"status\":\"error\",\"message\":\"Invalid roll number!\"}";
+            }
+
+            // Call EJB
+            abl.addStudent(studentName, rollNo, courseId, semId, divId);
+
+            return "{"
+                    + "\"status\":\"success\","
+                    + "\"message\":\"Student added successfully: " + studentName + "\","
+                    + "\"details\":{"
+                    + "\"roll_no\":" + rollNo + ","
+                    + "\"course_id\":" + courseId + ","
+                    + "\"sem_id\":" + semId + ","
+                    + "\"div_id\":" + divId
+                    + "}"
+                    + "}";
+
         } catch (IllegalArgumentException e) {
-            return "{\"status\":\"error\",\"message\":\"" + e.getMessage() + "\"}";
+
+            return "{"
+                    + "\"status\":\"error\","
+                    + "\"message\":\"" + e.getMessage() + "\""
+                    + "}";
+
         } catch (Exception e) {
-            return "{\"status\":\"error\",\"message\":\"Unexpected error: " + e.getMessage() + "\"}";
+
+            return "{"
+                    + "\"status\":\"error\","
+                    + "\"message\":\"Unexpected error: " + e.getMessage() + "\""
+                    + "}";
+
         }
     }
 
     @DELETE
-    @Path("deletestudent/{studId}")
-    public String deleteStudent(@PathParam("studId") Integer studId) {
+    @Path("deletestudent/{studId}/{courseId}/{semId}/{divId}")
+    public String deleteStudent(
+            @PathParam("studId") Integer studId,
+            @PathParam("courseId") Integer selectedCourseId,
+            @PathParam("semId") Integer selectedSemId,
+            @PathParam("divId") Integer selectedStudentDivId) {
         try {
-            abl.deleteStudent(studId);
+            abl.deleteStudent(studId, selectedCourseId, selectedSemId, selectedStudentDivId);
             return "{\"message\": \"Student deleted successfully\"}";
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             e.printStackTrace();
             return "{\"error\": \"" + e.getMessage() + "\"}";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "{\"error\": \"Unexpected error: " + e.getMessage() + "\"}";
         }
     }
 
@@ -448,8 +520,28 @@ public class AdminRest {
             return Collections.singletonMap("error", e.getMessage());
         }
     }
-//Attendance Summary Logic
 
+    @GET
+    @Path("studentsbycourseSemDiv/{courseid}/{semid}/{divid}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Object getStudentsByCourseSemDiv(
+            @PathParam("courseid") Integer courseId,
+            @PathParam("semid") Integer semId,
+            @PathParam("divid") Integer divId) {
+
+        try {
+            Collection<Student> list = abl.getStudentsByCourseSemDiv(courseId, semId, divId);
+            return list;   // JSON array of students
+
+        } catch (IllegalArgumentException e) {
+            return "{\"status\":\"error\",\"message\":\"" + e.getMessage() + "\"}";
+
+        } catch (Exception e) {
+            return "{\"status\":\"error\",\"message\":\"Error fetching students: " + e.getMessage() + "\"}";
+        }
+    }
+
+//Attendance Summary Logic
     @GET
     @Path("updatesummary/{studId}")
     @Produces(MediaType.APPLICATION_JSON)

@@ -4,6 +4,7 @@ import EJB.AdminBeanLocal;
 import Entity.Course;
 import Entity.Division;
 import Entity.Semester;
+import Entity.Student;
 import Entity.Subject;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
@@ -50,6 +51,17 @@ public class UpdateCDIBean implements Serializable {
 
     private Integer updateDivId;
     private String updateDivName;
+// ==========================
+// STUDENT VARIABLES
+// ==========================
+    private Collection<Student> studentList;
+
+    private Integer selectedStudentSemId;  // Semester ke hisab se students load
+    private Integer selectedStudentDivId;  // Division ke hisab se students load
+
+    private Integer updateStudId;
+    private String updateStudName;
+    private Integer updateStudRoll;
 
     @PostConstruct
     public void init() {
@@ -57,7 +69,46 @@ public class UpdateCDIBean implements Serializable {
         semesterList = new ArrayList<>();
         subjectList = new ArrayList<>();
         divisionList = new ArrayList<>();
+        studentList = new ArrayList<>();
 
+    }
+
+    public void loadStudents() {
+        System.out.println("selectedCourseId = " + selectedCourseId);
+        System.out.println("selectedSemId = " + selectedSemId);
+        System.out.println("selectedStudentDivId = " + selectedStudentDivId);
+
+        if (selectedCourseId != null && selectedSemId != null && selectedStudentDivId != null) {
+            studentList = abl.getStudentsByCourseSemDiv(selectedCourseId, selectedSemId, selectedStudentDivId);
+            System.out.println("Loaded students: " + (studentList != null ? studentList.size() : 0));
+        } else {
+            studentList = new ArrayList<>();
+        }
+    }
+
+    public void editStudent(Integer studId, String studName, Integer rollNo) {
+        updateStudId = studId;
+        updateStudName = studName;
+        updateStudRoll = rollNo;
+
+        showUpdateForm = true;
+
+        System.out.println("=== EDIT STUDENT ===");
+        System.out.println("ID: " + studId);
+        System.out.println("Name: " + studName);
+        System.out.println("Roll: " + rollNo);
+    }
+
+    public void updateStudent() {
+        abl.updateStudent(updateStudId, updateStudName, updateStudRoll, selectedCourseId, selectedSemId, selectedStudentDivId);
+
+        loadStudents();
+        showUpdateForm = false;
+    }
+
+    public void deleteStudent(Integer studId) {
+        abl.deleteStudent(studId, selectedCourseId, selectedSemId, selectedStudentDivId);
+        loadStudents();
     }
 
     public void loadDivisions() {
@@ -110,6 +161,10 @@ public class UpdateCDIBean implements Serializable {
         // Division reset
         updateDivId = null;
         updateDivName = null;
+        updateStudId = null;
+        updateStudName = null;
+        updateStudRoll = null;
+
     }
 
     public void saveUpdate() {
@@ -119,6 +174,8 @@ public class UpdateCDIBean implements Serializable {
             updateSubject();
         } else if (updateDivId != null) {
             updateDivision();
+        } else if (updateStudId != null) {
+            updateStudent();
         }
     }
 
@@ -346,4 +403,45 @@ public class UpdateCDIBean implements Serializable {
     public void onCourseChange() {
         // nothing to do — JSF automatically calls getSemesters()
     }
+
+    public Collection<Student> getStudentList() {
+        return studentList;
+    }
+
+    public Integer getUpdateStudId() {
+        return updateStudId;
+    }
+
+    public String getUpdateStudName() {
+        return updateStudName;
+    }
+
+    public void setUpdateStudName(String updateStudName) {
+        this.updateStudName = updateStudName;
+    }
+
+    public Integer getUpdateStudRoll() {
+        return updateStudRoll;
+    }
+
+    public void setUpdateStudRoll(Integer updateStudRoll) {
+        this.updateStudRoll = updateStudRoll;
+    }
+
+    public Integer getSelectedStudentSemId() {
+        return selectedStudentSemId;
+    }
+
+    public void setSelectedStudentSemId(Integer selectedStudentSemId) {
+        this.selectedStudentSemId = selectedStudentSemId;
+    }
+
+    public Integer getSelectedStudentDivId() {
+        return selectedStudentDivId;
+    }
+
+    public void setSelectedStudentDivId(Integer selectedStudentDivId) {
+        this.selectedStudentDivId = selectedStudentDivId;
+    }
+
 }

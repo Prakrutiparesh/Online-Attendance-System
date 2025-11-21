@@ -69,10 +69,6 @@ public class Users implements Serializable {
     private Groupmaster groupmaster;
 
     @JsonbTransient
-    @OneToOne(mappedBy = "users")
-    private Student student;
-
-    @JsonbTransient
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "users")
     private Collection<Attendance> attendanceCollection;
 
@@ -151,14 +147,6 @@ public class Users implements Serializable {
 
     public void setGroupmaster(Groupmaster groupmaster) {
         this.groupmaster = groupmaster;
-    }
-
-    public Student getStudent() {
-        return student;
-    }
-
-    public void setStudent(Student student) {
-        this.student = student;
     }
 
     public Collection<Attendance> getAttendanceCollection() {

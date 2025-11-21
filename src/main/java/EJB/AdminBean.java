@@ -461,6 +461,16 @@ public class AdminBean implements AdminBeanLocal {
         em.remove(d);
     }
 
+    public Collection<Division> getAllDivision() {
+        try {
+            return em.createNamedQuery("Division.findAll", Division.class)
+                    .getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
     @Override
     public Collection<Division> getDivisionsByCourseAndSemester(Integer semId, Integer courseId) {
         try {
@@ -506,62 +516,53 @@ public class AdminBean implements AdminBeanLocal {
 // Student Logic
 
     @Override
-    public void addStudent(Integer userId, Integer rollNo,
-            Integer courseId, Integer semId,
-            Integer divId
-    ) {
-        try {
-            Users u = em.find(Users.class, userId);
-            Course c = em.find(Course.class, courseId);
-            Semester s = em.find(Semester.class, semId);
-            Division d = em.find(Division.class, divId);
+    public void addStudent(String studentName, Integer rollNo,
+            Integer courseId, Integer semId, Integer divId) {
 
-            if (u == null) {
-                throw new IllegalArgumentException("Invalid User ID: " + userId);
-            }
-            if (c == null) {
-                throw new IllegalArgumentException("Invalid Course ID: " + courseId);
-            }
-            if (s == null) {
-                throw new IllegalArgumentException("Invalid Semester ID: " + semId);
-            }
-            if (d == null) {
-                throw new IllegalArgumentException("Invalid Division ID: " + divId);
-            }
+        Course c = em.find(Course.class, courseId);
+        Semester s = em.find(Semester.class, semId);
+        Division d = em.find(Division.class, divId);
 
-            Student st = new Student();
-            st.setUsers(u);
-            st.setRollNo(rollNo);
-            st.setCourse(c);
-            st.setSemester(s);
-            st.setDivision(d);
+        Student st = new Student();
+        st.setStudentName(studentName);
+        st.setRollNo(rollNo);
+        st.setCourse(c);
+        st.setSemester(s);
+        st.setDivision(d);
 
-            em.persist(st);
-            System.out.println("Student added successfully: " + u.getUserId());
-
-        } catch (IllegalArgumentException e) {
-            System.err.println("Validation error: " + e.getMessage());
-            throw e;  // Pass to REST layer
-        } catch (Exception e) {
-            System.err.println("Unexpected error in addStudent(): " + e.getMessage());
-            throw new RuntimeException("Error adding student: " + e.getMessage());
-        }
+        em.persist(st);
     }
 
     @Override
-    public void updateStudent(Integer studId, Integer rollNo,
-            Integer semId, Integer divId
-    ) {
+    public void updateStudent(Integer studId, String studName, Integer rollNo,
+            Integer courseId, Integer semId, Integer divId) {
+
         try {
             Student st = em.find(Student.class, studId);
             if (st == null) {
                 throw new IllegalArgumentException("Invalid Student ID: " + studId);
             }
 
+            // Update name
+            if (studName != null && !studName.trim().isEmpty()) {
+                st.setStudentName(studName);
+            }
+
+            // Update roll no
             if (rollNo != null) {
                 st.setRollNo(rollNo);
             }
 
+            // Update course
+            if (courseId != null) {
+                Course c = em.find(Course.class, courseId);
+                if (c == null) {
+                    throw new IllegalArgumentException("Invalid Course ID: " + courseId);
+                }
+                st.setCourse(c);
+            }
+
+            // Update semester
             if (semId != null) {
                 Semester s = em.find(Semester.class, semId);
                 if (s == null) {
@@ -570,6 +571,7 @@ public class AdminBean implements AdminBeanLocal {
                 st.setSemester(s);
             }
 
+            // Update division
             if (divId != null) {
                 Division d = em.find(Division.class, divId);
                 if (d == null) {
@@ -583,7 +585,7 @@ public class AdminBean implements AdminBeanLocal {
 
         } catch (IllegalArgumentException e) {
             System.err.println("Validation error: " + e.getMessage());
-            throw e; // Pass error to REST layer
+            throw e;
         } catch (Exception e) {
             System.err.println("Unexpected error in updateStudent(): " + e.getMessage());
             throw new RuntimeException("Error updating student: " + e.getMessage());
@@ -591,15 +593,27 @@ public class AdminBean implements AdminBeanLocal {
     }
 
     @Override
-    public void deleteStudent(Integer studId
-    ) {
+    public void deleteStudent(Integer studId, Integer selectedCourseId, Integer selectedSemId, Integer selectedStudentDivId) {
         try {
             Student st = em.find(Student.class, studId);
             if (st == null) {
                 throw new IllegalArgumentException("Invalid Student ID: " + studId);
             }
 
-            // Remove from related collections (optional but safe practice)
+            // Optional: Validate selected Course, Semester, Division before deletion
+            if (selectedCourseId != null && st.getCourse() != null && !st.getCourse().getCourseId().equals(selectedCourseId)) {
+                throw new IllegalArgumentException("Student does not belong to the selected Course ID: " + selectedCourseId);
+            }
+
+            if (selectedSemId != null && st.getSemester() != null && !st.getSemester().getSemId().equals(selectedSemId)) {
+                throw new IllegalArgumentException("Student does not belong to the selected Semester ID: " + selectedSemId);
+            }
+
+            if (selectedStudentDivId != null && st.getDivision() != null && !st.getDivision().getDivId().equals(selectedStudentDivId)) {
+                throw new IllegalArgumentException("Student does not belong to the selected Division ID: " + selectedStudentDivId);
+            }
+
+            // Remove from related collections (safe practice)
             Course c = st.getCourse();
             if (c != null && c.getStudentCollection() != null) {
                 c.getStudentCollection().remove(st);
@@ -620,7 +634,7 @@ public class AdminBean implements AdminBeanLocal {
 
         } catch (IllegalArgumentException e) {
             System.err.println("Validation error: " + e.getMessage());
-            throw e;  // Pass to REST
+            throw e;  // Pass error to REST
         } catch (Exception e) {
             System.err.println("Unexpected error in deleteStudent(): " + e.getMessage());
             throw new RuntimeException("Error deleting student: " + e.getMessage());
@@ -677,8 +691,48 @@ public class AdminBean implements AdminBeanLocal {
             return Collections.emptyList();
         }
     }
-//Attendance Summary Logic
 
+    @Override
+    public Collection<Student> getStudentsByCourseSemDiv(Integer courseId, Integer semId, Integer divId) {
+        try {
+
+            // 1. Load Course
+            Course c = em.find(Course.class, courseId);
+            if (c == null) {
+                throw new IllegalArgumentException("Invalid Course ID: " + courseId);
+            }
+
+            // 2. Load Semester
+            Semester s = em.find(Semester.class, semId);
+            if (s == null) {
+                throw new IllegalArgumentException("Invalid Semester ID: " + semId);
+            }
+
+            // 3. Load Division
+            Division d = em.find(Division.class, divId);
+            if (d == null) {
+                throw new IllegalArgumentException("Invalid Division ID: " + divId);
+            }
+
+            // 4. Filter students of the course AND semester AND division
+            return c.getStudentCollection().stream()
+                    .filter(st -> st.getSemester() != null
+                    && st.getDivision() != null
+                    && st.getCourse() != null
+                    && st.getSemester().getSemId().equals(semId)
+                    && st.getDivision().getDivId().equals(divId))
+                    .collect(Collectors.toList());
+
+        } catch (IllegalArgumentException e) {
+            System.err.println("Validation error: " + e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            System.err.println("Error fetching students by course, semester, division: " + e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+//Attendance Summary Logic
     @Override
     public void updateSummary(Integer studId
     ) {

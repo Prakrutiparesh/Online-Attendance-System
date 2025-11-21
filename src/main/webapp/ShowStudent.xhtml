@@ -1,11 +1,152 @@
-<?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="jakarta.faces.html">
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
     <h:head>
-        <title>Facelet Title</title>
+        <title>Course-wise Student Management</title>
+        <link href="CSS/showSemester.css" rel="stylesheet" type="text/css"/>
     </h:head>
+
     <h:body>
-        Hello from Facelets
+
+        <h:form id="studentForm">
+
+            <h2>Select Course</h2>
+            <h:selectOneMenu value="#{updateCDIBean.selectedCourseId}" styleClass="menu">
+                <f:selectItem itemLabel="--Select Course--" itemValue="" />
+                <f:selectItems value="#{updateCDIBean.courseList}" var="c"
+                               itemValue="#{c.courseId}" itemLabel="#{c.courseName}" />
+                <f:ajax listener="#{updateCDIBean.loadSemesters()}" render="semesterPanel" />
+            </h:selectOneMenu>
+
+            <br/><br/>
+
+            <h:panelGroup id="semesterPanel">
+                <h:panelGroup rendered="#{not empty updateCDIBean.semesterList}">
+                    <h2>Select Semester</h2>
+                    <h:selectOneMenu value="#{updateCDIBean.selectedSemId}" styleClass="menu">
+                        <f:selectItem itemLabel="--Select Semester--" itemValue="" />
+                        <f:selectItems value="#{updateCDIBean.semesterList}" var="s"
+                                       itemValue="#{s.semId}" itemLabel="#{s.semName}" />
+                        <f:ajax listener="#{updateCDIBean.loadDivisions()}" render="divisionPanel" />
+                    </h:selectOneMenu>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <br/>
+
+            <h:panelGroup id="divisionPanel">
+                <h:panelGroup rendered="#{not empty updateCDIBean.divisionList}">
+                    <h2>Select Division</h2>
+                    <h:selectOneMenu value="#{updateCDIBean.selectedStudentDivId}" styleClass="menu">
+                        <f:selectItem itemLabel="--Select Division--" itemValue="" />
+                        <f:selectItems value="#{updateCDIBean.divisionList}" var="d"
+                                       itemValue="#{d.divId}" itemLabel="#{d.divName}" />
+                        <f:ajax execute="@this" listener="#{updateCDIBean.loadStudents}" render="studentPanel" />
+
+                    </h:selectOneMenu>
+
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <br/>
+
+            <h:panelGroup id="studentPanel">
+                <h:panelGroup rendered="#{not empty updateCDIBean.studentList}">
+                    <h2>Students in Selected Division</h2>
+
+                    <h:dataTable id="studentTable" value="#{updateCDIBean.studentList}" var="st">
+
+                        <h:column>
+                            <f:facet name="header">Student ID</f:facet>
+                                #{st.studId}
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Student Name</f:facet>
+                                #{st.studentName}
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Roll No</f:facet>
+                                #{st.rollNo}
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Actions</f:facet>
+
+                            <h:commandButton value="Update"
+                                             action="#{updateCDIBean.editStudent(st.studId, st.studentName, st.rollNo)}">
+                                <f:ajax execute="@this" render=":updateForm" />
+                            </h:commandButton>
+
+                            <h:commandButton value="Delete"
+                                             action="#{updateCDIBean.deleteStudent(st.studId)}">
+                                <f:ajax execute="@form" render="@form" />
+                            </h:commandButton>
+
+                        </h:column>
+
+                    </h:dataTable>
+
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{empty updateCDIBean.studentList}">
+                    <h3 style="text-align:center; color:#777; margin-top:20px;">
+                        No Students Found
+                    </h3>
+                </h:panelGroup>
+            </h:panelGroup>
+
+        </h:form>
+
+
+        <!-- STUDENT POPUP FORM -->
+        <h:panelGroup id="updateForm">
+            <h:panelGroup rendered="#{updateCDIBean.showUpdateForm}">
+                <div class="popup-overlay">
+                    <div class="popup-box">
+
+                        <h2 class="popup-heading">Update Student</h2>
+
+                        <h:form id="updatePopupForm">
+
+                            <div style="text-align: left; margin-bottom: 5px;">Student ID</div>
+                            <h:inputText readonly="true"
+                                         value="#{updateCDIBean.updateStudId}"
+                                         class="popup-input"/>
+
+                            <div style="text-align: left; margin-bottom: 5px;">Student Name</div>
+                            <h:inputText value="#{updateCDIBean.updateStudName}"
+                                         class="popup-input"/>
+
+                            <div style="text-align: left; margin-bottom: 5px;">Roll No</div>
+                            <h:inputText value="#{updateCDIBean.updateStudRoll}"
+                                         class="popup-input"/>
+
+                            <div class="btn-container">
+                                <h:commandButton value="Save Update"
+                                                 styleClass="save-btn"
+                                                 action="#{updateCDIBean.saveUpdate()}">
+                                    <f:ajax execute="@form"
+                                            render=":studentForm:studentPanel :updateForm"/>
+                                </h:commandButton>
+
+                                <h:commandButton value="Cancel"
+                                                 styleClass="cancel-btn"
+                                                 action="#{updateCDIBean.cancelPopup()}">
+                                    <f:ajax execute="@this" render=":updateForm" />
+                                </h:commandButton>
+                            </div>
+
+                        </h:form>
+
+                    </div>
+                </div>
+            </h:panelGroup>
+        </h:panelGroup>
+
     </h:body>
 </html>

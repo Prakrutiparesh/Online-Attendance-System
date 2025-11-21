@@ -17,7 +17,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.util.Collection;
@@ -40,13 +39,10 @@ public class Student implements Serializable {
     @Basic(optional = false)
     @Column(name = "stud_id")
     private Integer studId;
-
+    @Column(name = "student_name")
+    private String studentName;
     @Column(name = "roll_no")
     private Integer rollNo;
-
-    @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
-    private Users users;
 
     @JsonbTransient
     @ManyToOne
@@ -85,20 +81,20 @@ public class Student implements Serializable {
         this.studId = studId;
     }
 
+    public String getStudentName() {
+        return studentName;
+    }
+
+    public void setStudentName(String studentName) {
+        this.studentName = studentName;
+    }
+
     public Integer getRollNo() {
         return rollNo;
     }
 
     public void setRollNo(Integer rollNo) {
         this.rollNo = rollNo;
-    }
-
-    public Users getUsers() {
-        return users;
-    }
-
-    public void setUsers(Users users) {
-        this.users = users;
     }
 
     public Course getCourse() {

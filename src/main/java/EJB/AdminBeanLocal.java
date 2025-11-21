@@ -64,6 +64,8 @@ public interface AdminBeanLocal {
 
     public void deleteDivision(Integer divId, Integer semId, Integer courseId);
 
+    public Collection<Division> getAllDivision();
+
     public Collection<Division> getDivisionsByCourseAndSemester(Integer semId, Integer courseId);
 
     public Collection<Division> getDivisionsByCourse(Integer courseId);
@@ -71,11 +73,11 @@ public interface AdminBeanLocal {
     public Collection<Division> getDivisionsBySemester(Integer semId);
 
     //Student Method
-    public void addStudent(Integer userId, Integer rollNo, Integer courseId, Integer semId, Integer divId);
+    public void addStudent(String studentName, Integer rollNo, Integer courseId, Integer semId, Integer divId);
 
-    public void updateStudent(Integer studId, Integer rollNo, Integer semId, Integer divId);
+    public void updateStudent(Integer studId, String studName, Integer rollNo, Integer courseId, Integer semId, Integer divId);
 
-    public void deleteStudent(Integer studId);
+    public void deleteStudent(Integer studId, Integer selectedCourseId, Integer selectedSemId, Integer selectedStudentDivId);
 
     public Student findStudentById(Integer studId);
 
@@ -84,6 +86,8 @@ public interface AdminBeanLocal {
     public Collection<Student> getStudentsByCourse(Integer courseId);
 
     public Collection<Student> getStudentsBySem(Integer semId);
+
+    public Collection<Student> getStudentsByCourseSemDiv(Integer courseId, Integer semId, Integer divId);
 
     //Attendance Summary Method
     public void updateSummary(Integer studId);

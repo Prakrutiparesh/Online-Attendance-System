@@ -1,11 +1,100 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="jakarta.faces.html">
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
+
     <h:head>
-        <title>Facelet Title</title>
+        <title>Add Student</title>
+        <link href="CSS/Division.css" rel="stylesheet" type="text/css"/>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     </h:head>
+
     <h:body>
-        Hello from Facelets
+
+        <h:panelGroup rendered="#{adminCDIBean.successMessage != null}">
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: '#{adminCDIBean.successMessage}',
+                    confirmButtonColor: '#4da6ff',
+                    confirmButtonText: 'OK'
+                });
+            </script>
+        </h:panelGroup>
+
+        <div class="form-box">
+            <h2>Add Student</h2>
+
+            <h:form>
+
+                <!-- Student Name -->
+                <div class="form-field">
+                    <h:outputLabel value="Student Name:" for="sname" />
+                    <h:inputText id="sname"
+                                 value="#{adminCDIBean.studentName}"
+                                 required="true"
+                                 requiredMessage="Enter student name"
+                                 a:placeholder="Enter Student Name"/>
+                    <h:message for="sname" styleClass="error-msg"/>
+                </div>
+
+                <!-- Roll Number -->
+                <div class="form-field">
+                    <h:outputLabel value="Roll No:" for="roll" />
+                    <h:inputText id="roll"
+                                 value="#{adminCDIBean.studentRoll}"
+                                 required="true"
+                                 requiredMessage="Enter roll number"
+                                 a:placeholder="Enter Roll Number"/>
+                    <h:message for="roll" styleClass="error-msg"/>
+                </div>
+
+                <!-- Course -->
+                <div class="form-field">
+                    <h:outputLabel value="Course:" for="course" />
+                    <h:selectOneMenu id="course"
+                                     value="#{adminCDIBean.studentCourseId}">
+                        <f:selectItem itemLabel="Select Course" itemValue="" />
+                        <f:selectItems value="#{adminCDIBean.courseList}" var="c"
+                                       itemLabel="#{c.courseName}" itemValue="#{c.courseId}"/>
+                    </h:selectOneMenu>
+                    <h:message for="course" styleClass="error-msg"/>
+                </div>
+
+                <!-- Semester -->
+                <div class="form-field">
+                    <h:outputLabel value="Semester:" for="sem" />
+                    <h:selectOneMenu id="sem"
+                                     value="#{adminCDIBean.studentSemesterId}">
+                        <f:selectItem itemLabel="Select Semester" itemValue="" />
+                        <f:selectItems value="#{adminCDIBean.semesterList}" var="s"
+                                       itemLabel="#{s.semName}" itemValue="#{s.semId}"/>
+                    </h:selectOneMenu>
+                    <h:message for="sem" styleClass="error-msg"/>
+                </div>
+
+                <!-- Division -->
+                <div class="form-field">
+                    <h:outputLabel value="Division:" for="div" />
+                    <h:selectOneMenu id="div"
+                                     value="#{adminCDIBean.studentDivisionId}">
+                        <f:selectItem itemLabel="Select Division" itemValue="" />
+                        <f:selectItems value="#{adminCDIBean.getAllDivision()}"
+                                       var="d"
+                                       itemLabel="#{d.divName}" itemValue="#{d.divId}"/>
+                    </h:selectOneMenu>
+                    <h:message for="div" styleClass="error-msg"/>
+                </div>
+
+                <h:commandButton value="Add Student"
+                                 action="#{adminCDIBean.insertStudent}"
+                                 styleClass="btn"/>
+
+            </h:form>
+        </div>
+
     </h:body>
 </html>
