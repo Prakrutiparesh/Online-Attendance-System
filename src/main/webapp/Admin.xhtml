@@ -23,11 +23,7 @@
 
             <p:panelMenu style="width:100%; border:none; background:transparent;">
 
-                <!-- 🔹 Dashboard as single clickable item -->
-                <!--                <p:submenu label="Dashboard" icon="pi pi-home" expanded="true">
-                                    <p:menuitem value="Go to Dashboard" icon="pi pi-home" onclick="loadPage('Welcome.jsf')" />
-                                </p:submenu>-->
-                <!-- 🔹 Course Dropdown -->
+
                 <p:submenu label="Course" icon="pi pi-book">
                     <p:menuitem value="Add Course" icon="pi pi-plus" onclick="loadPage('AddCourse.jsf')" />
                     <p:menuitem value="Show Course" icon="pi pi-eye" onclick="loadPage('ShowCourse.jsf')" />
@@ -72,8 +68,8 @@
 
             <p:menubar styleClass="user-info">
                 <p:submenu label="Admin" icon="pi pi-user" class="admin-option">
-                    <p:menuitem value="Add Admin" icon="pi pi-user-plus" url="AddAdmin.jsf"/>
-                    <p:menuitem value="Add Faculty" icon="pi pi-user-plus" url="AddFaculty.jsf"/>
+                    <p:menuitem value="Add Admin" icon="pi pi-user-plus" url="register.jsf?group_id=1" />
+                    <p:menuitem value="Add Faculty" icon="pi pi-user-plus" url="register.jsf?group_id=2"/>
                     <p:menuitem value="Logout" icon="pi pi-sign-out" url="Logout.jsf"/>
                 </p:submenu>
             </p:menubar>

@@ -7,7 +7,8 @@ import Entity.Semester;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
-import jakarta.enterprise.context.RequestScoped;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
 
 import java.io.Serializable;
@@ -19,7 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Named("adminCDIBean")
-@RequestScoped
+@ViewScoped
 public class AdminCDIBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -35,8 +36,7 @@ public class AdminCDIBean implements Serializable {
     private String mobile;
     private String email;
 
-    private static final int DEFAULT_GROUP_ID = 2;
-
+    private Integer groupId;
     // ===== Course & Semester Fields =====
     private Collection<Course> courseList;
     private Collection<Integer> semesterNumbers;
@@ -66,6 +66,14 @@ public class AdminCDIBean implements Serializable {
     // ===== Initialization =====
     @PostConstruct
     public void init() {
+        String groupParam = FacesContext.getCurrentInstance().getExternalContext()
+                .getRequestParameterMap().get("group_id");
+
+        if (groupParam != null) {
+            groupId = Integer.parseInt(groupParam);
+        } else {
+            groupId = 2;
+        }
         courseList = new ArrayList<>(abl.getAllCourse());
         semesterNumbers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         semesterList = new ArrayList<>(abl.getAllSemesters()); // initialize semester list
@@ -186,7 +194,7 @@ public class AdminCDIBean implements Serializable {
         }
         try {
             // Directly call EJB method
-            abl.registerUser(username, password, name, date, mobile, email, DEFAULT_GROUP_ID);
+            abl.registerUser(username, password, name, date, mobile, email, groupId);
             message = "User registered successfully!";
             return "Login.jsf?faces-redirect=true";
         } catch (Exception e) {

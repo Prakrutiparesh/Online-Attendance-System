@@ -6,121 +6,278 @@
 
     <h:head>
         <title>Course-wise Subject Management</title>
-        <link href="CSS/showSemester.css" rel="stylesheet" type="text/css"/>
+
+        <style>
+            /* GLOBAL */
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: "Poppins", sans-serif;
+                background: #eef4ff;
+                color: #0a2342;
+            }
+
+            /* CARD */
+            .card {
+                max-width: 800px;
+                margin: 40px auto;
+                background: #ffffff;
+                padding: 40px;
+                border-radius: 14px;
+                border: 1px solid rgba(0, 0, 0, 0.06);
+                box-shadow: 0 8px 28px rgba(0, 65, 200, 0.10);
+                animation: fadeIn .4s ease-in-out;
+            }
+
+            h2 {
+                text-align: center;
+                font-size: 26px;
+                font-weight: 700;
+                color: #004bcc;
+                margin-bottom: 20px;
+            }
+
+            /* SELECT */
+            .menu {
+                width: 220px;
+                padding: 12px;
+                font-size: 16px;
+                border-radius: 10px;
+                border: 2px solid #d6e1ff;
+                background: #ffffff;
+                transition: .3s;
+            }
+            .menu:focus {
+                border-color: #004bcc;
+                box-shadow: 0 0 6px rgba(0, 97, 255, 0.35);
+            }
+
+            /* FLEX */
+            .form-row {
+                display: flex;
+                justify-content: center;
+                gap: 40px;
+                margin-bottom: 25px;
+            }
+
+            /* TABLE */
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+            th {
+                background: #004bcc;
+                color: #fff;
+                padding: 14px;
+            }
+            td {
+                background: #ffffff;
+                padding: 14px;
+                border: 1px solid #d9e2f7;
+            }
+            tr:hover td {
+                background: #e5edff;
+                transition: .25s;
+            }
+
+            /* BUTTONS */
+            input[type="submit"],
+            button,
+            .btn {
+                border: none;
+                padding: 10px 20px;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 600;
+                transition: .25s;
+                color: #fff;
+                margin-right: 8px;
+            }
+            .update-btn,
+            .save-btn {
+                background: #0061ff;
+            }
+            .update-btn:hover,
+            .save-btn:hover {
+                background: #004bcc;
+            }
+            .delete-btn {
+                background: #ff3b30;
+            }
+            .delete-btn:hover {
+                background: #d62b23;
+            }
+            .cancel-btn {
+                background: #9aa9c4;
+            }
+
+            /* POPUP */
+            .popup-overlay {
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.45);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .popup-box {
+                background: #ffffff;
+                padding: 28px;
+                width: 430px;
+                border-radius: 14px;
+                box-shadow: 0 10px 35px rgba(0,0,0,0.15);
+                animation: slideUp .3s ease;
+            }
+            .popup-input {
+                width: 100%;
+                padding: 13px;
+                border-radius: 8px;
+                border: 2px solid #d6e1ff;
+                margin-bottom: 14px;
+            }
+
+            .btn-container {
+                text-align: center;
+            }
+
+            /* ANIMATIONS */
+            @keyframes fadeIn {
+                from {
+                    opacity:0;
+                }
+                to {
+                    opacity:1;
+                }
+            }
+            @keyframes slideUp {
+                from {
+                    transform:translateY(25px);
+                    opacity:0;
+                }
+                to {
+                    transform:translateY(0);
+                    opacity:1;
+                }
+            }
+
+        </style>
     </h:head>
 
     <h:body>
 
-        <h:form id="subjectForm">
+        <div class="card">
 
-            <h2>Select Course</h2>
-            <h:selectOneMenu value="#{updateCDIBean.selectedCourseId}" styleClass="menu">
-                <f:selectItem itemLabel="--Select Course--" itemValue="" />
-                <f:selectItems value="#{updateCDIBean.courseList}" var="c"
-                               itemValue="#{c.courseId}" itemLabel="#{c.courseName}" />
-                <f:ajax listener="#{updateCDIBean.loadSemesters()}" render="semesterPanel" />
-            </h:selectOneMenu>
+            <h:form id="subjectForm">
 
-            <br/><br/>
+                <h2>Course And Semester Selection</h2>
 
-            <h:panelGroup id="semesterPanel">
-                <h:panelGroup rendered="#{not empty updateCDIBean.semesterList}">
-                    <h2>Select Semester</h2>
-                    <h:selectOneMenu value="#{updateCDIBean.selectedSemId}" styleClass="menu">
-                        <f:selectItem itemLabel="--Select Semester--" itemValue="" />
-                        <f:selectItems value="#{updateCDIBean.semesterList}" var="s"
-                                       itemValue="#{s.semId}" itemLabel="#{s.semName}" />
-                        <f:ajax listener="#{updateCDIBean.loadSubjects()}" render="subjectPanel" />
-                    </h:selectOneMenu>
+                <div class="form-row">
+                    <!-- Course -->
+                    <div>
+                        <h3 style="text-align:center; margin-bottom:8px;">Course</h3>
+                        <h:selectOneMenu value="#{updateCDIBean.selectedCourseId}" styleClass="menu">
+                            <f:selectItem itemLabel="--Select--" itemValue="" />
+                            <f:selectItems value="#{updateCDIBean.courseList}" var="c"
+                                           itemValue="#{c.courseId}" itemLabel="#{c.courseName}" />
+                            <f:ajax listener="#{updateCDIBean.loadSemesters()}" render="semesterPanel subjectPanel" />
+                        </h:selectOneMenu>
+                    </div>
+
+                    <!-- Semester -->
+                    <h:panelGroup id="semesterPanel">
+                        <h:panelGroup rendered="#{not empty updateCDIBean.semesterList}">
+                            <div>
+                                <h3 style="text-align:center; margin-bottom:8px;">Semester</h3>
+                                <h:selectOneMenu value="#{updateCDIBean.selectedSemId}" styleClass="menu">
+                                    <f:selectItem itemLabel="--Select--" itemValue="" />
+                                    <f:selectItems value="#{updateCDIBean.semesterList}" var="s"
+                                                   itemValue="#{s.semId}" itemLabel="#{s.semName}" />
+                                    <f:ajax listener="#{updateCDIBean.loadSubjects()}" render="subjectPanel" />
+                                </h:selectOneMenu>
+                            </div>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                </div>
+
+                <!-- SUBJECT TABLE -->
+                <h:panelGroup id="subjectPanel">
+
+                    <h:panelGroup rendered="#{not empty updateCDIBean.subjectList}">
+                        <h2>Subjects</h2>
+
+                        <h:dataTable value="#{updateCDIBean.subjectList}" var="sub">
+                            <h:column>
+                                <f:facet name="header">ID</f:facet>
+                                    #{sub.subId}
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">Name</f:facet>
+                                    #{sub.subName}
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">Action</f:facet>
+
+                                <h:commandButton value="Update" styleClass="update-btn"
+                                                 action="#{updateCDIBean.editSubject(sub.subId, sub.subName)}">
+                                    <f:ajax execute="@this" render=":updateForm" />
+                                </h:commandButton>
+
+                                <h:commandButton value="Delete" styleClass="delete-btn"
+                                                 action="#{updateCDIBean.deleteSubject(sub.subId)}">
+                                    <f:ajax execute="@form" render="@form" />
+                                </h:commandButton>
+
+                            </h:column>
+
+                        </h:dataTable>
+
+                    </h:panelGroup>
+
+                    <h:panelGroup rendered="#{empty updateCDIBean.subjectList}">
+                        <h3 style="text-align:center; color:#777; margin-top:20px;">
+                            No Subjects Found
+                        </h3>
+                    </h:panelGroup>
+
                 </h:panelGroup>
-            </h:panelGroup>
 
-            <br/>
+            </h:form>
 
-            <h:panelGroup id="subjectPanel">
-                <h:panelGroup rendered="#{not empty updateCDIBean.subjectList}">
-                    <h2>Subjects in Selected Semester</h2>
-                    <h:dataTable id="subjectTable" value="#{updateCDIBean.subjectList}" var="sub">
+        </div>
 
-                        <h:column>
-                            <f:facet name="header">Subject ID</f:facet>
-                                #{sub.subId}
-                        </h:column>
-
-                        <h:column>
-                            <f:facet name="header">Subject Name</f:facet>
-                                #{sub.subName}
-                        </h:column>
-
-                        <h:column>
-                            <f:facet name="header">Actions</f:facet>
-
-                            <h:commandButton value="Update"
-                                             action="#{updateCDIBean.editSubject(sub.subId, sub.subName)}">
-                                <f:ajax execute="@this" render=":updateForm" />
-                            </h:commandButton>
-
-                            <h:commandButton value="Delete"
-                                             action="#{updateCDIBean.deleteSubject(sub.subId)}">
-                                <f:ajax execute="@form" render="@form" />
-                            </h:commandButton>
-
-                        </h:column>
-
-                    </h:dataTable>
-                </h:panelGroup>
-
-                <h:panelGroup rendered="#{empty updateCDIBean.subjectList}">
-                    <h3 style="text-align:center; color:#777; margin-top:20px;">
-                        No Subjects Found
-                    </h3>
-                </h:panelGroup>
-            </h:panelGroup>
-
-
-        </h:form>
-
+        <!-- UPDATE POPUP -->
         <h:panelGroup id="updateForm">
             <h:panelGroup rendered="#{updateCDIBean.showUpdateForm}">
                 <div class="popup-overlay">
                     <div class="popup-box">
 
-                        <h2 class="popup-heading">
-                            <h:outputText value="#{updateCDIBean.updateSemId != null ? 'Update Semester' : 'Update Subject'}"/>
-                        </h2>
+                        <h2>Update Subject</h2>
 
                         <h:form id="updatePopupForm">
 
-                            <div style="text-align: left; margin-bottom: 5px;">
-                                <span class="input-label">
-                                    <h:outputText value="#{updateCDIBean.updateSemId != null ? 'Semester ID' : 'Subject ID'}"/>
-                                </span>
-                            </div>
+                            <div style="text-align:left;">Subject ID</div>
                             <h:inputText readonly="true"
-                                         value="#{updateCDIBean.updateSemId != null ? updateCDIBean.updateSemId : updateCDIBean.updateSubId}"
-                                         class="popup-input" />
+                                         value="#{updateCDIBean.updateSubId}"
+                                         styleClass="popup-input"/>
 
-                            <div style="text-align: left; margin-bottom: 5px;">
-                                <span class="input-label">
-                                    <h:outputText value="#{updateCDIBean.updateSemId != null ? 'Semester Name' : 'Subject Name'}"/>
-                                </span>
-                            </div>
-                            <h:inputText value="#{updateCDIBean.updateSemId != null ? updateCDIBean.updateSemName : updateCDIBean.updateSubName}"
-                                         class="popup-input" />
+                            <div style="text-align:left;">Subject Name</div>
+                            <h:inputText value="#{updateCDIBean.updateSubName}"
+                                         styleClass="popup-input"/>
 
                             <div class="btn-container">
-                                <h:commandButton value="Save Update"
-                                                 styleClass="save-btn"
+                                <h:commandButton value="Save Update" styleClass="save-btn"
                                                  action="#{updateCDIBean.saveUpdate()}">
                                     <f:ajax execute="@form"
                                             render=":subjectForm:subjectPanel :updateForm" />
                                 </h:commandButton>
 
-
-                                <h:commandButton value="Cancel"
-                                                 styleClass="cancel-btn"
+                                <h:commandButton value="Cancel" styleClass="cancel-btn"
                                                  action="#{updateCDIBean.cancelPopup()}">
-                                    <f:ajax execute="@this" render=":updateForm" />
+                                    <f:ajax render=":updateForm" />
                                 </h:commandButton>
 
                             </div>
@@ -132,6 +289,6 @@
             </h:panelGroup>
         </h:panelGroup>
 
-
     </h:body>
+
 </html>
