@@ -1,19 +1,26 @@
 package CDIBean;
 
 import EJB.AdminBeanLocal;
+import EJB.UserBeanLocal;
 import Entity.Course;
 import Entity.Division;
 import Entity.Semester;
 import Entity.Student;
 import Entity.Subject;
+import Entity.Users;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
+import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Named("updateCDIBean")
 @ViewScoped
@@ -21,6 +28,9 @@ public class UpdateCDIBean implements Serializable {
 
     @EJB
     AdminBeanLocal abl;
+
+    @EJB
+    UserBeanLocal ubl;
 
     private Integer courseId;
     private String courseName;
@@ -57,6 +67,13 @@ public class UpdateCDIBean implements Serializable {
     private String name;
     private String rollNo;
     private String attendance; // P/A
+    private Date attendanceDate;
+    private String todayDateString;
+    private Map<Integer, String> attendanceStatusMap = new HashMap<>();
+
+    public Map<Integer, String> getAttendanceStatusMap() {
+        return attendanceStatusMap;
+    }
 
     @PostConstruct
     public void init() {
@@ -65,20 +82,43 @@ public class UpdateCDIBean implements Serializable {
         subjectList = new ArrayList<>();
         divisionList = new ArrayList<>();
         studentList = new ArrayList<>();
+        attendanceDate = new Date();
+
+        // Format today's date for display
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        todayDateString = sdf.format(attendanceDate);
     }
 
     // --- Load Methods ---
     public void loadStudents() {
-        if (selectedCourseId != null && selectedSemId != null && selectedStudentDivId != null) {
+        System.out.println("selectedCourseId = " + selectedCourseId);
+        System.out.println("selectedSemId = " + selectedSemId);
+        System.out.println("selectedStudentDivId = " + selectedStudentDivId);
+
+        if (selectedCourseId != null && selectedCourseId > 0
+                && selectedSemId != null && selectedSemId > 0
+                && selectedStudentDivId != null && selectedStudentDivId > 0) {
+
             studentList = abl.getStudentsByCourseSemDiv(selectedCourseId, selectedSemId, selectedStudentDivId);
+
+            System.out.println("Loaded students: " + studentList.size());
         } else {
             studentList = new ArrayList<>();
+            System.out.println("Waiting for valid selection...");
         }
+        for (Student st : studentList) {
+            System.out.println("Stud: " + st.getStudId() + " | "
+                    + "Course: " + st.getCourse().getCourseName() + " | "
+                    + "Sem: " + st.getSemester().getSemName() + " | "
+                    + "Div: " + st.getDivision().getDivName());
+        }
+
     }
 
     public void loadDivisions() {
         if (selectedCourseId != null && selectedSemId != null) {
             divisionList = abl.getDivisionsByCourseAndSemester(selectedSemId, selectedCourseId);
+            System.out.println("Loaded divisions: " + (divisionList != null ? divisionList.size() : 0));
         } else {
             divisionList = new ArrayList<>();
         }
@@ -137,6 +177,7 @@ public class UpdateCDIBean implements Serializable {
         updateDivId = divId;
         updateDivName = divName;
         showUpdateForm = true;
+
     }
 
     public void updateDivision() {
@@ -182,8 +223,21 @@ public class UpdateCDIBean implements Serializable {
     public String deleteSemester(Integer semId) {
         if (selectedCourseId != null) {
             abl.deleteSemester(semId, selectedCourseId);
+            semesterList = new ArrayList<>(abl.getAllSemesters());
         }
         return null;
+    }
+
+    public void saveUpdate() {
+        if (updateSemId != null) {
+            updateSemester();
+        } else if (updateSubId != null) {
+            updateSubject();
+        } else if (updateDivId != null) {
+            updateDivision();
+        } else if (updateStudId != null) {
+            updateStudent();
+        }
     }
 
     public void cancelPopup() {
@@ -235,6 +289,22 @@ public class UpdateCDIBean implements Serializable {
     }
 
     // --- Getters & Setters ---
+    public Date getAttendanceDate() {
+        return attendanceDate;
+    }
+
+    public void setAttendanceDate(Date attendanceDate) {
+        this.attendanceDate = attendanceDate;
+    }
+
+    public String getTodayDateString() {
+        return todayDateString;
+    }
+
+    public java.sql.Date getTodaySqlDate() {
+        return new java.sql.Date(attendanceDate.getTime());
+    }
+
     public Integer getSelectedCourseId() {
         return selectedCourseId;
     }
@@ -381,6 +451,83 @@ public class UpdateCDIBean implements Serializable {
 
     public void setUpdateSubName(String updateSubName) {
         this.updateSubName = updateSubName;
+    }
+
+    public void setAttendanceStatusMap(Map<Integer, String> attendanceStatusMap) {
+        this.attendanceStatusMap = attendanceStatusMap;
+    }
+    private String message; // Add this in your CDI bean
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void toggleAttendance(Integer studId) {
+        String current = attendanceStatusMap.getOrDefault(studId, "absent");
+        if ("absent".equals(current)) {
+            attendanceStatusMap.put(studId, "present");
+        } else {
+            attendanceStatusMap.put(studId, "absent");
+        }
+    }
+
+    public void saveAttendance() {
+        Users loggedUser = (Users) FacesContext.getCurrentInstance()
+                .getExternalContext()
+                .getSessionMap()
+                .get("loggedUser");
+
+        if (selectedCourseId == null || updateSubId == null || selectedSemId == null || selectedStudentDivId == null) {
+            message = "Please select Course, Semester, Division, and Subject.";
+            return;
+        }
+
+        boolean allSuccess = true;
+        StringBuilder alreadyDoneStudents = new StringBuilder();
+
+        for (Student st : studentList) {
+            Integer studentId = st.getStudId();
+            String status = attendanceStatusMap.getOrDefault(studentId, "absent");
+            try {
+                ubl.markAttendance(
+                        studentId,
+                        19, // loggedUser hardcode for now
+                        selectedCourseId,
+                        updateSubId,
+                        selectedSemId,
+                        selectedStudentDivId,
+                        getTodaySqlDate(),
+                        status
+                );
+                abl.updateSummary(studentId);
+
+            } catch (IllegalArgumentException e) {
+                if (e.getMessage().toLowerCase().contains("already marked")) {
+                    allSuccess = false;
+                    alreadyDoneStudents.append(st.getStudentName()).append(", ");
+                } else {
+                    allSuccess = false;
+                    alreadyDoneStudents.append(st.getStudentName())
+                            .append(" (Error: ").append(e.getMessage()).append("), ");
+                }
+            } catch (Exception e) {
+                allSuccess = false;
+                alreadyDoneStudents.append(st.getStudentName())
+                        .append(" (Error: ").append(e.getMessage()).append("), ");
+            }
+        }
+
+        String students = alreadyDoneStudents.toString();
+        if (!students.isEmpty()) {
+            students = students.substring(0, students.length() - 2);
+        }
+
+        if (allSuccess) {
+            message = "Attendance saved successfully!";
+        } else {
+            message = students.isEmpty() ? "Error while saving attendance!"
+                    : "Attendance already marked or error for: " + students;
+        }
     }
 
 }

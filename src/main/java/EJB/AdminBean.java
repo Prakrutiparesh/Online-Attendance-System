@@ -695,121 +695,77 @@ public class AdminBean implements AdminBeanLocal {
     @Override
     public Collection<Student> getStudentsByCourseSemDiv(Integer courseId, Integer semId, Integer divId) {
         try {
+            return em.createQuery(
+                    "SELECT st FROM Student st WHERE "
+                    + "st.course.courseId = :cid AND "
+                    + "st.semester.semId = :sid AND "
+                    + "st.division.divId = :did "
+                    + "ORDER BY st.rollNo", Student.class)
+                    .setParameter("cid", courseId)
+                    .setParameter("sid", semId)
+                    .setParameter("did", divId)
+                    .getResultList();
 
-            // 1. Load Course
-            Course c = em.find(Course.class, courseId);
-            if (c == null) {
-                throw new IllegalArgumentException("Invalid Course ID: " + courseId);
-            }
-
-            // 2. Load Semester
-            Semester s = em.find(Semester.class, semId);
-            if (s == null) {
-                throw new IllegalArgumentException("Invalid Semester ID: " + semId);
-            }
-
-            // 3. Load Division
-            Division d = em.find(Division.class, divId);
-            if (d == null) {
-                throw new IllegalArgumentException("Invalid Division ID: " + divId);
-            }
-
-            // 4. Filter students of the course AND semester AND division
-            return c.getStudentCollection().stream()
-                    .filter(st -> st.getSemester() != null
-                    && st.getDivision() != null
-                    && st.getCourse() != null
-                    && st.getSemester().getSemId().equals(semId)
-                    && st.getDivision().getDivId().equals(divId))
-                    .collect(Collectors.toList());
-
-        } catch (IllegalArgumentException e) {
-            System.err.println("Validation error: " + e.getMessage());
-            throw e;
         } catch (Exception e) {
-            System.err.println("Error fetching students by course, semester, division: " + e.getMessage());
+            System.err.println("Error fetching students: " + e.getMessage());
             return Collections.emptyList();
         }
     }
 
 //Attendance Summary Logic
     @Override
-    public void updateSummary(Integer studId
-    ) {
-        try {
-            Student st = em.find(Student.class, studId);
-            if (st == null) {
-                throw new IllegalArgumentException("Invalid Student ID: " + studId);
-            }
+    public void updateSummary(Integer studId) {
 
-            // Fetch all attendance records for this student
-            TypedQuery<Attendance> query = em.createQuery(
-                    "SELECT a FROM Attendance a WHERE a.student.studId = :studId", Attendance.class);
-            query.setParameter("studId", studId);
-            List<Attendance> attendanceList = query.getResultList();
-
-            if (attendanceList == null || attendanceList.isEmpty()) {
-                throw new IllegalArgumentException("No attendance records found for student ID: " + studId);
-            }
-
-            int totalPresent = 0;
-            int totalAbsent = 0;
-
-            for (Attendance a : attendanceList) {
-                if ("Present".equalsIgnoreCase(a.getStatus())) {
-                    totalPresent++;
-                } else if ("Absent".equalsIgnoreCase(a.getStatus())) {
-                    totalAbsent++;
-                }
-            }
-
-            // Count total students (in same course & semester)
-            TypedQuery<Long> countQuery = em.createQuery(
-                    "SELECT COUNT(s) FROM Student s WHERE s.course.courseId = :cid AND s.semester.semId = :sid", Long.class);
-            countQuery.setParameter("cid", st.getCourse().getCourseId());
-            countQuery.setParameter("sid", st.getSemester().getSemId());
-            Long totalStudentCount = countQuery.getSingleResult();
-
-            // Calculate average attendance for this student's course/semester
-            TypedQuery<Double> avgQuery = em.createQuery(
-                    "SELECT AVG(s.totalPresent * 100.0 / (s.totalPresent + s.totalAbsent)) "
-                    + "FROM AttendanceSummary s WHERE s.student.course.courseId = :cid AND s.student.semester.semId = :sid", Double.class);
-            avgQuery.setParameter("cid", st.getCourse().getCourseId());
-            avgQuery.setParameter("sid", st.getSemester().getSemId());
-            Double avgAttendance = avgQuery.getSingleResult();
-            if (avgAttendance == null) {
-                avgAttendance = 0.0;
-            }
-
-            // Check if summary already exists
-            TypedQuery<AttendanceSummary> existingQuery = em.createQuery(
-                    "SELECT s FROM AttendanceSummary s WHERE s.student.studId = :studId", AttendanceSummary.class);
-            existingQuery.setParameter("studId", studId);
-            List<AttendanceSummary> existingList = existingQuery.getResultList();
-
-            AttendanceSummary summary;
-            if (existingList.isEmpty()) {
-                summary = new AttendanceSummary();
-                summary.setStudent(st);
-            } else {
-                summary = existingList.get(0);
-            }
-
-            summary.setTotalPresent(totalPresent);
-            summary.setTotalAbsent(totalAbsent);
-            summary.setTotalStudent(totalStudentCount.intValue());
-            summary.setAvgAttendance(avgAttendance.floatValue());
-
-            em.merge(summary);
-            System.out.println("Attendance summary updated successfully for Student ID: " + studId);
-
-        } catch (IllegalArgumentException e) {
-            System.err.println("Validation error in updateSummary(): " + e.getMessage());
-            throw e;
-        } catch (Exception e) {
-            System.err.println("Unexpected error in updateSummary(): " + e.getMessage());
-            throw new RuntimeException("Error updating summary: " + e.getMessage());
+        Student st = em.find(Student.class, studId);
+        if (st == null) {
+            throw new IllegalArgumentException("Invalid Student ID: " + studId);
         }
+
+        // Fetch attendance Records
+        TypedQuery<Attendance> query = em.createQuery(
+                "SELECT a FROM Attendance a WHERE a.student.studId = :sid", Attendance.class);
+        query.setParameter("sid", studId);
+        List<Attendance> list = query.getResultList();
+
+        int totalPresent = 0;
+        int totalAbsent = 0;
+
+        for (Attendance a : list) {
+            if ("present".equalsIgnoreCase(a.getStatus())) {
+                totalPresent++;
+            } else if ("absent".equalsIgnoreCase(a.getStatus())) {
+                totalAbsent++;
+            }
+        }
+
+        int totalRecords = totalPresent + totalAbsent;
+        float avgAttendance = (totalRecords > 0)
+                ? (totalPresent * 100f / totalRecords)
+                : 0;
+
+        // Check existing summary
+        TypedQuery<AttendanceSummary> sQuery = em.createQuery(
+                "SELECT s FROM AttendanceSummary s WHERE s.student.studId = :sid",
+                AttendanceSummary.class);
+        sQuery.setParameter("sid", studId);
+
+        AttendanceSummary summary;
+        List<AttendanceSummary> sList = sQuery.getResultList();
+
+        if (sList.isEmpty()) {
+            summary = new AttendanceSummary();
+            summary.setStudent(st);
+        } else {
+            summary = sList.get(0);
+        }
+
+        summary.setTotalPresent(totalPresent);
+        summary.setTotalAbsent(totalAbsent);
+        summary.setAvgAttendance(avgAttendance);
+
+        em.merge(summary);
+
+        System.out.println("Summary Updated Successfully -> Student ID: " + studId);
     }
 
     @Override

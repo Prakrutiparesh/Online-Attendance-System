@@ -33,47 +33,59 @@
             <h:form>
 
                 <!-- Course Dropdown -->
+
                 <div class="form-field">
-                    <h:outputLabel value="Select Course:" for="course" />
+                    <h:outputLabel value="Course:" />
                     <h:selectOneMenu id="course"
-                                     value="#{adminCDIBean.selectedDivisionCourseId}"
+                                     value="#{adminCDIBean.selectedCourseId}"
                                      required="true"
-                                     requiredMessage="Please select a course">
-                        <f:selectItem itemLabel="Select Course" itemValue="" />
-                        <f:selectItems value="#{adminCDIBean.courseList}"
-                                       var="c"
-                                       itemLabel="#{c.courseName}"
-                                       itemValue="#{c.courseId}" />
+                                     requiredMessage="Please select a course"
+                                     styleClass="select-box">
+
+                        <f:selectItem itemLabel="--Select Course--" itemValue="" />
+                        <f:selectItems value="#{adminCDIBean.courseList}" var="c"
+                                       itemValue="#{c.courseId}" itemLabel="#{c.courseName}" />
+
+                        <!-- Load Semesters on Course Change -->
+                        <f:ajax listener="#{adminCDIBean.loadSemesters}" render="semPanel divPanel" />
                     </h:selectOneMenu>
-                    <h:message for="course" styleClass="error-msg" />
                 </div>
 
-                <!-- Semester Dropdown -->
-                <div class="form-field">
-                    <h:outputLabel value="Select Semester:" for="semester" />
-                    <h:selectOneMenu id="semester"
-                                     value="#{adminCDIBean.selectedDivisionSemesterId}"
-                                     required="true"
-                                     requiredMessage="Please select a semester">
-                        <f:selectItem itemLabel="Select Semester" itemValue="" />
-                        <f:selectItems value="#{adminCDIBean.semesterList}"
-                                       var="s"
-                                       itemLabel="#{s.semName}"
-                                       itemValue="#{s.semId}" />
-                    </h:selectOneMenu>
-                    <h:message for="semester" styleClass="error-msg" />
-                </div>
+                <!-- Semester -->
+                <h:panelGroup id="semPanel">
+                    <h:panelGroup rendered="#{not empty adminCDIBean.semesterList}">
+                        <div class="form-field">
+                            <h:outputLabel value="Semester:" />
+                            <h:selectOneMenu id="sem"
+                                             value="#{adminCDIBean.selectedDivisionSemesterId}"
+                                             styleClass="select-box"
+                                             required="true"
+                                             requiredMessage="Please select a semester">
 
-                <!-- Division Name -->
-                <div class="form-field">
-                    <h:outputLabel value="Division Name:" for="divName" />
-                    <h:inputText id="divName"
-                                 value="#{adminCDIBean.divisionName}"
-                                 required="true"
-                                 requiredMessage="Please enter division name"
-                                 a:placeholder="Enter Division Name" />
-                    <h:message for="divName" styleClass="error-msg" />
-                </div>
+                                <f:selectItem itemLabel="--Select Semester--" itemValue="" />
+                                <f:selectItems value="#{adminCDIBean.semesterList}" var="s"
+                                               itemValue="#{s.semId}" itemLabel="#{s.semName}" />
+
+                                <!-- Load Divisions on Semester Change -->
+                                <f:ajax listener="#{adminCDIBean.loadDivisions}" render="divPanel" />
+                            </h:selectOneMenu>
+                        </div>
+                    </h:panelGroup>
+                </h:panelGroup>
+
+                <!-- Division -->
+                <h:panelGroup id="divPanel">
+                    <div class="form-field">
+                        <h:outputLabel value="Division Name:" for="divName" />
+                        <h:inputText id="divName"
+                                     value="#{adminCDIBean.divisionName}"
+                                     required="true"
+                                     requiredMessage="Please enter division name"
+                                     a:placeholder="Enter Division Name" />
+                        <h:message for="divName" styleClass="error-msg" />
+                    </div>
+                </h:panelGroup>
+
 
                 <h:commandButton value="Add Division"
                                  action="#{adminCDIBean.insertDivision}"

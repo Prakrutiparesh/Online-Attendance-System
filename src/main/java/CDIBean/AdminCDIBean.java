@@ -42,6 +42,7 @@ public class AdminCDIBean implements Serializable {
     // ===== Course & Semester Fields =====
     private Collection<Course> courseList;
     private Collection<Integer> semesterNumbers;
+    private Collection<Division> divisionList = new ArrayList<>();
     private Integer selectedCourseId;
     private Integer semesterNumber;
     private String courseName;
@@ -67,6 +68,10 @@ public class AdminCDIBean implements Serializable {
     private Integer studentCourseId;
     private Integer studentSemesterId;
     private Integer studentDivisionId;
+//    private Integer selectedSemId;
+//    private Integer updateSubId;
+//    private Integer selectedStudentDivId;
+    private Collection<Subject> subjectList;
 
     // ===== Initialization =====
     @PostConstruct
@@ -83,6 +88,45 @@ public class AdminCDIBean implements Serializable {
         courseList = new ArrayList<>(abl.getAllCourse());
         semesterNumbers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         semesterList = new ArrayList<>(abl.getAllSemesters());
+        divisionList = new ArrayList<>();
+        subjectList = new ArrayList<>();
+
+    }
+
+    public void insertSubject() {
+        try {
+            if (subjectName == null || subjectName.trim().isEmpty()) {
+                successMessage = "Please enter a subject name!";
+                return;
+            }
+            if (selectedCourseId == null) {
+                successMessage = "Please select a course!";
+                return;
+            }
+            if (selectedSemesterId == null) {
+                successMessage = "Please select a semester!";
+                return;
+            }
+            abl.addSubject(subjectName, selectedCourseId, selectedSemesterId);
+            successMessage = "Subject added successfully: " + subjectName; // Reset fields subjectName = null;
+            selectedCourseId = null;
+            selectedSemesterId = null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            successMessage = "Error adding subject: " + e.getMessage();
+        }
+    }
+
+    public String insertSemester() {
+        try {
+            abl.addSemester(String.valueOf(semesterNumber), selectedCourseId);
+            successMessage = "Semester added successfully!";
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            successMessage = "Something went wrong! " + e.getMessage();
+            return null;
+        }
     }
 
     // ===== Student Methods =====
@@ -120,6 +164,8 @@ public class AdminCDIBean implements Serializable {
             studentDivisionId = null;
 
         } catch (Exception e) {
+            e.printStackTrace(); // Log actual problem to server console
+
             successMessage = "Error adding student: " + e.getMessage();
         }
     }
@@ -163,6 +209,54 @@ public class AdminCDIBean implements Serializable {
     // ===== Course Methods =====
     public Collection<Course> getAllCourses() {
         return abl.getAllCourse();
+    }
+
+    public void addCourse() {
+        try {
+            abl.addCourse(courseName);
+            message = "Course added successfully!";
+            courseName = ""; // Refresh course list
+            courseList = new ArrayList<>(abl.getAllCourse());
+        } catch (Exception e) {
+            message = "Error adding course: " + e.getMessage();
+        }
+    }
+
+    public void insertDivision() {
+        try {
+            if (divisionName == null || divisionName.trim().isEmpty()) {
+                successMessage = "Please enter division name!";
+                return;
+            }
+            if (selectedCourseId == null) {
+                successMessage = "Please select a course!";
+                return;
+            }
+            if (selectedDivisionSemesterId == null) {
+                successMessage = "Please select a semester!";
+                return;
+            }
+            System.out.println("going here sdivision");
+            // Call EJB
+            abl.addDivision(divisionName, selectedDivisionSemesterId, selectedCourseId);
+
+            successMessage = "Division added successfully: " + divisionName;
+
+            // Reset fields
+            divisionName = null;
+            selectedDivisionCourseId = null;
+            selectedDivisionSemesterId = null;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            successMessage = "Error adding division: " + e.getMessage();
+        }
+    }
+
+    public String deleteCourse(Integer id) {
+        abl.deleteCourse(id);
+        courseList = new ArrayList<>(abl.getAllCourse());
+        return "ViewCourse?faces-redirect=true";
     }
 
     public String getSelectedCourseName() {
@@ -385,6 +479,53 @@ public class AdminCDIBean implements Serializable {
 
     public void setStudentDivisionId(Integer studentDivisionId) {
         this.studentDivisionId = studentDivisionId;
+    }
+
+    public void onCourseChange() {
+        if (studentCourseId != null) {
+            semesterList = new ArrayList<>(abl.getSemestersByCourse(studentCourseId));
+        } else {
+            semesterList = new ArrayList<>();
+        }
+        studentSemesterId = null;
+        studentDivisionId = null;
+    }
+
+    public void onSemesterChange() {
+        if (studentSemesterId != null) {
+            divisionList = new ArrayList<>(abl.getDivisionsBySemester(studentSemesterId));
+        } else {
+            divisionList = new ArrayList<>();
+        }
+        studentDivisionId = null;
+    }
+
+    public void loadSemesters() {
+        studentSemesterId = null;
+        studentDivisionId = null;
+        divisionList = new ArrayList<>();
+
+        if (studentCourseId != null) {
+            semesterList = abl.getSemestersByCourse(studentCourseId);
+        } else {
+            semesterList = new ArrayList<>();
+        }
+    }
+
+    public void loadDivisions() {
+        if (studentSemesterId != null) {
+            divisionList = new ArrayList<>(abl.getDivisionsBySemester(studentSemesterId));
+        } else {
+            divisionList = new ArrayList<>();
+        }
+    }
+
+    public Collection<Division> getDivisionList() {
+        return divisionList;
+    }
+
+    public void setDivisionList(Collection<Division> divisionList) {
+        this.divisionList = divisionList;
     }
 
 }

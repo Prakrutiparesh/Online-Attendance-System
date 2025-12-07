@@ -7,7 +7,9 @@
     <ui:define name="title">Take Attendance</ui:define>
 
     <ui:define name="content">
+        <h:outputScript library="javax.faces" name="jsf.js" target="head"/>
 
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js" integrity="sha512-AA1Bzp5Q0K1KanKKmvN/4d3IRKVlv9PYgwFPvm32nPO6QS8yH1HO7LbgB1pgiOxPtfeg5zEn2ba64MUcqJx6CA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <style>
             .form-container {
                 max-width: 900px;
@@ -22,13 +24,18 @@
                 gap:20px;
                 justify-content:center;
                 margin-bottom:20px;
+                flex-wrap: wrap;
+            }
+            .form-group {
+                display: flex;
+                flex-direction: column;
             }
             label {
                 font-weight:bold;
                 margin-bottom:5px;
                 display:block;
             }
-            select {
+            select, input[type="date"] {
                 width:200px;
                 padding:8px;
                 border-radius:5px;
@@ -60,7 +67,7 @@
                 color:white;
             }
 
-            /* Toggle Button Styles - Minimal */
+            /* Toggle Button Styles */
             .toggle-btn {
                 width: 40px;
                 height: 40px;
@@ -85,7 +92,6 @@
                 color: white;
             }
 
-            /* Status Legend */
             .status-legend {
                 display: flex;
                 justify-content: center;
@@ -110,88 +116,155 @@
             .present-indicator {
                 background: #4CAF50;
             }
-
             .absent-indicator {
                 background: #f44336;
             }
+
+            .date-input-container {
+                text-align: center;
+                margin: 15px 0;
+            }
+            .date-picker-wrapper {
+                display: inline-block;
+                position: relative;
+            }
+
+            .custom-date-input {
+                position: relative;
+                display: flex;
+                align-items: center;
+                width: 220px;
+                background: rgba(255, 255, 255, 0.8);
+                border-radius: 8px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+                border: 1px solid #ccc;
+                padding: 5px 10px;
+            }
+
+            .date-field {
+                flex: 1;
+                border: none;
+                outline: none;
+                width: 180px;
+                padding: 8px;
+                border-radius: 8px;
+                background: transparent;
+                font-size: 14px;
+                font-weight: 500;
+                color: #333;
+            }
+
+            .date-field:focus {
+                border: 1px solid #007bff;
+                box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+            }
+
+            .calendar-icon {
+                font-size: 18px;
+                margin-right: 70%;
+                color: #007bff;
+                cursor: pointer;
+            }
+
         </style>
 
         <h:form id="attendanceForm">
             <div class="form-container">
 
-                <h2 style="text-align:center;">Select Course, Semester, Division , Subject</h2>
+                <h2 style="text-align:center;">Take Attendance</h2>
+
+                <!-- DATE SELECTION -->
+                <!-- DATE SELECTION -->
+                <div class="date-input-container">
+                    <div class="form-group date-picker-wrapper">
+                        <label for="attendanceDate">Date</label>
+                        <div class="custom-date-input">
+                            <h:inputText id="attendanceDate"
+                                         value="#{updateCDIBean.attendanceDate}"
+                                         readonly="true"
+                                         styleClass="date-field">
+                                <f:convertDateTime pattern="dd-MM-yyyy"/>
+                            </h:inputText>
+                            <span class="calendar-icon">&#128197;</span>
+                        </div>
+                    </div>
+                </div>
+
+
+                <h3 style="text-align:center; margin:20px 0 10px 0;">Select Course, Semester, Division, Subject</h3>
 
                 <div class="form-row">
 
                     <!-- COURSE -->
-                    <div>
+                    <div class="form-group">
                         <label>Course</label>
                         <h:selectOneMenu value="#{updateCDIBean.selectedCourseId}">
-                            <f:selectItem itemLabel="--Select--" itemValue="" />
-                            <f:selectItems value="#{updateCDIBean.courseList}" var="c" 
+                            <f:selectItem itemLabel="--Select--" itemValue="-1" />
+                            <f:selectItems value="#{updateCDIBean.courseList}" var="c"
                                            itemValue="#{c.courseId}" itemLabel="#{c.courseName}" />
-                            <f:ajax listener="#{updateCDIBean.loadSemesters}" 
-                                    render="semesterPanel divisionPanel subjectPanel studentPanel" 
-                                    onevent="clearStudentData"/>
+                            <f:ajax listener="#{updateCDIBean.loadSemesters}"
+                                    render="semesterPanel divisionPanel subjectPanel studentPanel"/>
                         </h:selectOneMenu>
                     </div>
 
                     <!-- SEMESTER -->
                     <h:panelGroup id="semesterPanel">
                         <h:panelGroup rendered="#{not empty updateCDIBean.semesterList}">
-                            <div>
+                            <div class="form-group">
                                 <label>Semester</label>
                                 <h:selectOneMenu value="#{updateCDIBean.selectedSemId}">
-                                    <f:selectItem itemLabel="--Select--" itemValue="" />
+                                    <f:selectItem itemLabel="--Select--" itemValue="-1" />
                                     <f:selectItems value="#{updateCDIBean.semesterList}" var="s"
                                                    itemValue="#{s.semId}" itemLabel="#{s.semName}" />
-                                    <f:ajax listener="#{updateCDIBean.loadDivisions}" 
-                                            render="divisionPanel studentPanel"
-                                            onevent="clearStudentData" />
+                                    <f:ajax listener="#{updateCDIBean.loadSubjects}"
+                                            render="subjectPanel divisionPanel studentPanel"/>
+
                                 </h:selectOneMenu>
                             </div>
                         </h:panelGroup>
                     </h:panelGroup>
-
-                    <!-- DIVISION -->
-                    <h:panelGroup id="divisionPanel">
-                        <h:panelGroup rendered="#{not empty updateCDIBean.divisionList}">
-                            <div>
-                                <label>Division</label>
-                                <h:selectOneMenu value="#{updateCDIBean.selectedStudentDivId}">
-                                    <f:selectItem itemLabel="--Select--" itemValue="" />
-                                    <f:selectItems value="#{updateCDIBean.divisionList}" var="d"
-                                                   itemValue="#{d.divId}" itemLabel="#{d.divName}" />
-                                    <f:ajax listener="#{updateCDIBean.loadSubjects}" 
-                                            render="subjectPanel studentPanel"
-                                            onevent="clearStudentData" />
-                                </h:selectOneMenu>
-                            </div>
-                        </h:panelGroup>
-                    </h:panelGroup>
-
                     <!-- SUBJECT -->
                     <h:panelGroup id="subjectPanel">
                         <h:panelGroup rendered="#{not empty updateCDIBean.subjectList}">
                             <div>
                                 <label>Subject</label>
                                 <h:selectOneMenu value="#{updateCDIBean.updateSubId}">
-                                    <f:selectItem itemLabel="--Select--" itemValue="" />
+                                    <f:selectItem itemLabel="--Select--" itemValue="-1" />
                                     <f:selectItems value="#{updateCDIBean.subjectList}" var="sub"
                                                    itemValue="#{sub.subId}" itemLabel="#{sub.subName}" />
-                                    <f:ajax listener="#{updateCDIBean.loadStudents}" 
-                                            render="studentPanel" />
+                                    <f:ajax listener="#{updateCDIBean.loadDivisions}"
+                                            render="divisionPanel studentPanel"/>
+
                                 </h:selectOneMenu>
                             </div>
                         </h:panelGroup>
                     </h:panelGroup>
+                    <!-- DIVISION -->
+                    <h:panelGroup id="divisionPanel">
+                        <h:panelGroup rendered="#{not empty updateCDIBean.divisionList}">
+                            <div class="form-group">
+                                <label>Division</label>
+                                <h:selectOneMenu value="#{updateCDIBean.selectedStudentDivId}">
+                                    <f:selectItem itemLabel="--Select--" itemValue="-1" />
+                                    <f:selectItems value="#{updateCDIBean.divisionList}" var="d"
+                                                   itemValue="#{d.divId}" itemLabel="#{d.divName}" />
+
+                                    <f:ajax listener="#{updateCDIBean.loadStudents}"
+                                            render="studentPanel"/>
+
+                                </h:selectOneMenu>
+                            </div>
+                        </h:panelGroup>
+                    </h:panelGroup>
+
+
 
                 </div>
 
                 <!-- STUDENTS TABLE -->
                 <h:panelGroup id="studentPanel">
                     <h:panelGroup rendered="#{not empty updateCDIBean.studentList}">
-                        <h2>Students List</h2>
+                        <h2>Students List - Date: #{updateCDIBean.todayDateString}</h2>
 
                         <!-- Status Legend -->
                         <div class="status-legend">
@@ -220,54 +293,73 @@
                             </h:column>
 
                             <h:column>
-                                <f:facet name="header">Attendance</f:facet> 
-                                <button type="button" class="toggle-btn absent" onclick="toggleAttendance(this)">A</button>
+                                <f:facet name="header">Attendance</f:facet>
+
+                                <h:commandButton
+                                    value="#{updateCDIBean.attendanceStatusMap[st.studId] eq 'present' ? 'P' : 'A'}"
+                                    styleClass="#{updateCDIBean.attendanceStatusMap[st.studId] eq 'present' ? 'toggle-btn present' : 'toggle-btn absent'}"
+                                    action="#{updateCDIBean.toggleAttendance(st.studId)}">
+                                    <f:ajax execute="@this" render="@this" />
+                                </h:commandButton>
+
+
                             </h:column>
 
                         </h:dataTable>
+                        <br/>
+                        <center>
+                            <h:commandButton value="Save Attendance" styleClass="btn" action="#{updateCDIBean.saveAttendance}">
+                                <f:ajax execute="@form" render="studentPanel msg"
+                                        onevent="handleAjaxEvent"/>
 
-                        <center> 
-                            <h:commandButton style="margin-top: 10px" value="Save Attendance" styleClass="btn" action="#{updateCDIBean.saveAttendance}">
-                                <f:ajax execute="@form" render="studentPanel" />
                             </h:commandButton>
+
                         </center>
+
 
                     </h:panelGroup>
                 </h:panelGroup>
 
             </div>
+            <h:outputText id="msg" value="#{updateCDIBean.message}" style="display:none"/>
+
         </h:form>
-
         <script>
-            function toggleAttendance(button) {
-                if (button.classList.contains('absent')) {
-                    button.classList.remove('absent');
-                    button.classList.add('present');
-                    button.textContent = 'P';
-                } else {
-                    button.classList.remove('present');
-                    button.classList.add('absent');
-                    button.textContent = 'A';
+            document.addEventListener('DOMContentLoaded', function () {
+                var msgEl = document.getElementById('attendanceForm:msg');
+                if (msgEl) {
+                    var msg = msgEl.innerText.trim();
+                    if (msg) {
+                        let icon = msg.toLowerCase().includes('success') ? 'success' : 'warning';
+                        Swal.fire({
+                            icon: icon,
+                            title: icon === 'success' ? 'Success!' : 'Warning!',
+                            text: msg
+                        });
+                    }
                 }
-            }
+            });
 
-            // Function to clear student data when dropdowns change
-            function clearStudentData(data) {
-                if (data.status === 'begin') {
-                    // Hide student table when dropdown is changing
-                    const studentPanel = document.querySelector('[id$="studentPanel"]');
-                    if (studentPanel) {
-                        studentPanel.style.display = 'none';
+            // Listen for AJAX updates
+            function handleAjaxEvent(data) {
+                if (data.status === 'success') {
+                    var msgEl = document.getElementById('attendanceForm:msg');
+                    if (msgEl) {
+                        var msg = msgEl.innerText.trim();
+                        if (msg) {
+                            let icon = msg.toLowerCase().includes('success') ? 'success' : 'warning';
+                            swal({
+                                title: icon === 'success' ? 'Success!' : 'Warning!',
+                                text: msg,
+                                icon: icon
+                            });
+                        }
                     }
                 }
             }
 
-            // Initialize all buttons to Absent on page load
-            document.addEventListener('DOMContentLoaded', function () {
-                // All buttons already start as Absent from HTML
-            });
+
         </script>
 
     </ui:define>
-
 </ui:composition>

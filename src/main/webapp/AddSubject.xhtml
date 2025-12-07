@@ -9,7 +9,6 @@
         <title>Add Subject</title>
         <link href="CSS/subject.css" rel="stylesheet" type="text/css"/>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     </h:head>
 
     <h:body>
@@ -32,37 +31,43 @@
 
             <h:form>
 
-                <!-- COURSE DROPDOWN -->
                 <div class="form-field">
-                    <h:outputLabel value="Select Course:" for="course"/>
+                    <h:outputLabel value="Course:" />
                     <h:selectOneMenu id="course"
                                      value="#{adminCDIBean.selectedCourseId}"
-                                     required="true"
-                                     requiredMessage="Please select a course">
-                        <f:selectItem itemLabel="Select Course" itemValue="" />
-                        <f:selectItems value="#{adminCDIBean.courseList}"
-                                       var="c"
-                                       itemLabel="#{c.courseName}"
-                                       itemValue="#{c.courseId}" />
+                                     styleClass="select-box">
+                        <f:selectItem itemLabel="--Select Course--" itemValue="" />
+                        <f:selectItems value="#{adminCDIBean.courseList}" var="c"
+                                       itemValue="#{c.courseId}" itemLabel="#{c.courseName}" />
+
+                        <!-- Load Semesters on Course Change -->
+                        <f:ajax listener="#{adminCDIBean.loadSemesters}"
+                                render="semPanel divPanel" />
                     </h:selectOneMenu>
-                    <h:message for="course" styleClass="error-msg"/>
                 </div>
 
-                <!-- SEMESTER DROPDOWN -->
-                <div class="form-field">
-                    <h:outputLabel value="Select Semester:" for="semester"/>
-                    <h:selectOneMenu id="semester"
-                                     value="#{adminCDIBean.selectedSemesterId}"
-                                     required="true"
-                                     requiredMessage="Please select a semester">
-                        <f:selectItem itemLabel="Select Semester" itemValue="" />
-                        <f:selectItems value="#{adminCDIBean.semesterList}"
-                                       var="s"
-                                       itemLabel="#{s.semName}"
-                                       itemValue="#{s.semId}" />
-                    </h:selectOneMenu>
-                    <h:message for="semester" styleClass="error-msg"/>
-                </div>
+                <!-- Semester -->
+                <!-- Semester -->
+                <h:panelGroup id="semPanel">
+                    <h:panelGroup rendered="#{not empty adminCDIBean.semesterList}">
+                        <div class="form-field">
+                            <h:outputLabel value="Semester:" />
+                            <h:selectOneMenu id="sem"
+                                             value="#{adminCDIBean.selectedSemesterId}"  
+                                             styleClass="select-box"
+                                             required="true"
+                                             requiredMessage="Please select a semester">
+
+                                <f:selectItem itemLabel="--Select Semester--" itemValue="" />
+                                <f:selectItems value="#{adminCDIBean.semesterList}" var="s"
+                                               itemValue="#{s.semId}" itemLabel="#{s.semName}" />
+
+                                <f:ajax listener="#{adminCDIBean.loadSemesters}" render="semPanel" />
+                            </h:selectOneMenu>
+
+                        </div>
+                    </h:panelGroup>
+                </h:panelGroup>
 
                 <!-- SUBJECT NAME -->
                 <div class="form-field">

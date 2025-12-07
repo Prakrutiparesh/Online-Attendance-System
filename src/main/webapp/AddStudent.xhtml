@@ -53,41 +53,59 @@
                 </div>
 
                 <!-- Course -->
+                <!-- Course -->
                 <div class="form-field">
-                    <h:outputLabel value="Course:" for="course" />
+                    <h:outputLabel value="Course:" />
                     <h:selectOneMenu id="course"
-                                     value="#{adminCDIBean.studentCourseId}">
-                        <f:selectItem itemLabel="Select Course" itemValue="" />
+                                     value="#{adminCDIBean.studentCourseId}"
+                                     styleClass="select-box">
+                        <f:selectItem itemLabel="--Select Course--" itemValue="" />
                         <f:selectItems value="#{adminCDIBean.courseList}" var="c"
-                                       itemLabel="#{c.courseName}" itemValue="#{c.courseId}"/>
+                                       itemValue="#{c.courseId}" itemLabel="#{c.courseName}" />
+
+                        <f:ajax listener="#{adminCDIBean.loadSemesters}" render="semPanel divPanel" execute="@this" />
+
+
                     </h:selectOneMenu>
-                    <h:message for="course" styleClass="error-msg"/>
                 </div>
 
                 <!-- Semester -->
-                <div class="form-field">
-                    <h:outputLabel value="Semester:" for="sem" />
-                    <h:selectOneMenu id="sem"
-                                     value="#{adminCDIBean.studentSemesterId}">
-                        <f:selectItem itemLabel="Select Semester" itemValue="" />
-                        <f:selectItems value="#{adminCDIBean.semesterList}" var="s"
-                                       itemLabel="#{s.semName}" itemValue="#{s.semId}"/>
-                    </h:selectOneMenu>
-                    <h:message for="sem" styleClass="error-msg"/>
-                </div>
+                <h:panelGroup id="semPanel">
+                    <h:panelGroup rendered="#{not empty adminCDIBean.semesterList}">
+                        <div class="form-field">
+                            <h:outputLabel value="Semester:" />
+                            <h:selectOneMenu id="sem"
+                                             value="#{adminCDIBean.studentSemesterId}"
+                                             styleClass="select-box">
+                                <f:selectItem itemLabel="--Select Semester--" itemValue="" />
+                                <f:selectItems value="#{adminCDIBean.semesterList}" var="s"
+                                               itemValue="#{s.semId}" itemLabel="#{s.semName}" />
+
+                                <!-- Load Divisions on Semester Change -->
+                                <f:ajax listener="#{adminCDIBean.loadDivisions}" render="divPanel" execute="@this" />
+
+                            </h:selectOneMenu>
+                        </div>
+                    </h:panelGroup>
+                </h:panelGroup>
+
 
                 <!-- Division -->
-                <div class="form-field">
-                    <h:outputLabel value="Division:" for="div" />
-                    <h:selectOneMenu id="div"
-                                     value="#{adminCDIBean.studentDivisionId}">
-                        <f:selectItem itemLabel="Select Division" itemValue="" />
-                        <f:selectItems value="#{adminCDIBean.getAllDivision()}"
-                                       var="d"
-                                       itemLabel="#{d.divName}" itemValue="#{d.divId}"/>
-                    </h:selectOneMenu>
-                    <h:message for="div" styleClass="error-msg"/>
-                </div>
+                <h:panelGroup id="divPanel">
+                    <h:panelGroup rendered="#{not empty adminCDIBean.divisionList}">
+                        <div class="form-field">
+                            <h:outputLabel value="Division:" />
+                            <h:selectOneMenu id="div"
+                                             value="#{adminCDIBean.studentDivisionId}"
+                                             styleClass="select-box">
+                                <f:selectItem itemLabel="--Select Division--" itemValue="" />
+                                <f:selectItems value="#{adminCDIBean.divisionList}" var="d"
+                                               itemValue="#{d.divId}" itemLabel="#{d.divName}" />
+                            </h:selectOneMenu>
+                        </div>
+                    </h:panelGroup>
+                </h:panelGroup>
+
 
                 <h:commandButton value="Add Student"
                                  action="#{adminCDIBean.insertStudent}"
