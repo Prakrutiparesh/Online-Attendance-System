@@ -4,6 +4,7 @@ import EJB.AdminBeanLocal;
 import Entity.Course;
 import Entity.Division;
 import Entity.Semester;
+import Entity.Subject;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
@@ -37,6 +38,7 @@ public class AdminCDIBean implements Serializable {
     private String email;
 
     private Integer groupId;
+
     // ===== Course & Semester Fields =====
     private Collection<Course> courseList;
     private Collection<Integer> semesterNumbers;
@@ -52,11 +54,14 @@ public class AdminCDIBean implements Serializable {
     // ===== Subject Fields =====
     private Integer selectedSemesterId;
     private String subjectName;
-// ===== Division Fields =====
+
+    // ===== Division Fields =====
     private Integer selectedDivisionCourseId;
     private Integer selectedDivisionSemesterId;
+    private Integer selectedDivisionId; // <-- added
     private String divisionName;
-// ===== Student Fields =====
+
+    // ===== Student Fields =====
     private String studentName;
     private Integer studentRoll;
     private Integer studentCourseId;
@@ -74,11 +79,13 @@ public class AdminCDIBean implements Serializable {
         } else {
             groupId = 2;
         }
+
         courseList = new ArrayList<>(abl.getAllCourse());
         semesterNumbers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-        semesterList = new ArrayList<>(abl.getAllSemesters()); // initialize semester list
+        semesterList = new ArrayList<>(abl.getAllSemesters());
     }
 
+    // ===== Student Methods =====
     public void insertStudent() {
         try {
             if (studentName == null || studentName.trim().isEmpty()) {
@@ -103,7 +110,6 @@ public class AdminCDIBean implements Serializable {
             }
 
             abl.addStudent(studentName, studentRoll, studentCourseId, studentSemesterId, studentDivisionId);
-
             successMessage = "Student added successfully: " + studentName;
 
             // Reset fields
@@ -118,65 +124,57 @@ public class AdminCDIBean implements Serializable {
         }
     }
 
+    // ===== Division Methods =====
     public Collection<Division> getAllDivision() {
         return abl.getAllDivision();
     }
 
+    public Collection<Division> getDivisionsBySemester(Integer semesterId) {
+        if (semesterId == null) {
+            return new ArrayList<>();
+        }
+        Collection<Division> divisionsBySemester = new ArrayList<>();
+        for (Division d : abl.getAllDivision()) {
+            if (d.getSemester().getSemId().equals(semesterId)) {
+                divisionsBySemester.add(d);
+            }
+        }
+        return divisionsBySemester;
+    }
+
+    // ===== Semester Methods =====
     public Collection<Semester> getSemesterList() {
         return semesterList;
     }
 
-    public void insertSubject() {
-        try {
-            if (subjectName == null || subjectName.trim().isEmpty()) {
-                successMessage = "Please enter a subject name!";
-                return;
-            }
-            if (selectedCourseId == null) {
-                successMessage = "Please select a course!";
-                return;
-            }
-            if (selectedSemesterId == null) {
-                successMessage = "Please select a semester!";
-                return;
-            }
-
-            abl.addSubject(subjectName, selectedCourseId, selectedSemesterId);
-
-            successMessage = "Subject added successfully: " + subjectName;
-
-            // Reset fields
-            subjectName = null;
-            selectedCourseId = null;
-            selectedSemesterId = null;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            successMessage = "Error adding subject: " + e.getMessage();
+    public Collection<Semester> getSemestersByCourse(Integer courseId) {
+        if (courseId == null) {
+            return new ArrayList<>();
         }
+        Collection<Semester> result = new ArrayList<>();
+        for (Semester s : semesterList) {
+            if (s.getCourse().getCourseId().equals(courseId)) {
+                result.add(s);
+            }
+        }
+        return result;
     }
 
-    public Integer getSelectedSemesterId() {
-        return selectedSemesterId;
+    // ===== Course Methods =====
+    public Collection<Course> getAllCourses() {
+        return abl.getAllCourse();
     }
 
-    public void setSelectedSemesterId(Integer selectedSemesterId) {
-        this.selectedSemesterId = selectedSemesterId;
+    public String getSelectedCourseName() {
+        for (Course c : courseList) {
+            if (c.getCourseId().equals(selectedCourseId)) {
+                return c.getCourseName();
+            }
+        }
+        return null;
     }
-
-    public String getSubjectName() {
-        return subjectName;
-    }
-
-    public void setSubjectName(String subjectName) {
-        this.subjectName = subjectName;
-    }
-
-    public void setSemesterList(Collection<Semester> semesterList) {
-        this.semesterList = semesterList;
-    }
-
     // ===== Email Validation =====
+
     private static boolean isValidEmail(String email) {
         String emailRegex = "^[a-zA-Z0-9_+&-]+(?:\\.[a-zA-Z0-9_+&-]+)*@"
                 + "(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
@@ -200,73 +198,6 @@ public class AdminCDIBean implements Serializable {
         } catch (Exception e) {
             e.printStackTrace();
             message = "Error during registration: " + e.getMessage();
-            return null;
-        }
-    }
-
-    // ===== Courses =====
-    public Collection<Course> getAllCourses() {
-        return abl.getAllCourse();
-    }
-
-    public void insertDivision() {
-        try {
-            if (divisionName == null || divisionName.trim().isEmpty()) {
-                successMessage = "Please enter division name!";
-                return;
-            }
-            if (selectedDivisionCourseId == null) {
-                successMessage = "Please select a course!";
-                return;
-            }
-            if (selectedDivisionSemesterId == null) {
-                successMessage = "Please select a semester!";
-                return;
-            }
-
-            // Call EJB
-            abl.addDivision(divisionName, selectedDivisionSemesterId, selectedDivisionCourseId);
-
-            successMessage = "Division added successfully: " + divisionName;
-
-            // Reset fields
-            divisionName = null;
-            selectedDivisionCourseId = null;
-            selectedDivisionSemesterId = null;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            successMessage = "Error adding division: " + e.getMessage();
-        }
-    }
-
-    public void addCourse() {
-        try {
-            abl.addCourse(courseName);
-            message = "Course added successfully!";
-            courseName = "";
-            // Refresh course list
-            courseList = new ArrayList<>(abl.getAllCourse());
-        } catch (Exception e) {
-            message = "Error adding course: " + e.getMessage();
-        }
-    }
-
-    public String deleteCourse(Integer id) {
-        abl.deleteCourse(id);
-        courseList = new ArrayList<>(abl.getAllCourse());
-        return "ViewCourse?faces-redirect=true";
-    }
-
-    // ===== Semesters =====
-    public String insertSemester() {
-        try {
-            abl.addSemester(String.valueOf(semesterNumber), selectedCourseId);
-            successMessage = "Semester added successfully!";
-            return null;
-        } catch (Exception e) {
-            e.printStackTrace();
-            successMessage = "Something went wrong! " + e.getMessage();
             return null;
         }
     }
@@ -384,12 +315,36 @@ public class AdminCDIBean implements Serializable {
         this.selectedDivisionSemesterId = selectedDivisionSemesterId;
     }
 
+    public Integer getSelectedDivisionId() {
+        return selectedDivisionId;
+    } // <-- added
+
+    public void setSelectedDivisionId(Integer selectedDivisionId) {
+        this.selectedDivisionId = selectedDivisionId;
+    }
+
     public String getDivisionName() {
         return divisionName;
     }
 
     public void setDivisionName(String divisionName) {
         this.divisionName = divisionName;
+    }
+
+    public Integer getSelectedSemesterId() {
+        return selectedSemesterId;
+    }
+
+    public void setSelectedSemesterId(Integer selectedSemesterId) {
+        this.selectedSemesterId = selectedSemesterId;
+    }
+
+    public String getSubjectName() {
+        return subjectName;
+    }
+
+    public void setSubjectName(String subjectName) {
+        this.subjectName = subjectName;
     }
 
     public String getStudentName() {

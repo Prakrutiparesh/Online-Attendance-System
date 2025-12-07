@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <h:head>
+        <title><ui:insert name="title">Faculty Panel</ui:insert></title>
+
+        <style>
+            body {
+                margin: 0;
+                font-family: "Poppins", sans-serif;
+                background: linear-gradient(to right, #eef4ff, #dce6ff);
+            }
+
+            /* NAVBAR */
+            .navbar {
+                background: #0a2342;
+                padding: 15px 30px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                color: #ffffff;
+            }
+
+            .navbar h2 {
+                margin: 0;
+                font-size: 26px;
+            }
+
+            .right-links a {
+                background:#ffffff;
+                color:#0a2342;
+                text-decoration:none;
+                font-weight:bold;
+                padding:8px 18px;
+                border-radius:6px;
+                margin-left: 10px;
+            }
+
+            /* CONTENT WRAPPER */
+            .content-wrapper {
+                width: 90%;
+                margin: 40px auto;
+            }
+
+            /* CARD + GRID */
+            .container {
+                max-width: 1200px;
+                margin: 20px auto;
+                padding: 10px;
+                display: grid;
+                grid-gap: 35px;
+                grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            }
+
+            .card {
+                background: #ffffff;
+                text-align: center;
+                padding: 35px 20px;
+                border-radius: 16px;
+                box-shadow: 0 7px 18px rgba(0,0,0,0.12);
+                transition: 0.25s;
+                cursor: pointer;
+            }
+
+            .card:hover {
+                transform: translateY(-6px);
+                box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+            }
+
+            .icon {
+                font-size: 50px;
+                margin-bottom: 12px;
+                color: #0a2342;
+            }
+
+            h3 {
+                margin: 10px 0;
+                font-size: 20px;
+            }
+
+            p {
+                font-size: 14px;
+                opacity: 0.8;
+            }
+        </style>
+
+    </h:head>
+
+    <h:body>
+
+        <div class="navbar">
+            <h2>Faculty Panel</h2>
+            <div class="right-links">
+                <h:link outcome="Logout.jsf">Logout</h:link>
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            <ui:insert name="content"/>
+        </div>
+
+    </h:body>
+</html>

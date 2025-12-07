@@ -1,0 +1,33 @@
+<ui:composition template="facultyTemplate.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <ui:define name="title">Take Attendance</ui:define>
+
+    <ui:define name="content">
+
+        <!-- Container to control button position -->
+        <div style="position: relative; height: 40px;">
+
+            <!-- Top-Right Back Button -->
+            <h:link outcome="Faculty.jsf"
+                    style="position:absolute;
+                    right:0;
+                    top:0;
+                    padding:8px 16px;
+                    background:#0a2342;
+                    color:#ffffff;
+                    border-radius:6px;
+                    text-decoration:none;
+                    font-size:14px;">
+                ⬅ Back to Home
+            </h:link>
+
+        </div>
+
+        <h2 style="color:#0a2342; margin-top:20px;">Take Attendance Page</h2>
+
+    </ui:define>
+
+</ui:composition>

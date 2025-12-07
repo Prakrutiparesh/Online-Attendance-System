@@ -1,0 +1,102 @@
+<ui:composition template="facultyTemplate.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <ui:define name="title">Faculty Dashboard</ui:define>
+
+    <ui:define name="content">
+
+        <style>
+            .dash-container {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 35px;
+                padding: 40px;
+            }
+
+            .card-link {
+                text-decoration: none;
+                color: inherit;
+                width: 260px;
+                height: 200px;
+                display: block;
+            }
+
+            .dash-card {
+                width: 100%;
+                height: 100%;
+                background: #ffffff;
+                border-radius: 16px;
+                text-align: center;
+                padding: 25px;
+                border: 1px solid rgba(0,0,0,0.10);
+                transition: 0.3s;
+                cursor: pointer;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                box-shadow: 0 5px 25px rgba(0,0,0,0.10);
+            }
+
+            .dash-card:hover {
+                transform: scale(1.05);
+                background: #eef4ff;
+                box-shadow: 0 10px 35px rgba(0,0,0,0.20);
+            }
+
+            .dash-icon {
+                font-size: 50px;
+                margin-bottom: 12px;
+                color: #0a2342;
+                transition: transform 0.3s ease;
+            }
+
+            .dash-card:hover .dash-icon {
+                transform: scale(1.25);
+            }
+
+            .dash-card h3 {
+                color: #0a2342;
+                font-size: 20px;
+                margin: 10px 0 5px;
+            }
+
+            .dash-card p {
+                font-size: 14px;
+                color: #3b4d70;
+            }
+        </style>
+
+
+        <div class="dash-container">
+
+            <h:link outcome="studentAttendance.jsf" styleClass="card-link">
+                <div class="dash-card">
+                    <div class="dash-icon">📝</div>
+                    <h3>Take Attendance</h3>
+                    <p>Mark today’s attendance</p>
+                </div>
+            </h:link>
+
+            <h:link outcome="viewAttendance.jsf" styleClass="card-link">
+                <div class="dash-card">
+                    <div class="dash-icon">📊</div>
+                    <h3>View Attendance</h3>
+                    <p>Check attendance records</p>
+                </div>
+            </h:link>
+
+            <h:link outcome="students.jsf" styleClass="card-link">
+                <div class="dash-card">
+                    <div class="dash-icon">🎓</div>
+                    <h3>Students</h3>
+                    <p>View student details</p>
+                </div>
+            </h:link>
+
+        </div>
+
+    </ui:define>
+</ui:composition>
