@@ -45,14 +45,25 @@ public class UserBean implements UserBeanLocal {
             }
 
             Long count = em.createQuery(
-                    "SELECT COUNT(a) FROM Attendance a WHERE a.student.studId = :sid AND a.attendanceDate = :date",
-                    Long.class)
+                    "SELECT COUNT(a) FROM Attendance a WHERE "
+                    + "a.student.studId = :sid AND "
+                    + "a.course.courseId = :cid AND "
+                    + "a.subject.subId = :subid AND "
+                    + "a.semester.semId = :semid AND "
+                    + "a.division.divId = :divid AND "
+                    + "a.attendanceDate = :date",
+                    Long.class
+            )
                     .setParameter("sid", studId)
+                    .setParameter("cid", courseId)
+                    .setParameter("subid", subId)
+                    .setParameter("semid", semId)
+                    .setParameter("divid", divId)
                     .setParameter("date", date)
                     .getSingleResult();
 
             if (count > 0) {
-                throw new IllegalArgumentException("Attendance already marked for this student on this date.");
+                throw new IllegalArgumentException("Attendance already marked for this student in this subject today!");
             }
 
             Attendance att = new Attendance();
