@@ -1,12 +1,175 @@
 <ui:composition template="facultyTemplate.xhtml"
                 xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:h="http://xmlns.jcp.org/jsf/html">
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <ui:define name="title">Take Attendance</ui:define>
 
     <ui:define name="content">
+        <style>
+            .form-container {
+                max-width: 900px;
+                margin: auto;
+                padding: 25px;
+                background: #fff;
+                border-radius: 10px;
+                border: 1px solid #ddd;
+            }
+            .form-row {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr); /* 2 columns */
+                gap: 10px;
+                justify-items: center; /* center items in each column */
+                margin-bottom: 20px;
+            }
 
+            .form-group {
+                display: flex;
+                flex-direction: column;
+            }
+            label {
+                font-weight:bold;
+                margin-bottom:5px;
+                display:block;
+            }
+            select, input[type="date"] {
+                width:200px;
+                padding:8px;
+                border-radius:5px;
+                border:1px solid #ccc;
+            }
+            .btn {
+                background:#007bff;
+                color:white;
+                padding:10px 15px;
+                border:none;
+                border-radius:5px;
+                cursor:pointer;
+            }
+            .btn:hover {
+                background:#0056b3;
+            }
+            table {
+                width:100%;
+                border-collapse:collapse;
+                margin-top:20px;
+            }
+            th, td {
+                border:1px solid #ddd;
+                padding:10px;
+                text-align:center;
+            }
+            th {
+                background:#004bcc;
+                color:white;
+            }
+
+            /* Toggle Button Styles */
+            .toggle-btn {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                border: none;
+                cursor: pointer;
+                font-weight: bold;
+                font-size: 14px;
+                display: inline-block;
+                line-height: 40px;
+                text-align: center;
+                transition: all 0.2s;
+            }
+
+            .present {
+                background: #4CAF50;
+                color: white;
+            }
+
+            .absent {
+                background: #f44336;
+                color: white;
+            }
+
+            .status-legend {
+                display: flex;
+                justify-content: center;
+                gap: 30px;
+                margin-top: 20px;
+                margin-bottom: 10px;
+            }
+
+            .status-item {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-weight: bold;
+            }
+
+            .status-indicator {
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+            }
+
+            .present-indicator {
+                background: #4CAF50;
+            }
+            .absent-indicator {
+                background: #f44336;
+            }
+
+            .date-input-container {
+                text-align: center;
+                margin: 15px 0;
+            }
+            .date-picker-wrapper {
+                display: inline-block;
+                position: relative;
+            }
+
+            .custom-date-input {
+                position: relative;
+                display: flex;
+                align-items: center;
+                width: 220px;
+                background: rgba(255, 255, 255, 0.8);
+                border-radius: 8px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+                border: 1px solid #ccc;
+                padding: 5px 10px;
+            }
+
+            .date-field {
+                flex: 1;
+                border: none;
+                outline: none;
+                width: 180px;
+                padding: 8px;
+                border-radius: 8px;
+                background: transparent;
+                font-size: 14px;
+                font-weight: 500;
+                color: #333;
+                margin-left: 0px;
+            }
+
+            .calendar-icon {
+                font-size: 18px;
+                margin-right: 70%;
+                color: #007bff;
+                cursor: pointer;
+            }
+
+            .date-field:focus {
+                border: 1px solid #007bff;
+                box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+            }
+
+
+            .form-group select, .form-group input[type="text"], .form-group input[type="date"] {
+                width: 220px; /* thoda bada dropdown */
+            }
+        </style>
         <!-- Container to control button position -->
         <div style="position: relative; height: 40px;">
 
@@ -26,7 +189,76 @@
 
         </div>
 
-        <h2 style="color:#0a2342; margin-top:20px;">Take Attendance Page</h2>
+        <h:form id="viewForm">
+            <div class="form-container">
+
+                <h3 style="text-align:center; margin:20px 0 10px 0;">Select Course, Semester, Division, Subject</h3>
+                <div class="form-row">
+                    <!-- COURSE -->
+                    <div class="form-group">
+                        <label>Course</label>
+                        <h:selectOneMenu value="#{updateCDIBean.selectedCourseId}">
+                            <f:selectItem itemLabel="--Select--" itemValue="-1" />
+                            <f:selectItems value="#{updateCDIBean.courseList}" var="c"
+                                           itemValue="#{c.courseId}" itemLabel="#{c.courseName}" />
+                            <f:ajax listener="#{updateCDIBean.loadSemesters}"
+                                    render="semesterPanel divisionPanel subjectPanel studentPanel"/>
+                        </h:selectOneMenu>
+                    </div>
+                    <!-- SEMESTER -->
+                    <h:panelGroup id="semesterPanel">
+                        <h:panelGroup rendered="#{not empty updateCDIBean.semesterList}">
+                            <div class="form-group">
+                                <label>Semester</label>
+                                <h:selectOneMenu value="#{updateCDIBean.selectedSemId}">
+                                    <f:selectItem itemLabel="--Select--" itemValue="-1" />
+                                    <f:selectItems value="#{updateCDIBean.semesterList}" var="s"
+                                                   itemValue="#{s.semId}" itemLabel="#{s.semName}" />
+                                    <f:ajax listener="#{updateCDIBean.loadSubjects}"
+                                            render="subjectPanel divisionPanel studentPanel"/>
+
+                                </h:selectOneMenu>
+                            </div>
+                        </h:panelGroup>
+                    </h:panelGroup>
+
+                    <!-- SUBJECT -->
+                    <h:panelGroup id="subjectPanel">
+                        <h:panelGroup rendered="#{not empty updateCDIBean.subjectList}">
+                            <div class="form-group">
+                                <label>Subject</label>
+                                <h:selectOneMenu value="#{updateCDIBean.updateSubId}">
+                                    <f:selectItem itemLabel="--Select--" itemValue="-1" />
+                                    <f:selectItems value="#{updateCDIBean.subjectList}" var="sub"
+                                                   itemValue="#{sub.subId}" itemLabel="#{sub.subName}" />
+                                    <f:ajax listener="#{updateCDIBean.loadDivisions}"
+                                            render="divisionPanel studentPanel"/>
+
+                                </h:selectOneMenu>
+                            </div>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                    <!-- DIVISION -->
+                    <h:panelGroup id="divisionPanel">
+                        <h:panelGroup rendered="#{not empty updateCDIBean.divisionList}">
+                            <div class="form-group">
+                                <label>Division</label>
+                                <h:selectOneMenu value="#{updateCDIBean.selectedStudentDivId}">
+                                    <f:selectItem itemLabel="--Select--" itemValue="-1" />
+                                    <f:selectItems value="#{updateCDIBean.divisionList}" var="d"
+                                                   itemValue="#{d.divId}" itemLabel="#{d.divName}" />
+
+                                    <f:ajax listener="#{updateCDIBean.loadStudents}"
+                                            render="studentPanel"/>
+
+                                </h:selectOneMenu>
+                            </div>
+                        </h:panelGroup>
+                    </h:panelGroup>
+
+                </div>
+            </div>
+        </h:form>
 
     </ui:define>
 
