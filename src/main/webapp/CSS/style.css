@@ -104,7 +104,7 @@ input[type="date"].selected-date {
 
 .login-error-msg
 {
-      color: red;
+    color: red;
     text-align: center !important;
     display: block;
     width: 108%;

@@ -543,11 +543,11 @@ public class AdminRest {
 
 //Attendance Summary Logic
     @GET
-    @Path("updatesummary/{studId}")
+    @Path("updatesummary/{studId}/{subId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Object updateSummary(@PathParam("studId") Integer studId) {
+    public Object updateSummary(@PathParam("studId") Integer studId, @PathParam("subId") Integer subId) {
         try {
-            abl.updateSummary(studId);
+            abl.updateSummary(studId, subId);
             return Collections.singletonMap("message", "Attendance summary updated successfully for Student ID: " + studId);
         } catch (IllegalArgumentException e) {
             return Collections.singletonMap("error", e.getMessage());

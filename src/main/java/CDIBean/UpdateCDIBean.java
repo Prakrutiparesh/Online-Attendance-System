@@ -2,6 +2,7 @@ package CDIBean;
 
 import EJB.AdminBeanLocal;
 import EJB.UserBeanLocal;
+import Entity.AttendanceSummary;
 import Entity.Course;
 import Entity.Division;
 import Entity.Semester;
@@ -21,6 +22,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Named("updateCDIBean")
 @ViewScoped
@@ -31,6 +33,8 @@ public class UpdateCDIBean implements Serializable {
 
     @EJB
     UserBeanLocal ubl;
+    private String searchKeyword; // search input value
+    private Collection<Student> filteredStudentList; // filtered list
 
     private Integer courseId;
     private String courseName;
@@ -71,8 +75,51 @@ public class UpdateCDIBean implements Serializable {
     private String todayDateString;
     private Map<Integer, String> attendanceStatusMap = new HashMap<>();
 
+    private Integer selectedSubId;
+
+    public Collection<Student> getFilteredStudentList() {
+        return filteredStudentList;
+    }
+
+    public Integer getSelectedSubId() {
+        return selectedSubId;
+    }
+
+    public void setSelectedSubId(Integer selectedSubId) {
+        this.selectedSubId = selectedSubId;
+    }
+
+    public void filterStudents() {
+        if (studentList == null) {
+            studentList = new ArrayList<>();
+        }
+        if (searchKeyword == null || searchKeyword.trim().isEmpty()) {
+            filteredStudentList = new ArrayList<>(studentList);
+        } else {
+            String key = searchKeyword.toLowerCase();
+            filteredStudentList = studentList.stream()
+                    .filter(s -> (s.getStudentName() != null && s.getStudentName().toLowerCase().contains(key))
+                    || (s.getRollNo() != null && s.getRollNo().toString().toLowerCase().contains(key)))
+                    .collect(Collectors.toList());
+        }
+    }
+
+    public String getSearchKeyword() {
+        return searchKeyword;
+    }
+
+    public void setSearchKeyword(String searchKeyword) {
+        this.searchKeyword = searchKeyword;
+        filterStudents(); // filter list every time searchKeyword changes
+    }
+
     public Map<Integer, String> getAttendanceStatusMap() {
         return attendanceStatusMap;
+    }
+    private Map<Integer, AttendanceSummary> studentSummaryMap = new HashMap<>();
+
+    public Map<Integer, AttendanceSummary> getStudentSummaryMap() {
+        return studentSummaryMap;
     }
 
     @PostConstruct
@@ -89,54 +136,48 @@ public class UpdateCDIBean implements Serializable {
         todayDateString = sdf.format(attendanceDate);
     }
 
-    // --- Load Methods ---
     public void loadStudents() {
-        System.out.println("selectedCourseId = " + selectedCourseId);
-        System.out.println("selectedSemId = " + selectedSemId);
-        System.out.println("selectedStudentDivId = " + selectedStudentDivId);
+        studentList = new ArrayList<>();
+        filteredStudentList = new ArrayList<>();
+        studentSummaryMap.clear();
 
-        if (selectedCourseId != null && selectedCourseId > 0
-                && selectedSemId != null && selectedSemId > 0
-                && selectedStudentDivId != null && selectedStudentDivId > 0) {
+        if (selectedCourseId != null && selectedSemId != null
+                && selectedStudentDivId != null && updateSubId != null) {
 
             studentList = abl.getStudentsByCourseSemDiv(selectedCourseId, selectedSemId, selectedStudentDivId);
 
-            System.out.println("Loaded students: " + studentList.size());
-        } else {
-            studentList = new ArrayList<>();
-            System.out.println("Waiting for valid selection...");
-        }
-        for (Student st : studentList) {
-            System.out.println("Stud: " + st.getStudId() + " | "
-                    + "Course: " + st.getCourse().getCourseName() + " | "
-                    + "Sem: " + st.getSemester().getSemName() + " | "
-                    + "Div: " + st.getDivision().getDivName());
+            for (Student st : studentList) {
+                AttendanceSummary summary = abl.findSummaryByStudentAndSubject(st.getStudId(), updateSubId);
+                studentSummaryMap.put(st.getStudId(), summary);
+            }
         }
 
+        filteredStudentList = new ArrayList<>(studentList);
     }
 
     public void loadDivisions() {
-        System.out.println("========== LOAD DIVISIONS ==========");
-        System.out.println("Time: " + new java.util.Date());
-        System.out.println("selectedCourseId: " + selectedCourseId);
-        System.out.println("selectedSemId: " + selectedSemId);
+        studentList = new ArrayList<>();
+        filteredStudentList = new ArrayList<>();
+        studentSummaryMap.clear();
+
+        // reset division selection
+        selectedStudentDivId = -1;
 
         if (selectedCourseId != null && selectedSemId != null) {
-            System.out.println("Calling EJB to get divisions...");
             divisionList = abl.getDivisionsByCourseAndSemester(selectedSemId, selectedCourseId);
-            System.out.println("Got " + divisionList.size() + " divisions from DB");
-
-            // Print all divisions
-            for (Division d : divisionList) {
-                System.out.println("Division: " + d.getDivId() + " - " + d.getDivName());
-            }
         } else {
-            System.out.println("NULL values - clearing division list");
             divisionList = new ArrayList<>();
         }
     }
 
     public void loadSubjects() {
+        studentList = new ArrayList<>();
+        filteredStudentList = new ArrayList<>();
+        studentSummaryMap.clear();
+
+        // reset subject selection
+        updateSubId = -1;
+
         if (selectedCourseId != null && selectedSemId != null) {
             subjectList = abl.getSubjectsByCourseandSemester(selectedCourseId, selectedSemId);
         } else {
@@ -160,8 +201,8 @@ public class UpdateCDIBean implements Serializable {
     }
 
     public void loadDivisionAndSubject() {
-        selectedStudentDivId = null;
-        updateSubId = null;
+//        selectedStudentDivId = null;
+//        updateSubId = null;
         loadDivisions();
         loadSubjects();
     }
@@ -513,7 +554,7 @@ public class UpdateCDIBean implements Serializable {
                         getTodaySqlDate(),
                         status
                 );
-                abl.updateSummary(studentId);
+                abl.updateSummary(studentId, updateSubId);
 
             } catch (IllegalArgumentException e) {
                 if (e.getMessage().toLowerCase().contains("already marked")) {

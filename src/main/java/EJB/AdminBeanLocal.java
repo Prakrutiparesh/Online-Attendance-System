@@ -90,9 +90,11 @@ public interface AdminBeanLocal {
     public Collection<Student> getStudentsByCourseSemDiv(Integer courseId, Integer semId, Integer divId);
 
     //Attendance Summary Method
-    public void updateSummary(Integer studId);
+    public void updateSummary(Integer studId, Integer subId);
 
     public AttendanceSummary findSummaryByStudent(Integer studId);
+
+    public AttendanceSummary findSummaryByStudentAndSubject(Integer studId, Integer subId);
 
     public Collection<AttendanceSummary> getAllSummaries();
 

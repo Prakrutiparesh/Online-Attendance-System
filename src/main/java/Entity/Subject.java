@@ -50,6 +50,10 @@ public class Subject implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "subject")
     private Collection<Attendance> attendanceCollection;
 
+    @JsonbTransient
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "subject")
+    private Collection<AttendanceSummary> attendanceSummaryCollection;
+
     @JoinColumn(name = "sem_id", referencedColumnName = "sem_id")
     @ManyToOne
     private Semester semester;
@@ -99,6 +103,14 @@ public class Subject implements Serializable {
 
     public void setSemester(Semester semester) {
         this.semester = semester;
+    }
+
+    public Collection<AttendanceSummary> getAttendanceSummaryCollection() {
+        return attendanceSummaryCollection;
+    }
+
+    public void setAttendanceSummaryCollection(Collection<AttendanceSummary> attendanceSummaryCollection) {
+        this.attendanceSummaryCollection = attendanceSummaryCollection;
     }
 
     @Override

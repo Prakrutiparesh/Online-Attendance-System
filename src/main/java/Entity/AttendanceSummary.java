@@ -54,6 +54,10 @@ public class AttendanceSummary implements Serializable {
     @JoinColumn(name = "stud_id", referencedColumnName = "stud_id")
     private Student student;
 
+    @ManyToOne
+    @JoinColumn(name = "sub_id", referencedColumnName = "sub_id")
+    private Subject subject;
+
     public AttendanceSummary() {
     }
 
@@ -107,6 +111,14 @@ public class AttendanceSummary implements Serializable {
 
     public void setStudent(Student student) {
         this.student = student;
+    }
+
+    public Subject getSubject() {
+        return subject;
+    }
+
+    public void setSubject(Subject subject) {
+        this.subject = subject;
     }
 
     @Override

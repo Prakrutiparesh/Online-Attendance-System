@@ -718,58 +718,62 @@ public class AdminBean implements AdminBeanLocal {
 
 //Attendance Summary Logic
     @Override
-    public void updateSummary(Integer studId) {
+    public void updateSummary(Integer studId, Integer subId) {
 
         Student st = em.find(Student.class, studId);
-        if (st == null) {
-            throw new IllegalArgumentException("Invalid Student ID: " + studId);
+        Subject sb = em.find(Subject.class, subId);
+
+        if (st == null || sb == null) {
+            throw new IllegalArgumentException("Invalid Student or Subject ID");
         }
 
-        // Fetch attendance Records
-        TypedQuery<Attendance> query = em.createQuery(
-                "SELECT a FROM Attendance a WHERE a.student.studId = :sid", Attendance.class);
-        query.setParameter("sid", studId);
-        List<Attendance> list = query.getResultList();
+        // Subject wise present count
+        Long totalPresent = em.createQuery(
+                "SELECT COUNT(a) FROM Attendance a WHERE a.student.studId = :sid AND a.subject.subId = :sub AND a.status = 'present'",
+                Long.class)
+                .setParameter("sid", studId)
+                .setParameter("sub", subId)
+                .getSingleResult();
 
-        int totalPresent = 0;
-        int totalAbsent = 0;
+        // Subject wise absent count
+        Long totalAbsent = em.createQuery(
+                "SELECT COUNT(a) FROM Attendance a WHERE a.student.studId = :sid AND a.subject.subId = :sub AND a.status = 'absent'",
+                Long.class)
+                .setParameter("sid", studId)
+                .setParameter("sub", subId)
+                .getSingleResult();
 
-        for (Attendance a : list) {
-            if ("present".equalsIgnoreCase(a.getStatus())) {
-                totalPresent++;
-            } else if ("absent".equalsIgnoreCase(a.getStatus())) {
-                totalAbsent++;
-            }
-        }
-
-        int totalRecords = totalPresent + totalAbsent;
-        float avgAttendance = (totalRecords > 0)
-                ? (totalPresent * 100f / totalRecords)
-                : 0;
-
-        // Check existing summary
-        TypedQuery<AttendanceSummary> sQuery = em.createQuery(
-                "SELECT s FROM AttendanceSummary s WHERE s.student.studId = :sid",
-                AttendanceSummary.class);
-        sQuery.setParameter("sid", studId);
+        Long total = totalPresent + totalAbsent;
+        float avg = total > 0 ? (totalPresent * 100f / total) : 0f;
 
         AttendanceSummary summary;
-        List<AttendanceSummary> sList = sQuery.getResultList();
 
-        if (sList.isEmpty()) {
+        try {
+            summary = em.createQuery(
+                    "SELECT s FROM AttendanceSummary s WHERE s.student.studId = :sid AND s.subject.subId = :sub",
+                    AttendanceSummary.class)
+                    .setParameter("sid", studId)
+                    .setParameter("sub", subId)
+                    .getSingleResult();
+
+            summary.setTotalPresent(totalPresent.intValue());
+            summary.setTotalAbsent(totalAbsent.intValue());
+            summary.setAvgAttendance(avg);
+
+            em.merge(summary);
+
+        } catch (Exception e) {
             summary = new AttendanceSummary();
             summary.setStudent(st);
-        } else {
-            summary = sList.get(0);
+            summary.setSubject(sb);
+            summary.setTotalPresent(totalPresent.intValue());
+            summary.setTotalAbsent(totalAbsent.intValue());
+            summary.setAvgAttendance(avg);
+
+            em.persist(summary);
         }
 
-        summary.setTotalPresent(totalPresent);
-        summary.setTotalAbsent(totalAbsent);
-        summary.setAvgAttendance(avgAttendance);
-
-        em.merge(summary);
-
-        System.out.println("Summary Updated Successfully -> Student ID: " + studId);
+        System.out.println("Subject-wise Summary Updated -> Student: " + studId + ", Subject: " + subId);
     }
 
     @Override
@@ -795,6 +799,33 @@ public class AdminBean implements AdminBeanLocal {
         }
     }
 
+    @Override
+    public AttendanceSummary findSummaryByStudentAndSubject(Integer studId, Integer subId) {
+        try {
+            TypedQuery<AttendanceSummary> query = em.createQuery(
+                    "SELECT s FROM AttendanceSummary s WHERE s.student.studId = :studId AND s.subject.subId = :subId",
+                    AttendanceSummary.class
+            );
+            query.setParameter("studId", studId);
+            query.setParameter("subId", subId);
+
+            List<AttendanceSummary> list = query.getResultList();
+
+            if (list.isEmpty()) {
+                throw new IllegalArgumentException("No summary found for Student ID: " + studId + " and Subject ID: " + subId);
+            }
+
+            return list.get(0);
+
+        } catch (IllegalArgumentException e) {
+            System.err.println("Validation error in findSummaryByStudentAndSubject(): " + e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            System.err.println("Unexpected error in findSummaryByStudentAndSubject(): " + e.getMessage());
+            throw new RuntimeException("Error finding summary by student and subject: " + e.getMessage());
+        }
+    }
+    
     @Override
     public Collection<AttendanceSummary> getAllSummaries() {
         try {
