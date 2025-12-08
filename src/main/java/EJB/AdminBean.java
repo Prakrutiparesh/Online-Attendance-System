@@ -474,22 +474,26 @@ public class AdminBean implements AdminBeanLocal {
     @Override
     public Collection<Division> getDivisionsByCourseAndSemester(Integer semId, Integer courseId) {
         try {
-            // Find course by ID
+            // Clear the EntityManager cache first
+            em.clear();
+
+            // Refresh the Course entity
             Course c = em.find(Course.class, courseId);
             if (c == null) {
                 throw new IllegalArgumentException("Invalid Course ID: " + courseId);
             }
 
-            // Filter divisions associated with the given semester
+            // Refresh the collection
+            em.refresh(c);
+
+            System.out.println("After refresh, divisions count: " + c.getDivisionCollection().size());
+
             return c.getDivisionCollection().stream()
                     .filter(d -> d.getSemester() != null && semId.equals(d.getSemester().getSemId()))
                     .collect(Collectors.toList());
 
-        } catch (IllegalArgumentException e) {
-            System.err.println(e.getMessage());
-            throw e;
         } catch (Exception e) {
-            System.err.println("Error fetching divisions by course and semester: " + e.getMessage());
+            System.err.println("Error: " + e.getMessage());
             return Collections.emptyList();
         }
     }
@@ -873,7 +877,7 @@ public class AdminBean implements AdminBeanLocal {
             if (g != null) {
                 Users u = new Users();
                 u.setUsername(username);
-                u.setPassword(passwordHash.generate(password.toCharArray())); // No need to initialize manually
+                u.setPassword(passwordHash.generate(password.toCharArray()));
                 u.setName(name);
                 u.setDob(dob);
                 u.setMobile(mobile);

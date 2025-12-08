@@ -232,8 +232,9 @@
                                         <h:commandButton value="Delete"
                                                          styleClass="btn delete-btn"
                                                          action="#{updateCDIBean.deleteSemester(s.semId)}">
-                                            <f:ajax execute="@form" render="@form" />
+                                            <f:ajax execute="@this" render=":courseForm:semesterPanel" />
                                         </h:commandButton>
+
                                     </div>
 
                                 </h:column>

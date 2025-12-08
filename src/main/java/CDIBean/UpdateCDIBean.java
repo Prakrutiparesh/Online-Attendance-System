@@ -116,10 +116,22 @@ public class UpdateCDIBean implements Serializable {
     }
 
     public void loadDivisions() {
+        System.out.println("========== LOAD DIVISIONS ==========");
+        System.out.println("Time: " + new java.util.Date());
+        System.out.println("selectedCourseId: " + selectedCourseId);
+        System.out.println("selectedSemId: " + selectedSemId);
+
         if (selectedCourseId != null && selectedSemId != null) {
+            System.out.println("Calling EJB to get divisions...");
             divisionList = abl.getDivisionsByCourseAndSemester(selectedSemId, selectedCourseId);
-            System.out.println("Loaded divisions: " + (divisionList != null ? divisionList.size() : 0));
+            System.out.println("Got " + divisionList.size() + " divisions from DB");
+
+            // Print all divisions
+            for (Division d : divisionList) {
+                System.out.println("Division: " + d.getDivId() + " - " + d.getDivName());
+            }
         } else {
+            System.out.println("NULL values - clearing division list");
             divisionList = new ArrayList<>();
         }
     }
@@ -176,6 +188,9 @@ public class UpdateCDIBean implements Serializable {
     public void editDivision(Integer divId, String divName) {
         updateDivId = divId;
         updateDivName = divName;
+        updateSemId = null;
+        updateSubId = null;
+        updateStudId = null;
         showUpdateForm = true;
 
     }
@@ -220,12 +235,11 @@ public class UpdateCDIBean implements Serializable {
         showUpdateForm = false;
     }
 
-    public String deleteSemester(Integer semId) {
+    public void deleteSemester(Integer semId) {
         if (selectedCourseId != null) {
             abl.deleteSemester(semId, selectedCourseId);
-            semesterList = new ArrayList<>(abl.getAllSemesters());
+            loadSemesters(); // reload only selected course semesters
         }
-        return null;
     }
 
     public void saveUpdate() {

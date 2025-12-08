@@ -14,66 +14,77 @@
 
     <h:body>
 
-        <!-- SUCCESS POPUP -->
-        <h:panelGroup rendered="#{adminCDIBean.successMessage != null}">
-            <script>
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success!',
-                    text: '#{adminCDIBean.successMessage}',
-                    confirmButtonColor: '#4da6ff',
-                    confirmButtonText: 'OK'
-                });
-            </script>
+        <h:panelGroup id="messages">
+            <!-- SUCCESS POPUP -->
+            <h:panelGroup rendered="#{adminCDIBean.successMessage != null}">
+                <script>
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: '#{adminCDIBean.successMessage}',
+                        confirmButtonColor: '#4da6ff'
+                    });
+                </script>
+            </h:panelGroup>
+
+            <!-- ERROR POPUP -->
+            <h:panelGroup rendered="#{adminCDIBean.errorMessage != null}">
+                <script>
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Validation Error!',
+                        text: '#{adminCDIBean.errorMessage}',
+                        confirmButtonColor: '#ff4d4d'
+                    });
+                </script>
+            </h:panelGroup>
         </h:panelGroup>
 
         <div class="form-box">
             <h2>Add Division</h2>
-
-            <h:form>
+            <h:form id="divisionForm">
 
                 <!-- Course Dropdown -->
-
                 <div class="form-field">
-                    <h:outputLabel value="Course:" />
+                    <h:outputLabel value="Course:" for="course" />
                     <h:selectOneMenu id="course"
-                                     value="#{adminCDIBean.selectedCourseId}"
+                                     value="#{adminCDIBean.studentCourseId}"
                                      required="true"
                                      requiredMessage="Please select a course"
                                      styleClass="select-box">
-
                         <f:selectItem itemLabel="--Select Course--" itemValue="" />
                         <f:selectItems value="#{adminCDIBean.courseList}" var="c"
                                        itemValue="#{c.courseId}" itemLabel="#{c.courseName}" />
-
                         <!-- Load Semesters on Course Change -->
-                        <f:ajax listener="#{adminCDIBean.loadSemesters}" render="semPanel divPanel" />
+                        <f:ajax listener="#{adminCDIBean.loadSemesters}" render="semPanel divPanel" execute="@this" />
+
                     </h:selectOneMenu>
+                    <h:message for="course" style="color:red;" />
                 </div>
 
-                <!-- Semester -->
+                <!-- Semester Dropdown -->
                 <h:panelGroup id="semPanel">
                     <h:panelGroup rendered="#{not empty adminCDIBean.semesterList}">
                         <div class="form-field">
-                            <h:outputLabel value="Semester:" />
+                            <h:outputLabel value="Semester:" for="sem" />
                             <h:selectOneMenu id="sem"
-                                             value="#{adminCDIBean.selectedDivisionSemesterId}"
-                                             styleClass="select-box"
+                                             value="#{adminCDIBean.studentSemesterId}"
                                              required="true"
-                                             requiredMessage="Please select a semester">
-
+                                             requiredMessage="Please select a semester"
+                                             styleClass="select-box">
                                 <f:selectItem itemLabel="--Select Semester--" itemValue="" />
                                 <f:selectItems value="#{adminCDIBean.semesterList}" var="s"
                                                itemValue="#{s.semId}" itemLabel="#{s.semName}" />
-
                                 <!-- Load Divisions on Semester Change -->
-                                <f:ajax listener="#{adminCDIBean.loadDivisions}" render="divPanel" />
+                                <f:ajax listener="#{adminCDIBean.loadDivisions}" render="semPanel divPanel" execute="@this" />
+
                             </h:selectOneMenu>
+                            <h:message for="sem" style="color:red;" />
                         </div>
                     </h:panelGroup>
                 </h:panelGroup>
 
-                <!-- Division -->
+                <!-- Division Name -->
                 <h:panelGroup id="divPanel">
                     <div class="form-field">
                         <h:outputLabel value="Division Name:" for="divName" />
@@ -82,14 +93,17 @@
                                      required="true"
                                      requiredMessage="Please enter division name"
                                      a:placeholder="Enter Division Name" />
-                        <h:message for="divName" styleClass="error-msg" />
+                        <h:message for="divName" style="color:red;" />
                     </div>
                 </h:panelGroup>
 
-
+                <!-- Submit Button -->
                 <h:commandButton value="Add Division"
                                  action="#{adminCDIBean.insertDivision}"
-                                 styleClass="btn" />
+                                 styleClass="btn">
+                    <f:ajax execute="@form" render=":messages divPanel" />
+                </h:commandButton>
+
 
             </h:form>
         </div>

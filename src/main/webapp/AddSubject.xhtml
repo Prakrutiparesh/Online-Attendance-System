@@ -23,8 +23,20 @@
                     confirmButtonColor: '#4da6ff',
                     confirmButtonText: 'OK'
                 });
+
             </script>
         </h:panelGroup>
+        <h:panelGroup rendered="#{adminCDIBean.errorMessage != null}">
+            <script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Validation Failed!',
+                    text: '#{adminCDIBean.errorMessage}',
+                    confirmButtonColor: '#ff4d4d'
+                });
+            </script>
+        </h:panelGroup>
+
 
         <div class="form-box">
             <h2>Add Subject</h2>
@@ -34,26 +46,28 @@
                 <div class="form-field">
                     <h:outputLabel value="Course:" />
                     <h:selectOneMenu id="course"
-                                     value="#{adminCDIBean.selectedCourseId}"
-                                     styleClass="select-box">
-                        <f:selectItem itemLabel="--Select Course--" itemValue="" />
+                                     value="#{adminCDIBean.studentCourseId}"
+                                     styleClass="select-box"
+                                     required="true"
+                                     requiredMessage="Please select a course">
+
+                        <f:selectItem itemLabel="--Select Course--" itemValue="" noSelectionOption="true"/>
                         <f:selectItems value="#{adminCDIBean.courseList}" var="c"
                                        itemValue="#{c.courseId}" itemLabel="#{c.courseName}" />
 
-                        <!-- Load Semesters on Course Change -->
-                        <f:ajax listener="#{adminCDIBean.loadSemesters}"
-                                render="semPanel divPanel" />
+                        <f:ajax listener="#{adminCDIBean.loadSemesters}" render="semPanel"/>
                     </h:selectOneMenu>
+                    <h:message for="course" styleClass="error-msg"/>
+
                 </div>
 
-                <!-- Semester -->
                 <!-- Semester -->
                 <h:panelGroup id="semPanel">
                     <h:panelGroup rendered="#{not empty adminCDIBean.semesterList}">
                         <div class="form-field">
                             <h:outputLabel value="Semester:" />
                             <h:selectOneMenu id="sem"
-                                             value="#{adminCDIBean.selectedSemesterId}"  
+                                             value="#{adminCDIBean.studentSemesterId}"  
                                              styleClass="select-box"
                                              required="true"
                                              requiredMessage="Please select a semester">
@@ -62,8 +76,10 @@
                                 <f:selectItems value="#{adminCDIBean.semesterList}" var="s"
                                                itemValue="#{s.semId}" itemLabel="#{s.semName}" />
 
-                                <f:ajax listener="#{adminCDIBean.loadSemesters}" render="semPanel" />
+                                <f:ajax render="semPanel" />
                             </h:selectOneMenu>
+                            <h:message for="sem" styleClass="error-msg"/>
+
 
                         </div>
                     </h:panelGroup>

@@ -48,6 +48,7 @@ public class AdminCDIBean implements Serializable {
     private String courseName;
     private String message;
     private String successMessage;
+    private String errorMessage;
 
     // ===== Semester List =====
     private Collection<Semester> semesterList = new ArrayList<>();
@@ -95,36 +96,68 @@ public class AdminCDIBean implements Serializable {
 
     public void insertSubject() {
         try {
+            errorMessage = null;
+            successMessage = null;
+
+            if (studentCourseId == null) {
+                errorMessage = "Please select a course!";
+                return;
+            }
+            if (studentSemesterId == null) {
+                errorMessage = "Please select a semester!";
+                return;
+            }
             if (subjectName == null || subjectName.trim().isEmpty()) {
-                successMessage = "Please enter a subject name!";
+                errorMessage = "Please enter a subject name!";
                 return;
             }
-            if (selectedCourseId == null) {
-                successMessage = "Please select a course!";
-                return;
-            }
-            if (selectedSemesterId == null) {
-                successMessage = "Please select a semester!";
-                return;
-            }
-            abl.addSubject(subjectName, selectedCourseId, selectedSemesterId);
-            successMessage = "Subject added successfully: " + subjectName; // Reset fields subjectName = null;
-            selectedCourseId = null;
-            selectedSemesterId = null;
+
+            abl.addSubject(subjectName, studentCourseId, studentSemesterId);
+
+            successMessage = "Subject added successfully!";
+            subjectName = "";
+            studentCourseId = null;
+            studentSemesterId = null;
+            semesterList = null;
         } catch (Exception e) {
-            e.printStackTrace();
-            successMessage = "Error adding subject: " + e.getMessage();
+            errorMessage = "Error adding subject!";
         }
     }
 
     public String insertSemester() {
         try {
+            // Validation
+            if (selectedCourseId == null) {
+                errorMessage = "Please select a course!";
+                successMessage = null;
+                return null;
+            }
+            if (semesterNumber == null) {
+                errorMessage = "Please select a semester!";
+                successMessage = null;
+                return null;
+            }
+
+            // Call EJB to insert semester
             abl.addSemester(String.valueOf(semesterNumber), selectedCourseId);
+
+            // Success
             successMessage = "Semester added successfully!";
+            errorMessage = null;
+
+            // Reset fields if needed
+            selectedCourseId = null;
+            semesterNumber = null;
+
             return null;
+
         } catch (Exception e) {
             e.printStackTrace();
-            successMessage = "Something went wrong! " + e.getMessage();
+
+            // Backend error
+            errorMessage = "Something went wrong: " + e.getMessage();
+            successMessage = null;
+
             return null;
         }
     }
@@ -223,33 +256,39 @@ public class AdminCDIBean implements Serializable {
     }
 
     public void insertDivision() {
-        try {
-            if (divisionName == null || divisionName.trim().isEmpty()) {
-                successMessage = "Please enter division name!";
-                return;
-            }
-            if (selectedCourseId == null) {
-                successMessage = "Please select a course!";
-                return;
-            }
-            if (selectedDivisionSemesterId == null) {
-                successMessage = "Please select a semester!";
-                return;
-            }
-            System.out.println("going here sdivision");
-            // Call EJB
-            abl.addDivision(divisionName, selectedDivisionSemesterId, selectedCourseId);
+        // Reset messages
+        successMessage = null;
+        errorMessage = null;
 
+        try {
+            // Backend validation
+            if (studentCourseId == null) {
+                errorMessage = "Please select a course!";
+                return;
+            }
+            if (studentSemesterId == null) {
+                errorMessage = "Please select a semester!";
+                return;
+            }
+            if (divisionName == null || divisionName.trim().isEmpty()) {
+                errorMessage = "Please enter division name!";
+                return;
+            }
+
+            // Call EJB to add division
+            abl.addDivision(divisionName, studentSemesterId, studentCourseId);
+
+            // Success message
             successMessage = "Division added successfully: " + divisionName;
 
             // Reset fields
+            studentCourseId = null;
+            studentSemesterId = null;
             divisionName = null;
-            selectedDivisionCourseId = null;
-            selectedDivisionSemesterId = null;
 
         } catch (Exception e) {
             e.printStackTrace();
-            successMessage = "Error adding division: " + e.getMessage();
+            errorMessage = "Error adding division: " + e.getMessage();
         }
     }
 
@@ -526,6 +565,14 @@ public class AdminCDIBean implements Serializable {
 
     public void setDivisionList(Collection<Division> divisionList) {
         this.divisionList = divisionList;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 
 }

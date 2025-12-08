@@ -26,6 +26,19 @@
             </script>
         </h:panelGroup>
 
+        <h:panelGroup rendered="#{not empty adminCDIBean.errorMessage}">
+            <script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: '#{adminCDIBean.errorMessage}',
+                    confirmButtonColor: '#ff4d4d',
+                    confirmButtonText: 'OK'
+                });
+            </script>
+        </h:panelGroup>
+
+
 
         <div class="form-box">
 

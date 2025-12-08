@@ -52,39 +52,38 @@
                     <h:message for="roll" styleClass="error-msg"/>
                 </div>
 
-                <!-- Course -->
-                <!-- Course -->
                 <div class="form-field">
-                    <h:outputLabel value="Course:" />
+                    <h:outputLabel value="Course:" for="course" />
                     <h:selectOneMenu id="course"
                                      value="#{adminCDIBean.studentCourseId}"
+                                     required="true"
+                                     requiredMessage="Please select a course"
                                      styleClass="select-box">
                         <f:selectItem itemLabel="--Select Course--" itemValue="" />
                         <f:selectItems value="#{adminCDIBean.courseList}" var="c"
                                        itemValue="#{c.courseId}" itemLabel="#{c.courseName}" />
-
+                        <!-- Load Semesters on Course Change -->
                         <f:ajax listener="#{adminCDIBean.loadSemesters}" render="semPanel divPanel" execute="@this" />
-
-
                     </h:selectOneMenu>
+                    <h:message for="course" style="color:red;" />
                 </div>
 
                 <!-- Semester -->
                 <h:panelGroup id="semPanel">
                     <h:panelGroup rendered="#{not empty adminCDIBean.semesterList}">
                         <div class="form-field">
-                            <h:outputLabel value="Semester:" />
+                            <h:outputLabel value="Semester:" for="sem" />
                             <h:selectOneMenu id="sem"
                                              value="#{adminCDIBean.studentSemesterId}"
+                                             required="true"
+                                             requiredMessage="Please select a semester"
                                              styleClass="select-box">
                                 <f:selectItem itemLabel="--Select Semester--" itemValue="" />
                                 <f:selectItems value="#{adminCDIBean.semesterList}" var="s"
                                                itemValue="#{s.semId}" itemLabel="#{s.semName}" />
-
-                                <!-- Load Divisions on Semester Change -->
                                 <f:ajax listener="#{adminCDIBean.loadDivisions}" render="divPanel" execute="@this" />
-
                             </h:selectOneMenu>
+                            <h:message for="sem" style="color:red;" />
                         </div>
                     </h:panelGroup>
                 </h:panelGroup>
@@ -94,22 +93,25 @@
                 <h:panelGroup id="divPanel">
                     <h:panelGroup rendered="#{not empty adminCDIBean.divisionList}">
                         <div class="form-field">
-                            <h:outputLabel value="Division:" />
+                            <h:outputLabel value="Division:" for="div" />
                             <h:selectOneMenu id="div"
                                              value="#{adminCDIBean.studentDivisionId}"
+                                             required="true"
+                                             requiredMessage="Please select a division"
                                              styleClass="select-box">
                                 <f:selectItem itemLabel="--Select Division--" itemValue="" />
                                 <f:selectItems value="#{adminCDIBean.divisionList}" var="d"
                                                itemValue="#{d.divId}" itemLabel="#{d.divName}" />
                             </h:selectOneMenu>
+                            <h:message for="div" style="color:red;" />
                         </div>
                     </h:panelGroup>
                 </h:panelGroup>
 
-
+                <!-- Submit Button -->
                 <h:commandButton value="Add Student"
                                  action="#{adminCDIBean.insertStudent}"
-                                 styleClass="btn"/>
+                                 styleClass="btn" />
 
             </h:form>
         </div>

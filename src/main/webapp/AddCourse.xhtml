@@ -61,6 +61,18 @@
             .btn:hover {
                 background: #1a73e8;
             }
+            .input-error {
+                border: 2px solid red !important;
+            }
+
+            .error-inline {
+                color: red;
+                font-size: 12px;
+                margin-top: -10px;
+                margin-bottom: -5px;
+                display: block;
+            }
+
         </style>
     </h:head>
 
@@ -70,14 +82,14 @@
             <h:outputLabel value="Course Name:" for="courseName" />
             <h:inputText id="courseName" value="#{adminCDIBean.courseName}" required="true"
                          requiredMessage="Course name is required." a:placeholder="Enter Course Name"/>
+            <h:message for="courseName" style="color:red;" />
 
             <h:commandButton value="Add Course" action="#{adminCDIBean.addCourse}" styleClass="btn" />
 
-            <h:message for="courseName" style="color:red;" />
+
+
+            <h:outputText id="msg" value="#{adminCDIBean.message}" style="display:none"/>
         </h:form>
-
-        <h:outputText id="msg" value="#{adminCDIBean.message}" style="display:none"/>
-
         <!-- SweetAlert Script -->
         <script>
             window.addEventListener('load', function () {
