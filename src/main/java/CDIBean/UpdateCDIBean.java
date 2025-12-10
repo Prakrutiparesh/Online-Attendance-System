@@ -135,6 +135,32 @@ public class UpdateCDIBean implements Serializable {
         }
     }
 
+    public void markAllPresent() {
+        try {
+            if (studentList != null) {
+                for (Student st : studentList) {
+                    attendanceStatusMap.put(st.getStudId(), "present");
+                }
+            }
+            message = "All students marked Present!";
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void markAllAbsent() {
+        try {
+            if (studentList != null) {
+                for (Student st : studentList) {
+                    attendanceStatusMap.put(st.getStudId(), "absent");
+                }
+            }
+            message = "All students marked Absent!";
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void clearAttendanceData() {
         dateWiseAttendanceList = new ArrayList<>();
         System.out.println("Cleared attendance data on date change");

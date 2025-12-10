@@ -8,83 +8,179 @@
         <title><ui:insert name="title">Faculty Panel</ui:insert></title>
 
         <style>
-            body {
+            /* Global Styles */
+            * {
                 margin: 0;
-                font-family: "Poppins", sans-serif;
-                background: linear-gradient(to right, #eef4ff, #dce6ff);
-
+                padding: 0;
+                box-sizing: border-box;
             }
 
-            /* NAVBAR */
+            body {
+                font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+                min-height: 100vh;
+                color: #2c3e50;
+            }
+
             .navbar {
-                background: #0a2342;
-                padding: 15px 30px;
+                background: rgba(255, 255, 255, 0.95);
+                padding: 18px 30px;
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                color: #ffffff;
+                color: #2c3e50;
+                box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+                position: sticky;
+                top: 0;
+                z-index: 1000;
+                border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+                backdrop-filter: blur(12px);
             }
 
             .navbar h2 {
                 margin: 0;
-                font-size: 26px;
+                font-size: 24px;
+                font-weight: 700;
+                color: #475569;
+                letter-spacing: -0.3px;
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+            .right-links {
+                display: flex;
+                align-items: center;
+                gap: 15px;
             }
 
             .right-links a {
-                background:#ffffff;
-                color:#0a2342;
-                text-decoration:none;
-                font-weight:bold;
-                padding:8px 18px;
-                border-radius:6px;
-                margin-left: 10px;
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                color: #FFFFFF;
+                text-decoration: none;
+                font-weight: 600;
+                padding: 10px 22px;
+                border-radius: 10px;
+                transition: all 0.3s ease;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                font-size: 14px;
+                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+            }
+
+            .right-links a:hover {
+                background: linear-gradient(135deg, #5a6fda, #6a4491);
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(102, 126, 234, 0.3);
             }
 
             /* CONTENT WRAPPER */
             .content-wrapper {
-                width: 90%;
-                margin: 40px auto;
-            }
-
-            /* CARD + GRID */
-            .container {
+                width: 100%;
                 max-width: 1200px;
-                margin: 20px auto;
-                padding: 10px;
-                display: grid;
-                grid-gap: 35px;
-                grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+                margin: 0 auto;
+                padding: 20px;
             }
 
-            .card {
-                background: #ffffff;
+            /* CUSTOM SCROLLBAR */
+            ::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            ::-webkit-scrollbar-track {
+                background: rgba(241, 245, 249, 0.5);
+                border-radius: 10px;
+            }
+
+            ::-webkit-scrollbar-thumb {
+                background: linear-gradient(135deg, #a5b4fc, #c4b5fd);
+                border-radius: 10px;
+            }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background: linear-gradient(135deg, #818cf8, #a78bfa);
+            }
+
+            /* RESPONSIVE DESIGN */
+            @media (max-width: 768px) {
+                .navbar {
+                    padding: 15px 20px;
+                    flex-direction: column;
+                    gap: 15px;
+                }
+
+                .navbar h2 {
+                    font-size: 20px;
+                }
+
+                .right-links {
+                    width: 100%;
+                    justify-content: center;
+                }
+
+                .right-links a {
+                    padding: 8px 18px;
+                    font-size: 13px;
+                }
+
+                .content-wrapper {
+                    padding: 15px;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .navbar {
+                    padding: 12px 15px;
+                }
+
+                .navbar h2 {
+                    font-size: 18px;
+                }
+
+                .right-links {
+                    flex-wrap: wrap;
+                    justify-content: center;
+                }
+
+                .right-links a {
+                    padding: 6px 14px;
+                    font-size: 12px;
+                }
+
+                .content-wrapper {
+                    padding: 10px;
+                }
+            }
+
+            /* Home Link in Navbar */
+            .home-link {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                text-decoration: none;
+                color: #475569;
+                font-weight: 500;
+                padding: 8px 16px;
+                border-radius: 8px;
+                background: rgba(241, 245, 249, 0.8);
+                transition: all 0.3s ease;
+                border: 1px solid rgba(226, 232, 240, 0.6);
+            }
+
+            .home-link:hover {
+                background: rgba(226, 232, 240, 0.9);
+                transform: translateY(-1px);
+            }
+
+            /* Footer */
+            .footer {
                 text-align: center;
-                padding: 35px 20px;
-                border-radius: 16px;
-                box-shadow: 0 7px 18px rgba(0,0,0,0.12);
-                transition: 0.25s;
-                cursor: pointer;
-            }
-
-            .card:hover {
-                transform: translateY(-6px);
-                box-shadow: 0 10px 25px rgba(0,0,0,0.18);
-            }
-
-            .icon {
-                font-size: 50px;
-                margin-bottom: 12px;
-                color: #0a2342;
-            }
-
-            h3 {
-                margin: 10px 0;
-                font-size: 20px;
-            }
-
-            p {
+                padding: 25px;
+                color: #64748b;
                 font-size: 14px;
-                opacity: 0.8;
+                margin-top: 50px;
+                border-top: 1px solid rgba(226, 232, 240, 0.8);
+                background: rgba(255, 255, 255, 0.5);
             }
         </style>
 
@@ -92,15 +188,33 @@
 
     <h:body>
 
+        <!-- NAVBAR SECTION -->
         <div class="navbar">
-            <h2>Faculty Panel</h2>
+            <!-- Left Side: Brand/Logo -->
+            <div class="nav-left">
+                <h2>Faculty Dashboard</h2>
+            </div>
+
+            <!-- Right Side: Navigation Links -->
             <div class="right-links">
+                <!-- Home Link -->
+                <h:link outcome="Faculty.jsf" styleClass="home-link">
+                    🏠 Home
+                </h:link>
+
+                <!-- Logout Button -->
                 <h:link outcome="Logout.jsf">Logout</h:link>
             </div>
         </div>
 
+        <!-- MAIN CONTENT AREA -->
         <div class="content-wrapper">
             <ui:insert name="content"/>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            © 2024 Faculty Management System
         </div>
 
     </h:body>

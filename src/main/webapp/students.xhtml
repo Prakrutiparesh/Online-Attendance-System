@@ -3,230 +3,705 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-                xmlns:fn="http://java.sun.com/jsp/jstl/functions"> 
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                xmlns:pt="jakarta.faces.passthrough">
 
-    <ui:define name="title">Take Attendance</ui:define>
+    <ui:define name="title">Date-Wise Attendance</ui:define>
 
     <ui:define name="content">
         <style>
-            .form-container {
-                max-width: 980px;
+            /* Main Container */
+            .datewise-container {
+                max-width: 1200px;
                 margin: 40px auto;
-                padding: 30px;
-                background: #ffffff;
-                border-radius: 16px;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.12);
-                border: 1px solid #e0e0e0;
+                padding: 0 20px;
             }
 
-            h3 {
-                color: #007bff;
+            /* Header Section - Matching Dashboard Theme */
+            .datewise-header {
                 text-align: center;
-                margin-bottom: 30px;
-                font-size: 22px;
-                font-weight: 700;
+                margin-bottom: 40px;
             }
 
+            .page-title {
+                font-size: 32px;
+                font-weight: 700;
+                color: #2c3e50;
+                margin-bottom: 10px;
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+            .page-subtitle {
+                color: #5a6c7d;
+                font-size: 16px;
+                font-weight: 400;
+            }
+
+            /* Form Container - Glass Morphism Effect */
+            .form-container {
+                max-width: 1000px;
+                margin: 0 auto 30px;
+                padding: 35px;
+                background: rgba(255, 255, 255, 0.95);
+                border-radius: 20px;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+                border: 1px solid rgba(255, 255, 255, 0.6);
+                backdrop-filter: blur(12px);
+            }
+
+            /* Section Title */
+            .section-title {
+                font-size: 24px;
+                color: #2c3e50;
+                margin-bottom: 25px;
+                padding-bottom: 15px;
+                border-bottom: 2px solid #f1f2f6;
+                font-weight: 700;
+                position: relative;
+            }
+
+            .section-title::after {
+                content: '';
+                position: absolute;
+                bottom: -2px;
+                left: 0;
+                width: 80px;
+                height: 3px;
+                background: linear-gradient(90deg, #667eea, #764ba2);
+                border-radius: 3px;
+            }
+
+            /* Form Rows - Modern Grid */
             .form-row {
-                display: flex;
-                flex-wrap: wrap;
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
                 gap: 25px;
-                justify-content: flex-start;
-                margin-bottom: 20px;
+                margin-bottom: 30px;
             }
 
             .form-group {
                 display: flex;
                 flex-direction: column;
-                min-width: 200px;
             }
 
-            label {
+            .form-group label {
                 font-weight: 600;
+                color: #475569;
                 margin-bottom: 8px;
-                color: #333;
-            }
-
-            select, input[type="text"], input[type="date"] {
-                padding: 10px 12px;
-                border-radius: 8px;
-                border: 1px solid #ccc;
                 font-size: 14px;
-                outline: none;
-                transition: all 0.2s;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
             }
 
-            select:focus, input[type="text"]:focus, input[type="date"]:focus {
-                border-color: #007bff;
-                box-shadow: 0 0 8px rgba(0,123,255,0.2);
-            }
-
-            table {
-                border-collapse: collapse;
+            .form-group select {
                 width: 100%;
-                margin-top: 20px;
+                padding: 14px 16px;
+                border-radius: 12px;
+                border: 1px solid #e2e8f0;
+                background: white;
+                font-size: 15px;
+                color: #2c3e50;
+                transition: all 0.3s ease;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
             }
 
-            table th, table td {
-                border: 1px solid #ccc;
-                padding: 8px 12px;
-                text-align: left;
+            .form-group select:focus {
+                outline: none;
+                border-color: #667eea;
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
             }
 
-            table th {
-                background: #0a2342;
+            /* Date Selection Section */
+            .date-selection {
+                margin: 30px 0;
+                padding: 25px;
+                background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+                border-radius: 16px;
+                border: 1px solid rgba(102, 126, 234, 0.1);
+            }
+
+            .date-wrapper {
+                display: flex;
+                align-items: center;
+                gap: 20px;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .date-input-wrapper {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                background: white;
+                padding: 12px 20px;
+                border-radius: 12px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+                border: 1px solid #e2e8f0;
+            }
+
+            .calendar-icon {
+                font-size: 22px;
+                color: #667eea;
+            }
+
+            .date-input {
+                border: none;
+                outline: none;
+                font-size: 16px;
+                font-weight: 500;
+                color: #2c3e50;
+                background: transparent;
+                width: 180px;
+            }
+
+            /* Load Button */
+            .load-btn {
+                background: #667eea;
                 color: white;
+                padding: 14px 32px;
+                border-radius: 12px;
+                border: none;
+                font-weight: 600;
+                font-size: 15px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+            }
+
+            .load-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+                background: #5a6fda;
+            }
+
+            /* Attendance Section */
+            .attendance-section {
+                margin-top: 40px;
+                padding: 30px;
+                background: rgba(255, 255, 255, 0.95);
+                border-radius: 20px;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+                border: 1px solid rgba(255, 255, 255, 0.6);
+            }
+
+            /* Summary Card */
+            .summary-card {
+                display: flex;
+                justify-content: center;
+                gap: 40px;
+                margin: 25px 0;
+                padding: 20px;
+                background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(118, 75, 162, 0.08));
+                border-radius: 16px;
+                border: 1px solid rgba(102, 126, 234, 0.15);
+            }
+
+            .summary-item {
+                text-align: center;
+            }
+
+            .summary-label {
+                font-size: 14px;
+                color: #64748b;
+                font-weight: 500;
+                margin-bottom: 8px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .summary-value {
+                font-size: 28px;
+                font-weight: 700;
+                color: #2c3e50;
+            }
+
+            /* Attendance Table */
+            .attendance-table {
+                width: 100%;
+                border-collapse: separate;
+                border-spacing: 0;
+                margin: 25px 0;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            }
+
+            .attendance-table th {
+                background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+                padding: 18px;
+                text-align: left;
+                color: #475569;
+                font-weight: 600;
+                border-bottom: 2px solid rgba(102, 126, 234, 0.2);
+                font-size: 14px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .attendance-table td {
+                padding: 18px;
+                border-bottom: 1px solid #f1f2f6;
+                color: #5a6c7d;
+                font-size: 15px;
+                font-weight: 500;
+            }
+
+            .attendance-table tr:hover td {
+                background-color: rgba(102, 126, 234, 0.03);
+            }
+
+            /* Status Badge */
+            .status-badge {
+                display: inline-block;
+                padding: 8px 16px;
+                border-radius: 20px;
+                font-size: 13px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.3px;
+            }
+
+            .status-present {
+                background: rgba(76, 175, 80, 0.1);
+                color: #4CAF50;
+                border: 1px solid rgba(76, 175, 80, 0.2);
+            }
+
+            .status-absent {
+                background: rgba(244, 67, 54, 0.1);
+                color: #F44336;
+                border: 1px solid rgba(244, 67, 54, 0.2);
+            }
+
+            /* No Data Message */
+            .no-data {
+                text-align: center;
+                padding: 50px 20px;
+                color: #94a3b8;
+                font-size: 16px;
+                background: rgba(255, 255, 255, 0.8);
+                border-radius: 16px;
+                border: 1px dashed #cbd5e1;
+                margin: 20px 0;
+            }
+
+            .no-data-icon {
+                font-size: 48px;
+                margin-bottom: 15px;
+                opacity: 0.5;
+            }
+
+            /* Back to Home Button */
+            .back-home {
+                position: absolute;
+                right: 20px;
+                top: 20px;
+                padding: 12px 24px;
+                background: #667eea;
+                color: white;
+                text-decoration: none;
+                border-radius: 10px;
+                font-weight: 600;
+                font-size: 14px;
+                transition: all 0.3s ease;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            }
+
+            .back-home:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+                background: #5a6fda;
+            }
+
+            /* Messages */
+            .message-panel {
+                margin-top: 20px;
+                padding: 15px;
+                border-radius: 12px;
+                text-align: center;
+                font-weight: 600;
+            }
+
+            .error-message {
+                background: rgba(244, 67, 54, 0.1);
+                color: #F44336;
+                border: 1px solid rgba(244, 67, 54, 0.2);
+            }
+
+            .success-message {
+                background: rgba(76, 175, 80, 0.1);
+                color: #4CAF50;
+                border: 1px solid rgba(76, 175, 80, 0.2);
+            }
+
+            .info-message {
+                background: rgba(102, 126, 234, 0.1);
+                color: #667eea;
+                border: 1px solid rgba(102, 126, 234, 0.2);
+            }
+
+            /* Responsive Design */
+            @media (max-width: 768px) {
+                .datewise-container {
+                    padding: 0 15px;
+                }
+
+                .form-container {
+                    padding: 25px;
+                }
+
+                .form-row {
+                    grid-template-columns: 1fr;
+                    gap: 20px;
+                }
+
+                .date-wrapper {
+                    flex-direction: column;
+                    gap: 15px;
+                }
+
+                .date-input-wrapper {
+                    width: 100%;
+                    max-width: 300px;
+                }
+
+                .attendance-table {
+                    display: block;
+                    overflow-x: auto;
+                }
+
+                .page-title {
+                    font-size: 26px;
+                }
+
+                .back-home {
+                    position: relative;
+                    margin-bottom: 20px;
+                    display: inline-block;
+                    right: auto;
+                    top: auto;
+                }
+
+                .summary-card {
+                    flex-direction: column;
+                    gap: 20px;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .form-container {
+                    padding: 20px;
+                }
+
+                .page-title {
+                    font-size: 22px;
+                }
+
+                .attendance-table th,
+                .attendance-table td {
+                    padding: 12px 8px;
+                    font-size: 13px;
+                }
+
+                .load-btn {
+                    padding: 12px 24px;
+                    font-size: 14px;
+                }
+
+                .summary-value {
+                    font-size: 24px;
+                }
+            }
+            /* Validation Messages Styling */
+            .validation-container {
+                margin: 20px 0;
+                padding: 0;
+            }
+
+            .message-item {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 14px 18px;
+                border-radius: 10px;
+                margin-bottom: 10px;
+                font-size: 14px;
+                font-weight: 600;
+                animation: fadeIn 0.3s ease;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .message-icon {
+                font-size: 18px;
+            }
+
+            .message-text {
+                flex: 1;
+            }
+
+            .error-item {
+                background: linear-gradient(135deg, rgba(244, 67, 54, 0.1), rgba(239, 83, 80, 0.1));
+                color: #D32F2F;
+                border-left: 4px solid #F44336;
+                border: 1px solid rgba(244, 67, 54, 0.2);
+            }
+
+            .warning-item {
+                background: linear-gradient(135deg, rgba(255, 152, 0, 0.1), rgba(255, 167, 38, 0.1));
+                color: #F57C00;
+                border-left: 4px solid #FF9800;
+                border: 1px solid rgba(255, 152, 0, 0.2);
+            }
+
+            .info-item {
+                background: linear-gradient(135deg, rgba(33, 150, 243, 0.1), rgba(66, 165, 245, 0.1));
+                color: #1976D2;
+                border-left: 4px solid #2196F3;
+                border: 1px solid rgba(33, 150, 243, 0.2);
+            }
+
+            /* Required Field Validation */
+            .ui-state-error {
+                border-color: #F44336 !important;
+                background-color: rgba(244, 67, 54, 0.05) !important;
+            }
+
+            .ui-state-error:focus {
+                box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.2) !important;
+            }
+
+            /* Error Labels */
+            .error-label {
+                color: #F44336;
+                font-weight: 600;
+                font-size: 12px;
+                margin-top: 5px;
+                display: flex;
+                align-items: center;
+                gap: 5px;
             }
         </style>
 
-        <!-- Container to control button position -->
-        <div style="position: relative; height: 40px;">
-            <h:link outcome="Faculty.jsf"
-                    style="position:absolute;
-                    right:0;
-                    top:0;
-                    padding:8px 16px;
-                    background:#0a2342;
-                    color:#ffffff;
-                    border-radius:6px;
-                    text-decoration:none;
-                    font-size:14px;">
+        <!-- Main Container -->
+        <div class="datewise-container">
+
+            <!-- Back to Home Button -->
+            <h:link outcome="Faculty.jsf" styleClass="back-home">
                 ⬅ Back to Home
             </h:link>
-        </div>
 
-        <h:form id="viewForm">
-
-            <!-- ======== COURSE / SEM / DIV / SUB DROPDOWNS ======== -->
-            <div class="form-container">
-                <h3>Select Course, Semester, Division, Subject</h3>
-
-                <div class="form-row">
-                    <!-- Course Dropdown -->
-                    <div class="form-group">
-                        <label>Course</label>
-                        <h:selectOneMenu value="#{updateCDIBean.selectedCourseId}">
-                            <f:selectItem itemLabel="--Select--" itemValue="-1"/>
-                            <f:selectItems value="#{updateCDIBean.courseList}" var="c" 
-                                           itemValue="#{c.courseId}" itemLabel="#{c.courseName}"/>
-                            <f:ajax listener="#{updateCDIBean.loadSemesters}" render="semesterPanel divisionPanel subjectPanel studentPanel"/>
-                        </h:selectOneMenu>
-                    </div>
-
-                    <!-- Semester Dropdown -->
-                    <h:panelGroup id="semesterPanel">
-                        <h:panelGroup rendered="#{not empty updateCDIBean.semesterList}">
-                            <div class="form-group">
-                                <label>Semester</label>
-                                <h:selectOneMenu value="#{updateCDIBean.selectedSemId}">
-                                    <f:selectItem itemLabel="--Select--" itemValue="-1"/>
-                                    <f:selectItems value="#{updateCDIBean.semesterList}" var="s"
-                                                   itemValue="#{s.semId}" itemLabel="#{s.semName}"/>
-                                    <f:ajax listener="#{updateCDIBean.loadSubjects}" render="subjectPanel divisionPanel studentPanel"/>
-                                </h:selectOneMenu>
-                            </div>
-                        </h:panelGroup>
-                    </h:panelGroup>
-
-                    <!-- Subject Dropdown -->
-                    <h:panelGroup id="subjectPanel">
-                        <h:panelGroup rendered="#{not empty updateCDIBean.subjectList}">
-                            <div class="form-group">
-                                <label>Subject</label>
-                                <h:selectOneMenu value="#{updateCDIBean.updateSubId}">
-                                    <f:selectItem itemLabel="--Select--" itemValue="-1"/>
-                                    <f:selectItems value="#{updateCDIBean.subjectList}" var="sub"
-                                                   itemValue="#{sub.subId}" itemLabel="#{sub.subName}"/>
-                                    <f:ajax listener="#{updateCDIBean.loadDivisions}" render="divisionPanel studentPanel"/>
-                                </h:selectOneMenu>
-                            </div>
-                        </h:panelGroup>
-                    </h:panelGroup>
-
-                    <!-- Division Dropdown -->
-                    <h:panelGroup id="divisionPanel">
-                        <h:panelGroup rendered="#{not empty updateCDIBean.divisionList}">
-                            <div class="form-group">
-                                <label>Division</label>
-                                <h:selectOneMenu value="#{updateCDIBean.selectedStudentDivId}">
-                                    <f:selectItem itemLabel="--Select--" itemValue="-1"/>
-                                    <f:selectItems value="#{updateCDIBean.divisionList}" var="d"
-                                                   itemValue="#{d.divId}" itemLabel="#{d.divName}"/>
-                                    <f:ajax listener="#{updateCDIBean.loadStudents}" render="studentPanel"/>
-                                </h:selectOneMenu>
-                            </div>
-                        </h:panelGroup>
-                    </h:panelGroup>
-                </div>
+            <!-- Page Header -->
+            <div class="datewise-header">
+                <h1 class="page-title">Date-Wise Attendance</h1>
+                <p class="page-subtitle">View attendance records filtered by specific dates</p>
             </div>
 
-            <!-- ======== DATE WISE ATTENDANCE ======== -->
-            <div class="form-container" style="margin-top: 30px;">
-                <h3>Date Wise Attendance</h3>
+            <h:form id="viewForm">
+                <!-- Main Form Container -->
+                <div class="form-container">
 
-                <div class="form-row">
-                    <!-- Date Picker -->
-                    <!-- Date Picker में AJAX जोड़ें -->
-                    <div class="form-group">
-                        <label>Select Date</label>
-                        <h:inputText id="selectedDate" value="#{updateCDIBean.selectedDate}" pt:type="date">
-                            <f:convertDateTime pattern="yyyy-MM-dd" />
-                            <f:ajax event="change" 
-                                    listener="#{updateCDIBean.clearAttendanceData}"
-                                    render="dateAttendancePanel messages" />
-                        </h:inputText>
-                    </div>
+                    <!-- Section Title -->
+                    <h3 class="section-title">Select Course Details</h3>
 
-
-                    <!-- Load Attendance Button -->
-                    <div class="form-group" style="margin-top: 30px;">
-                        <h:commandButton value="Load Attendance"
-                                         style="padding:10px 18px; background:#007bff; color:white; border-radius: 8px;"
-                                         action="#{updateCDIBean.loadDateWiseAttendance}">
-                            <f:ajax render="dateAttendancePanel messages" />
-                        </h:commandButton>
-                    </div>
-                </div>
-
-                <!-- Result Table -->
-                <h:panelGroup id="dateAttendancePanel">
-                    <h:panelGroup rendered="#{not empty updateCDIBean.dateWiseAttendanceList}">
-                        <!-- Display selected date -->
-                        <div style="margin: 10px 0; padding: 8px; background: #f0f0f0; border-radius: 4px;">
-                            <strong>Selected Date:</strong> #{updateCDIBean.selectedDate}
-                            <strong>Total Records:</strong> #{fn:length(updateCDIBean.dateWiseAttendanceList)}
+                    <!-- Form Row for Selection -->
+                    <div class="form-row">
+                        <!-- Course -->
+                        <div class="form-group">
+                            <label>Course</label>
+                            <h:selectOneMenu value="#{updateCDIBean.selectedCourseId}">
+                                <f:selectItem itemLabel="-- Select Course --" itemValue="-1" />
+                                <f:selectItems value="#{updateCDIBean.courseList}" var="c"
+                                               itemValue="#{c.courseId}" itemLabel="#{c.courseName}" />
+                                <f:ajax listener="#{updateCDIBean.loadSemesters}"
+                                        render="semesterPanel divisionPanel subjectPanel dateAttendancePanel"/>
+                            </h:selectOneMenu>
                         </div>
 
-                        <table>
-                            <tr>
-                                <th>Student Name</th>
-                                <th>Roll No</th>
-                                <th>Status</th>
-                            </tr>
+                        <!-- Semester -->
+                        <h:panelGroup id="semesterPanel">
+                            <h:panelGroup rendered="#{not empty updateCDIBean.semesterList}">
+                                <div class="form-group">
+                                    <label>Semester</label>
+                                    <h:selectOneMenu value="#{updateCDIBean.selectedSemId}">
+                                        <f:selectItem itemLabel="-- Select Semester --" itemValue="-1" />
+                                        <f:selectItems value="#{updateCDIBean.semesterList}" var="s"
+                                                       itemValue="#{s.semId}" itemLabel="#{s.semName}" />
+                                        <f:ajax listener="#{updateCDIBean.loadSubjects}"
+                                                render="subjectPanel divisionPanel dateAttendancePanel"/>
+                                    </h:selectOneMenu>
+                                </div>
+                            </h:panelGroup>
+                        </h:panelGroup>
 
-                            <ui:repeat value="#{updateCDIBean.dateWiseAttendanceList}" var="att">
-                                <tr>
-                                    <td>#{att.student.studentName}</td>
-                                    <td>#{att.student.rollNo}</td>
-                                    <td>
-                                        <span style="padding:6px 12px; border-radius:6px;
-                                              background: #{att.status eq 'present' ? 'green' : 'red'};
-                                              color:white; font-weight:bold;">
-                                            #{att.status}
-                                        </span>
-                                    </td>
-                                </tr>
-                            </ui:repeat>
-                        </table>
-                    </h:panelGroup>
+                        <!-- Subject -->
+                        <h:panelGroup id="subjectPanel">
+                            <h:panelGroup rendered="#{not empty updateCDIBean.subjectList}">
+                                <div class="form-group">
+                                    <label>Subject</label>
+                                    <h:selectOneMenu value="#{updateCDIBean.updateSubId}">
+                                        <f:selectItem itemLabel="-- Select Subject --" itemValue="-1" />
+                                        <f:selectItems value="#{updateCDIBean.subjectList}" var="sub"
+                                                       itemValue="#{sub.subId}" itemLabel="#{sub.subName}" />
+                                        <f:ajax listener="#{updateCDIBean.loadDivisions}"
+                                                render="divisionPanel dateAttendancePanel"/>
+                                    </h:selectOneMenu>
+                                </div>
+                            </h:panelGroup>
+                        </h:panelGroup>
+
+                        <!-- Division -->
+                        <h:panelGroup id="divisionPanel">
+                            <h:panelGroup rendered="#{not empty updateCDIBean.divisionList}">
+                                <div class="form-group">
+                                    <label>Division</label>
+                                    <h:selectOneMenu value="#{updateCDIBean.selectedStudentDivId}">
+                                        <f:selectItem itemLabel="-- Select Division --" itemValue="-1" />
+                                        <f:selectItems value="#{updateCDIBean.divisionList}" var="d"
+                                                       itemValue="#{d.divId}" itemLabel="#{d.divName}" />
+                                        <f:ajax listener="#{updateCDIBean.clearAttendanceData}"
+                                                render="dateAttendancePanel"/>
+                                    </h:selectOneMenu>
+                                </div>
+                            </h:panelGroup>
+                        </h:panelGroup>
+                    </div>
+
+                    <!-- Date Selection Section -->
+                    <!-- Date Selection Section -->
+                    <div class="date-selection">
+                        <h3 class="section-title">Select Date</h3>
+                        <div class="date-wrapper">
+                            <div class="date-input-wrapper">
+                                <span class="calendar-icon">📅</span>
+                                <!-- Corrected Date Picker with type="date" -->
+                                <h:inputText id="selectedDate" 
+                                             value="#{updateCDIBean.selectedDate}" 
+                                             styleClass="date-input"
+                                             pt:type="date">
+                                    <f:convertDateTime pattern="yyyy-MM-dd" />
+                                    <f:ajax event="change" 
+                                            listener="#{updateCDIBean.clearAttendanceData}"
+                                            render="dateAttendancePanel messages"/>
+                                </h:inputText>
+                            </div>
+                            <h:commandButton value="Load Attendance" 
+                                             styleClass="load-btn"
+                                             action="#{updateCDIBean.loadDateWiseAttendance}">
+                                <f:ajax render="dateAttendancePanel messages" />
+                            </h:commandButton>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Attendance Results Section -->
+                <h:panelGroup id="dateAttendancePanel">
+                    <ui:fragment rendered="#{not empty updateCDIBean.dateWiseAttendanceList}">
+                        <div class="attendance-section">
+                            <h3 class="section-title">Attendance for Selected Date</h3>
+
+                            <!-- Summary Card -->
+                            <div class="summary-card">
+                                <div class="summary-item">
+                                    <div class="summary-label">Selected Date</div>
+                                    <div class="summary-value">
+                                        <h:outputText value="#{updateCDIBean.selectedDate}">
+                                            <f:convertDateTime pattern="dd-MMM-yyyy" />
+                                        </h:outputText>
+                                    </div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-label">Total Records</div>
+                                    <div class="summary-value">
+                                        #{fn:length(updateCDIBean.dateWiseAttendanceList)}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Attendance Table -->
+                            <table class="attendance-table">
+                                <thead>
+                                    <tr>
+                                        <th>Student Name</th>
+                                        <th>Roll Number</th>
+                                        <th>Attendance Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <ui:repeat value="#{updateCDIBean.dateWiseAttendanceList}" var="att">
+                                        <tr>
+                                            <td>#{att.student.studentName}</td>
+                                            <td>#{att.student.rollNo}</td>
+                                            <td>
+                                                <span class="status-badge #{att.status eq 'present' ? 'status-present' : 'status-absent'}">
+                                                    #{att.status}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </ui:repeat>
+                                </tbody>
+                            </table>
+                        </div>
+                    </ui:fragment>
+
+                    <!-- No Data Message -->
+                    <ui:fragment rendered="#{empty updateCDIBean.dateWiseAttendanceList and updateCDIBean.selectedDate != null}">
+                        <div class="no-data">
+                            <div class="no-data-icon">📊</div>
+                            <p>No attendance records found for the selected date.</p>
+                            <p style="font-size: 14px; margin-top: 10px; color: #64748b;">
+                                Please ensure you have selected all required filters.
+                            </p>
+                        </div>
+                    </ui:fragment>
                 </h:panelGroup>
-            </div>
 
-            <!-- Messages -->
-            <h:messages id="messages" style="color: red; font-weight: bold;" />
+                <!-- Messages Panel -->
+                <!-- Messages Panel with Better Styling -->
+                <h:panelGroup id="messages">
+                    <!-- JSF Faces Messages -->
+                    <!--                    <h:messages id="facesMessages" 
+                                                    globalOnly="false"
+                                                    showDetail="true"
+                                                    showSummary="true"
+                                                    errorClass="error-message"
+                                                    infoClass="info-message"
+                                                    warnClass="warning-message"
+                                                    fatalClass="error-message"/>-->
 
-        </h:form>
+                    <!-- Custom Validation Messages -->
+                    <ui:fragment rendered="#{facesContext.maximumSeverity != null}">
+                        <div class="validation-container">
+                            <ui:repeat value="#{facesContext.messageList}" var="msg">
+                                <div class="message-item 
+                                     #{msg.severity.toString() eq 'ERROR' ? 'error-item' : 
+                                       msg.severity.toString() eq 'WARN' ? 'warning-item' : 
+                                       'info-item'}">
+                                    <span class="message-icon">
+                                        #{msg.severity.toString() eq 'ERROR' ? '❌' : 
+                                          msg.severity.toString() eq 'WARN' ? '⚠️' : 'ℹ️'}
+                                    </span>
+                                    <span class="message-text">#{msg.summary}</span>
+                                </div>
+                            </ui:repeat>
+                        </div>
+                    </ui:fragment>
+                </h:panelGroup>
+            </h:form>
+        </div>
+
     </ui:define>
-
 </ui:composition>

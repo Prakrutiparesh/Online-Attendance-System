@@ -2,280 +2,561 @@
                 xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:f="http://xmlns.jcp.org/jsf/core">
+                xmlns:f="http://xmlns.jcp.org/jsf/core"    
+                xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
 
-    <ui:define name="title">Take Attendance</ui:define>
+
+    <ui:define name="title">View Attendance</ui:define>
 
     <ui:define name="content">
         <style>
-            /* ======== Container  Card ======== */
-            .form-container {
-                max-width: 980px;
+            /* Main Container */
+            .view-container {
+                max-width: 1200px;
                 margin: 40px auto;
-                padding: 30px;
-                background: #ffffff;
-                border-radius: 16px;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.12);
-                border: 1px solid #e0e0e0;
+                padding: 0 20px;
             }
 
-            h3 {
-                color: #007bff;
+            /* Header Section - Matching Dashboard Theme */
+            .view-header {
                 text-align: center;
-                margin-bottom: 30px;
-                font-size: 22px;
-                font-weight: 700;
+                margin-bottom: 40px;
             }
 
-            /* ======== Form Rows ======== */
+            .page-title {
+                font-size: 32px;
+                font-weight: 700;
+                color: #2c3e50;
+                margin-bottom: 10px;
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+            .page-subtitle {
+                color: #5a6c7d;
+                font-size: 16px;
+                font-weight: 400;
+            }
+
+            /* Form Container - Glass Morphism Effect */
+            .form-container {
+                max-width: 1000px;
+                margin: 0 auto 30px;
+                padding: 35px;
+                background: rgba(255, 255, 255, 0.95);
+                border-radius: 20px;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+                border: 1px solid rgba(255, 255, 255, 0.6);
+                backdrop-filter: blur(12px);
+            }
+
+            /* Section Title */
+            .section-title {
+                font-size: 24px;
+                color: #2c3e50;
+                margin-bottom: 25px;
+                padding-bottom: 15px;
+                border-bottom: 2px solid #f1f2f6;
+                font-weight: 700;
+                position: relative;
+            }
+
+            .section-title::after {
+                content: '';
+                position: absolute;
+                bottom: -2px;
+                left: 0;
+                width: 80px;
+                height: 3px;
+                background: linear-gradient(90deg, #667eea, #764ba2);
+                border-radius: 3px;
+            }
+
+            /* Form Rows - Modern Grid */
             .form-row {
-                display: flex;
-                flex-wrap: wrap;
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
                 gap: 25px;
-                justify-content: flex-start;
-                margin-bottom: 20px;
+                margin-bottom: 30px;
             }
 
             .form-group {
                 display: flex;
                 flex-direction: column;
-                min-width: 200px;
             }
 
-            label {
+            .form-group label {
                 font-weight: 600;
+                color: #475569;
                 margin-bottom: 8px;
-                color: #333;
-            }
-
-            select, input[type="text"], input[type="date"] {
-                padding: 10px 12px;
-                border-radius: 8px;
-                border: 1px solid #ccc;
                 font-size: 14px;
-                outline: none;
-                transition: all 0.2s;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
             }
 
-            select:focus, input[type="text"]:focus, input[type="date"]:focus {
-                border-color: #007bff;
-                box-shadow: 0 0 8px rgba(0,123,255,0.2);
-            }
-
-            /* ======== Back Link ======== */
-            .back-link {
-                display: inline-block;
-                margin-bottom: 25px;
-                padding: 8px 16px;
-                background: #0a2342;
-                color: #fff;
-                border-radius: 8px;
-                text-decoration: none;
-                font-size: 14px;
-                font-weight: 600;
-                transition: 0.3s;
-            }
-
-            .back-link:hover {
-                background: #07305a;
-            }
-
-            /* ======== Search Bar ======== */
-            .search-bar {
-                display: flex;
-                justify-content: flex-end;
-                margin-bottom: 15px;
-            }
-
-            .search-bar input {
-                width: 280px;
-                padding: 8px 12px;
-                border-radius: 8px;
-                border: 1px solid #ccc;
-                font-size: 14px;
-                outline: none;
-            }
-
-            .search-bar input:focus {
-                border-color: #007bff;
-                box-shadow: 0 0 5px rgba(0,123,255,0.3);
-            }
-
-            /* ======== Table ======== */
-            table {
+            .form-group select {
                 width: 100%;
-                border-collapse: collapse;
+                padding: 14px 16px;
+                border-radius: 12px;
+                border: 1px solid #e2e8f0;
+                background: white;
+                font-size: 15px;
+                color: #2c3e50;
+                transition: all 0.3s ease;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            }
+
+            .form-group select:focus {
+                outline: none;
+                border-color: #667eea;
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            }
+
+            /* Search Bar */
+            .search-container {
+                margin: 25px 0;
+                padding: 20px;
+                background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+                border-radius: 16px;
+                border: 1px solid rgba(102, 126, 234, 0.1);
+            }
+
+            .search-wrapper {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                max-width: 500px;
+                margin: 0 auto;
+            }
+
+            .search-label {
+                font-weight: 600;
+                color: #475569;
+                white-space: nowrap;
+            }
+
+            .search-input {
+                flex: 1;
+                padding: 14px 20px;
+                border-radius: 12px;
+                border: 1px solid #e2e8f0;
+                background: white;
+                font-size: 15px;
+                color: #2c3e50;
+                transition: all 0.3s ease;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            }
+
+            .search-input:focus {
+                outline: none;
+                border-color: #667eea;
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            }
+
+            /* Students Section */
+            .students-section {
+                margin-top: 40px;
+                padding: 30px;
+                background: rgba(255, 255, 255, 0.95);
+                border-radius: 20px;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+                border: 1px solid rgba(255, 255, 255, 0.6);
+            }
+
+            /* Attendance Table */
+            .attendance-table {
+                width: 100%;
+                border-collapse: separate;
+                border-spacing: 0;
+                margin: 25px 0;
                 border-radius: 12px;
                 overflow: hidden;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
             }
 
-            th, td {
-                padding: 14px;
+            .attendance-table th {
+                background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+                padding: 18px;
                 text-align: center;
+                color: #475569;
+                font-weight: 600;
+                border-bottom: 2px solid rgba(102, 126, 234, 0.2);
                 font-size: 14px;
-                color: #333;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
             }
 
-            th {
-                background: #007bff;
-                color: #fff;
+            .attendance-table td {
+                padding: 18px;
+                border-bottom: 1px solid #f1f2f6;
+                color: #5a6c7d;
+                font-size: 15px;
+                font-weight: 500;
+                text-align: center;
+            }
+
+            .attendance-table tr:hover td {
+                background-color: rgba(102, 126, 234, 0.03);
+            }
+
+            /* Attendance Stats */
+            .attendance-stats {
+                display: inline-block;
+                padding: 6px 12px;
+                border-radius: 20px;
+                font-size: 13px;
+                font-weight: 600;
+                margin: 2px;
+            }
+
+            .present-stat {
+                background: rgba(76, 175, 80, 0.1);
+                color: #4CAF50;
+                border: 1px solid rgba(76, 175, 80, 0.2);
+            }
+
+            .absent-stat {
+                background: rgba(244, 67, 54, 0.1);
+                color: #F44336;
+                border: 1px solid rgba(244, 67, 54, 0.2);
+            }
+
+            .avg-stat {
+                background: rgba(102, 126, 234, 0.1);
+                color: #667eea;
+                border: 1px solid rgba(102, 126, 234, 0.2);
+                font-weight: 700;
+            }
+
+            /* Export Button */
+            .export-section {
+                text-align: center;
+                margin-top: 40px;
+                padding-top: 30px;
+                border-top: 1px solid #f1f2f6;
+            }
+
+            .export-btn {
+                background: #4CAF50;
+                color: white;
+                padding: 16px 40px;
+                border-radius: 12px;
+                border: none;
+                font-weight: 600;
+                font-size: 16px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
+                display: inline-flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .export-btn:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+                background: #45a049;
+            }
+
+            /* Back to Home Button */
+            .back-home {
+                position: absolute;
+                right: 20px;
+                top: 20px;
+                padding: 12px 24px;
+                background: #667eea;
+                color: white;
+                text-decoration: none;
+                border-radius: 10px;
+                font-weight: 600;
+                font-size: 14px;
+                transition: all 0.3s ease;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            }
+
+            .back-home:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+                background: #5a6fda;
+            }
+
+            /* No Data Message */
+            .no-data {
+                text-align: center;
+                padding: 50px 20px;
+                color: #94a3b8;
+                font-size: 16px;
+                background: rgba(255, 255, 255, 0.8);
+                border-radius: 16px;
+                border: 1px dashed #cbd5e1;
+                margin: 20px 0;
+            }
+
+            .no-data-icon {
+                font-size: 48px;
+                margin-bottom: 15px;
+                opacity: 0.5;
+            }
+
+            /* Message Panel */
+            .message-panel {
+                margin-top: 20px;
+                padding: 15px;
+                border-radius: 12px;
+                text-align: center;
                 font-weight: 600;
             }
 
-            tr:nth-child(even) {
-                background: #f9f9f9;
+            .error-message {
+                background: rgba(244, 67, 54, 0.1);
+                color: #F44336;
+                border: 1px solid rgba(244, 67, 54, 0.2);
             }
 
-            tr:hover {
-                background: #e6f0ff;
-                transition: 0.3s;
+            .info-message {
+                background: rgba(102, 126, 234, 0.1);
+                color: #667eea;
+                border: 1px solid rgba(102, 126, 234, 0.2);
             }
 
-            /* ======== Message ======== */
-            #messagePanel h:outputText {
-                font-weight: 600;
-                margin-top: 15px;
-                display: block;
-            }
-
-            /* ======== Responsive ======== */
+            /* Responsive Design */
             @media (max-width: 768px) {
+                .view-container {
+                    padding: 0 15px;
+                }
+
+                .form-container {
+                    padding: 25px;
+                }
+
                 .form-row {
+                    grid-template-columns: 1fr;
+                    gap: 20px;
+                }
+
+                .search-wrapper {
                     flex-direction: column;
-                    gap: 15px;
+                    align-items: stretch;
                 }
 
-                select, input[type="text"], input[type="date"] {
-                    width: 100%;
+                .search-label {
+                    text-align: center;
                 }
 
-                .search-bar {
-                    justify-content: center;
+                .attendance-table {
+                    display: block;
+                    overflow-x: auto;
+                }
+
+                .page-title {
+                    font-size: 26px;
+                }
+
+                .back-home {
+                    position: relative;
+                    margin-bottom: 20px;
+                    display: inline-block;
+                    right: auto;
+                    top: auto;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .form-container {
+                    padding: 20px;
+                }
+
+                .page-title {
+                    font-size: 22px;
+                }
+
+                .attendance-table th,
+                .attendance-table td {
+                    padding: 12px 8px;
+                    font-size: 13px;
+                }
+
+                .export-btn {
+                    padding: 14px 30px;
+                    font-size: 15px;
                 }
             }
         </style>
 
-        <!-- Back Button -->
-        <h:link outcome="Faculty.jsf" styleClass="back-link">⬅ Back to Home</h:link>
+        <!-- Main Container -->
+        <div class="view-container">
 
-        <h:form id="viewForm">
-            <div class="form-container">
-                <h3>Select Course, Semester, Division, Subject</h3>
+            <!-- Back to Home Button -->
+            <h:link outcome="Faculty.jsf" styleClass="back-home">
+                ⬅ Back to Home
+            </h:link>
 
-                <div class="form-row">
-                    <!-- Course Dropdown -->
-                    <div class="form-group">
-                        <label>Course</label>
-                        <h:selectOneMenu value="#{updateCDIBean.selectedCourseId}">
-                            <f:selectItem itemLabel="--Select--" itemValue="-1"/>
-                            <f:selectItems value="#{updateCDIBean.courseList}" var="c" 
-                                           itemValue="#{c.courseId}" itemLabel="#{c.courseName}"/>
-                            <f:ajax listener="#{updateCDIBean.loadSemesters}" render="semesterPanel divisionPanel subjectPanel studentPanel"/>
-                        </h:selectOneMenu>
+            <!-- Page Header -->
+            <div class="view-header">
+                <h1 class="page-title">View Attendance Reports</h1>
+                <p class="page-subtitle">Analyze student attendance patterns and generate reports</p>
+            </div>
+
+            <h:form id="viewForm">
+                <!-- Main Form Container -->
+                <div class="form-container">
+
+                    <!-- Section Title -->
+                    <h3 class="section-title">Select Course Details</h3>
+
+                    <!-- Form Row for Selection -->
+                    <div class="form-row">
+                        <!-- Course -->
+                        <div class="form-group">
+                            <label>Course</label>
+                            <h:selectOneMenu value="#{updateCDIBean.selectedCourseId}">
+                                <f:selectItem itemLabel="-- Select Course --" itemValue="-1" />
+                                <f:selectItems value="#{updateCDIBean.courseList}" var="c"
+                                               itemValue="#{c.courseId}" itemLabel="#{c.courseName}" />
+                                <f:ajax listener="#{updateCDIBean.loadSemesters}"
+                                        render="semesterPanel divisionPanel subjectPanel studentPanel"/>
+                            </h:selectOneMenu>
+                        </div>
+
+                        <!-- Semester -->
+                        <h:panelGroup id="semesterPanel">
+                            <h:panelGroup rendered="#{not empty updateCDIBean.semesterList}">
+                                <div class="form-group">
+                                    <label>Semester</label>
+                                    <h:selectOneMenu value="#{updateCDIBean.selectedSemId}">
+                                        <f:selectItem itemLabel="-- Select Semester --" itemValue="-1" />
+                                        <f:selectItems value="#{updateCDIBean.semesterList}" var="s"
+                                                       itemValue="#{s.semId}" itemLabel="#{s.semName}" />
+                                        <f:ajax listener="#{updateCDIBean.loadSubjects}"
+                                                render="subjectPanel divisionPanel studentPanel"/>
+                                    </h:selectOneMenu>
+                                </div>
+                            </h:panelGroup>
+                        </h:panelGroup>
+
+                        <!-- Subject -->
+                        <h:panelGroup id="subjectPanel">
+                            <h:panelGroup rendered="#{not empty updateCDIBean.subjectList}">
+                                <div class="form-group">
+                                    <label>Subject</label>
+                                    <h:selectOneMenu value="#{updateCDIBean.updateSubId}">
+                                        <f:selectItem itemLabel="-- Select Subject --" itemValue="-1" />
+                                        <f:selectItems value="#{updateCDIBean.subjectList}" var="sub"
+                                                       itemValue="#{sub.subId}" itemLabel="#{sub.subName}" />
+                                        <f:ajax listener="#{updateCDIBean.loadDivisions}"
+                                                render="divisionPanel studentPanel"/>
+                                    </h:selectOneMenu>
+                                </div>
+                            </h:panelGroup>
+                        </h:panelGroup>
+
+                        <!-- Division -->
+                        <h:panelGroup id="divisionPanel">
+                            <h:panelGroup rendered="#{not empty updateCDIBean.divisionList}">
+                                <div class="form-group">
+                                    <label>Division</label>
+                                    <h:selectOneMenu value="#{updateCDIBean.selectedStudentDivId}">
+                                        <f:selectItem itemLabel="-- Select Division --" itemValue="-1" />
+                                        <f:selectItems value="#{updateCDIBean.divisionList}" var="d"
+                                                       itemValue="#{d.divId}" itemLabel="#{d.divName}" />
+                                        <f:ajax listener="#{updateCDIBean.loadStudents}"
+                                                render="studentPanel"/>
+                                    </h:selectOneMenu>
+                                </div>
+                            </h:panelGroup>
+                        </h:panelGroup>
                     </div>
 
-                    <!-- Semester Dropdown -->
-                    <h:panelGroup id="semesterPanel">
-                        <h:panelGroup rendered="#{not empty updateCDIBean.semesterList}">
-                            <div class="form-group">
-                                <label>Semester</label>
-                                <h:selectOneMenu value="#{updateCDIBean.selectedSemId}">
-                                    <f:selectItem itemLabel="--Select--" itemValue="-1"/>
-                                    <f:selectItems value="#{updateCDIBean.semesterList}" var="s"
-                                                   itemValue="#{s.semId}" itemLabel="#{s.semName}"/>
-                                    <f:ajax listener="#{updateCDIBean.loadSubjects}" render="subjectPanel divisionPanel studentPanel"/>
-                                </h:selectOneMenu>
-                            </div>
-                        </h:panelGroup>
-                    </h:panelGroup>
-
-                    <!-- Subject Dropdown -->
-                    <h:panelGroup id="subjectPanel">
-                        <h:panelGroup rendered="#{not empty updateCDIBean.subjectList}">
-                            <div class="form-group">
-                                <label>Subject</label>
-                                <h:selectOneMenu value="#{updateCDIBean.updateSubId}">
-                                    <f:selectItem itemLabel="--Select--" itemValue="-1"/>
-                                    <f:selectItems value="#{updateCDIBean.subjectList}" var="sub"
-                                                   itemValue="#{sub.subId}" itemLabel="#{sub.subName}"/>
-                                    <f:ajax listener="#{updateCDIBean.loadDivisions}" render="divisionPanel studentPanel"/>
-                                </h:selectOneMenu>
-                            </div>
-                        </h:panelGroup>
-                    </h:panelGroup>
-
-                    <!-- Division Dropdown -->
-                    <h:panelGroup id="divisionPanel">
-                        <h:panelGroup rendered="#{not empty updateCDIBean.divisionList}">
-                            <div class="form-group">
-                                <label>Division</label>
-                                <h:selectOneMenu value="#{updateCDIBean.selectedStudentDivId}">
-                                    <f:selectItem itemLabel="--Select--" itemValue="-1"/>
-                                    <f:selectItems value="#{updateCDIBean.divisionList}" var="d"
-                                                   itemValue="#{d.divId}" itemLabel="#{d.divName}"/>
-                                    <f:ajax listener="#{updateCDIBean.loadStudents}" render="studentPanel"/>
-                                </h:selectOneMenu>
-                            </div>
-                        </h:panelGroup>
-                    </h:panelGroup>
+                    <!-- Search Bar -->
+                    <div class="search-container">
+                        <div class="search-wrapper">
+                            <span class="search-label">Search Student:</span>
+                            <h:inputText id="searchInput" value="#{updateCDIBean.searchKeyword}"
+                                         styleClass="search-input"
+                                         a:placeholder="Search by name or roll number...">
+                                <f:ajax event="keyup" listener="#{updateCDIBean.filterStudents}" 
+                                        render="studentPanel messagePanel"/>
+                            </h:inputText>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Search -->
-                <div class="search-bar">
-                    <h:outputLabel value="Search: " for="searchInput"/>
-                    <h:inputText id="searchInput" value="#{updateCDIBean.searchKeyword}">
-                        <f:ajax event="keyup" listener="#{updateCDIBean.filterStudents}" render="studentPanel"/>
-                    </h:inputText>
-                </div>
-
-                <!-- Students Table -->
+                <!-- Students List Section -->
                 <h:panelGroup id="studentPanel">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Roll No</th>
-                                <th>Name</th>
-                                <th>Total Present</th>
-                                <th>Total Absent</th>
-                                <th>Average (%)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <ui:fragment rendered="#{not empty updateCDIBean.filteredStudentList}">
-                                <ui:repeat value="#{updateCDIBean.filteredStudentList}" var="stud">
+                    <div class="students-section">
+                        <h3 class="section-title">Attendance Summary</h3>
+
+                        <!-- Attendance Table -->
+                        <ui:fragment rendered="#{not empty updateCDIBean.filteredStudentList}">
+                            <table class="attendance-table">
+                                <thead>
                                     <tr>
-                                        <td>#{stud.rollNo}</td>
-                                        <td>#{stud.studentName}</td>
-                                        <td>#{updateCDIBean.studentSummaryMap[stud.studId] != null ? updateCDIBean.studentSummaryMap[stud.studId].totalPresent : 0}</td>
-                                        <td>#{updateCDIBean.studentSummaryMap[stud.studId] != null ? updateCDIBean.studentSummaryMap[stud.studId].totalAbsent : 0}</td>
-                                        <td>#{updateCDIBean.studentSummaryMap[stud.studId] != null ? updateCDIBean.studentSummaryMap[stud.studId].avgAttendance : 0}</td>
+                                        <th>Roll No</th>
+                                        <th>Student Name</th>
+                                        <th>Total Present</th>
+                                        <th>Total Absent</th>
+                                        <th>Average Attendance (%)</th>
                                     </tr>
-                                </ui:repeat>
-                            </ui:fragment>
+                                </thead>
+                                <tbody>
+                                    <ui:repeat value="#{updateCDIBean.filteredStudentList}" var="stud">
+                                        <tr>
+                                            <td>#{stud.rollNo}</td>
+                                            <td>#{stud.studentName}</td>
+                                            <td>
+                                                <span class="attendance-stats present-stat">
+                                                    #{updateCDIBean.studentSummaryMap[stud.studId] != null ? 
+                                                      updateCDIBean.studentSummaryMap[stud.studId].totalPresent : 0}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="attendance-stats absent-stat">
+                                                    #{updateCDIBean.studentSummaryMap[stud.studId] != null ? 
+                                                      updateCDIBean.studentSummaryMap[stud.studId].totalAbsent : 0}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="attendance-stats avg-stat">
+                                                    #{updateCDIBean.studentSummaryMap[stud.studId] != null ? 
+                                                      updateCDIBean.studentSummaryMap[stud.studId].avgAttendance : 0}%
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </ui:repeat>
+                                </tbody>
+                            </table>
 
-                            <ui:fragment rendered="#{empty updateCDIBean.filteredStudentList}">
-                                <tr>
-                                    <td colspan="5" style="color:gray; font-style:italic;">No students found.</td>
-                                </tr>
-                            </ui:fragment>
-                        </tbody>
+                            <!-- Export Button -->
+                            <div class="export-section">
+                                <h:commandButton value="📊 Export to Excel" 
+                                                 styleClass="export-btn"
+                                                 action="#{updateCDIBean.exportAttendanceToExcel}"/>
+                            </div>
+                        </ui:fragment>
 
-                    </table>
-                    <h:panelGroup rendered="#{not empty updateCDIBean.filteredStudentList}" style="margin-top:15px;">
-                        <h:commandButton 
-                            value="Export to Excel" 
-                            action="#{updateCDIBean.exportAttendanceToExcel}" 
-                            style="background:#28a745; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer;"/>
-                    </h:panelGroup>
+                        <!-- No Data Message -->
+                        <ui:fragment rendered="#{empty updateCDIBean.filteredStudentList}">
+                            <div class="no-data">
+                                <div class="no-data-icon">📊</div>
+                                <p>No students found. Please select course details above.</p>
+                            </div>
+                        </ui:fragment>
+                    </div>
                 </h:panelGroup>
 
-
-                <!-- Message -->
+                <!-- Message Panel -->
                 <h:panelGroup id="messagePanel">
-                    <h:outputText value="#{updateCDIBean.message}" style="color:red; font-weight:bold;"/>
+                    <ui:fragment rendered="#{not empty updateCDIBean.message}">
+                        <div class="message-panel #{updateCDIBean.message.contains('Error') ? 'error-message' : 'info-message'}">
+                            #{updateCDIBean.message}
+                        </div>
+                    </ui:fragment>
                 </h:panelGroup>
-            </div>
-        </h:form>
+            </h:form>
+        </div>
+
     </ui:define>
 </ui:composition>
