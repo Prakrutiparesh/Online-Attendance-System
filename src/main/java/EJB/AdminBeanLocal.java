@@ -4,6 +4,7 @@
  */
 package EJB;
 
+import Entity.Attendance;
 import Entity.AttendanceSummary;
 import Entity.Course;
 import Entity.Division;
@@ -108,5 +109,7 @@ public interface AdminBeanLocal {
     public Collection<Users> getAllUsers();
 
     public String saySecureHello();
+
+    public Collection<Attendance> getAttendanceByDate(int courseId, int semId, int divId, int subId, java.sql.Date date);
 
 }

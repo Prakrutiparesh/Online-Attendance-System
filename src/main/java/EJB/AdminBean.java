@@ -950,4 +950,47 @@ public class AdminBean implements AdminBeanLocal {
         return "Secure Hello from Secure Bean";
     }
 
+    @Override
+    public Collection<Attendance> getAttendanceByDate(int courseId, int semId, int divId, int subId, java.sql.Date date) {
+        try {
+            // DATE() function हटाएं क्योंकि attendanceDate पहले से ही java.sql.Date है
+            String jpql = "SELECT a FROM Attendance a "
+                    + "WHERE a.course.courseId = :courseId "
+                    + "AND a.semester.semId = :semId "
+                    + "AND a.division.divId = :divId "
+                    + "AND a.subject.subId = :subId "
+                    + "AND a.attendanceDate = :date"; // सीधे compare करें
+
+            System.out.println("Executing JPQL: " + jpql);
+            System.out.println("Parameters - Course: " + courseId
+                    + ", Sem: " + semId
+                    + ", Div: " + divId
+                    + ", Sub: " + subId
+                    + ", Date: " + date);
+
+            List<Attendance> result = em.createQuery(jpql, Attendance.class)
+                    .setParameter("courseId", courseId)
+                    .setParameter("semId", semId)
+                    .setParameter("divId", divId)
+                    .setParameter("subId", subId)
+                    .setParameter("date", date)
+                    .getResultList();
+
+            System.out.println("Query executed for date: " + date + ", Results: " + result.size());
+
+            // Debug: Print found records
+            for (Attendance att : result) {
+                System.out.println("Found: " + att.getStudent().getStudentName()
+                        + " - " + att.getAttendanceDate()
+                        + " - " + att.getStatus());
+            }
+
+            return result;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Error in getAttendanceByDate: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
 }

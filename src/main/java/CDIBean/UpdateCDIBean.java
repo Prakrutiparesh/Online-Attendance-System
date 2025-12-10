@@ -2,6 +2,7 @@ package CDIBean;
 
 import EJB.AdminBeanLocal;
 import EJB.UserBeanLocal;
+import Entity.Attendance;
 import Entity.AttendanceSummary;
 import Entity.Course;
 import Entity.Division;
@@ -11,6 +12,7 @@ import Entity.Subject;
 import Entity.Users;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
+import jakarta.faces.application.FacesMessage;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
 import java.text.SimpleDateFormat;
@@ -24,7 +26,6 @@ import java.io.Serializable;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.context.ExternalContext;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
@@ -80,6 +81,76 @@ public class UpdateCDIBean implements Serializable {
     private Map<Integer, String> attendanceStatusMap = new HashMap<>();
 
     private Integer selectedSubId;
+    private Collection<Attendance> dateWiseAttendanceList;
+    private Date selectedDate; // java.util.Date
+
+    public void loadDateWiseAttendance() {
+        try {
+            if (selectedDate == null) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_WARN, "Select date!", null));
+                return;
+            }
+
+            if (selectedCourseId == null || selectedCourseId == -1
+                    || selectedSemId == null || selectedSemId == -1
+                    || selectedStudentDivId == null || selectedStudentDivId == -1
+                    || updateSubId == null || updateSubId == -1) {
+
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_WARN,
+                                "Please select Course, Semester, Division, and Subject.", null));
+                return;
+            }
+
+            // ✅ Clear previous data
+            dateWiseAttendanceList = new ArrayList<>();
+
+            // ✅ Convert java.util.Date to java.sql.Date
+            java.sql.Date sqlDate = new java.sql.Date(selectedDate.getTime());
+
+            // ✅ Debug logging
+            System.out.println("Loading attendance for date: " + sqlDate);
+            System.out.println("Course: " + selectedCourseId
+                    + ", Sem: " + selectedSemId
+                    + ", Div: " + selectedStudentDivId
+                    + ", Sub: " + updateSubId);
+
+            // ✅ Get attendance for selected date
+            dateWiseAttendanceList = abl.getAttendanceByDate(
+                    selectedCourseId, selectedSemId, selectedStudentDivId, updateSubId, sqlDate
+            );
+
+            if (dateWiseAttendanceList.isEmpty()) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage("No attendance found for selected date."));
+            } else {
+                System.out.println("Found " + dateWiseAttendanceList.size() + " attendance records");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error loading attendance: " + e.getMessage(), null));
+        }
+    }
+
+    public void clearAttendanceData() {
+        dateWiseAttendanceList = new ArrayList<>();
+        System.out.println("Cleared attendance data on date change");
+    }
+
+    public Date getSelectedDate() {
+        return selectedDate;
+    }
+
+    public void setSelectedDate(Date selectedDate) {
+        this.selectedDate = selectedDate;
+    }
+
+    public Collection<Attendance> getDateWiseAttendanceList() {
+        return dateWiseAttendanceList;
+    }
 
     public Collection<Student> getFilteredStudentList() {
         return filteredStudentList;
@@ -134,10 +205,17 @@ public class UpdateCDIBean implements Serializable {
         divisionList = new ArrayList<>();
         studentList = new ArrayList<>();
         attendanceDate = new Date();
-
+        selectedCourseId = -1;
+        selectedSemId = -1;
+        selectedStudentDivId = -1;
+        updateSubId = -1;
         // Format today's date for display
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
         todayDateString = sdf.format(attendanceDate);
+        if (attendanceDate == null) {
+            attendanceDate = new Date(); // today
+        }
+        selectedDate = attendanceDate;
     }
 
     public void loadStudents() {
