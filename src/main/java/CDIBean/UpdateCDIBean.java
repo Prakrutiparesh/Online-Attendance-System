@@ -669,8 +669,7 @@ public class UpdateCDIBean implements Serializable {
         if (allSuccess) {
             message = "Attendance saved successfully!";
         } else {
-            message = students.isEmpty() ? "Error while saving attendance!"
-                    : "Attendance already marked or error for: " + students;
+            message = "Attendance already marked for Today";
         }
     }
 
