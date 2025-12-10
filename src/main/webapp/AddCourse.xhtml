@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
 
     <h:head>
@@ -61,65 +62,54 @@
             .btn:hover {
                 background: #1a73e8;
             }
-            .input-error {
-                border: 2px solid red !important;
-            }
-
-            .error-inline {
-                color: red;
-                font-size: 12px;
-                margin-top: -10px;
-                margin-bottom: -5px;
-                display: block;
-            }
-
         </style>
     </h:head>
 
     <h:body>
+
+        <!-- SUCCESS POPUP -->
+        <h:panelGroup rendered="#{not empty adminCDIBean.successMessage}">
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: '#{adminCDIBean.successMessage}',
+                    confirmButtonColor: '#4da6ff',
+                    confirmButtonText: 'OK'
+                });
+            </script>
+        </h:panelGroup>
+
+        <!-- ERROR POPUP -->
+        <h:panelGroup rendered="#{not empty adminCDIBean.errorMessage}">
+            <script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: '#{adminCDIBean.errorMessage}',
+                    confirmButtonColor: '#ff4d4d',
+                    confirmButtonText: 'OK'
+                });
+            </script>
+        </h:panelGroup>
+
         <h1>Add New Course</h1>
+
         <h:form class="form-container">
+
             <h:outputLabel value="Course Name:" for="courseName" />
-            <h:inputText id="courseName" value="#{adminCDIBean.courseName}" required="true"
-                         requiredMessage="Course name is required." a:placeholder="Enter Course Name"/>
+            <h:inputText id="courseName"
+                         value="#{adminCDIBean.courseName}"
+                         required="true"
+                         requiredMessage="Course name is required."
+                         a:placeholder="Enter Course Name" />
             <h:message for="courseName" style="color:red;" />
 
-            <h:commandButton value="Add Course" action="#{adminCDIBean.addCourse}" styleClass="btn" />
+            <h:commandButton value="Add Course"
+                             action="#{adminCDIBean.addCourse}"
+                             styleClass="btn" />
 
-
-
-            <h:outputText id="msg" value="#{adminCDIBean.message}" style="display:none"/>
         </h:form>
-        <!-- SweetAlert Script -->
-        <script>
-            window.addEventListener('load', function () {
-                var msgEl = document.getElementById('msg');
-                if (msgEl) {
-                    var msg = msgEl.innerHTML.trim();
-                    console.log("Message received:", msg); // ✅ debug
-
-                    if (msg !== '') {
-                        var msgLower = msg.toLowerCase();
-                        var icon;
-                        if (msgLower.includes('success') || msgLower.includes('added')) {
-                            icon = 'success';
-                        } else {
-                            icon = 'error';
-                        }
-
-                        Swal.fire({
-                            icon: icon,
-                            title: icon === 'success' ? 'Success!' : 'Error!',
-                            text: msg,
-                            showConfirmButton: true
-                        });
-                    }
-                }
-            });
-
-        </script>
-
 
     </h:body>
-
 </html>

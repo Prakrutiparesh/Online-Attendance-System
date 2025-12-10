@@ -246,13 +246,28 @@ public class AdminCDIBean implements Serializable {
 
     public void addCourse() {
         try {
+            successMessage = null;
+            errorMessage = null;
+            if (courseName == null || courseName.trim().isEmpty()) {
+                errorMessage = "Please Enter Course Name!";
+                return;
+            }
             abl.addCourse(courseName);
-            message = "Course added successfully!";
-            courseName = ""; // Refresh course list
-            courseList = new ArrayList<>(abl.getAllCourse());
+            successMessage = "Course Added Successfully " + courseName;
+            courseName = "";
         } catch (Exception e) {
-            message = "Error adding course: " + e.getMessage();
+            e.printStackTrace();
+            errorMessage = "Error adding division: " + e.getMessage();
+
         }
+//        try {
+//            abl.addCourse(courseName);
+//            message = "Course added successfully!";
+//            courseName = ""; // Refresh course list
+//            courseList = new ArrayList<>(abl.getAllCourse());
+//        } catch (Exception e) {
+//            message = "Error adding course: " + e.getMessage();
+//        }
     }
 
     public void insertDivision() {
@@ -540,15 +555,15 @@ public class AdminCDIBean implements Serializable {
     }
 
     public void loadSemesters() {
-        studentSemesterId = null;
-        studentDivisionId = null;
-        divisionList = new ArrayList<>();
-
         if (studentCourseId != null) {
-            semesterList = abl.getSemestersByCourse(studentCourseId);
+            semesterList = new ArrayList<>(abl.getSemestersByCourse(studentCourseId));
         } else {
             semesterList = new ArrayList<>();
         }
+
+        studentSemesterId = null;
+        studentDivisionId = null;
+        divisionList = new ArrayList<>();
     }
 
     public void loadDivisions() {
@@ -557,6 +572,8 @@ public class AdminCDIBean implements Serializable {
         } else {
             divisionList = new ArrayList<>();
         }
+
+        studentDivisionId = null;
     }
 
     public Collection<Division> getDivisionList() {

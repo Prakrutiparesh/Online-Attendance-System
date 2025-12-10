@@ -262,7 +262,14 @@
                         </tbody>
 
                     </table>
+                    <h:panelGroup rendered="#{not empty updateCDIBean.filteredStudentList}" style="margin-top:15px;">
+                        <h:commandButton 
+                            value="Export to Excel" 
+                            action="#{updateCDIBean.exportAttendanceToExcel}" 
+                            style="background:#28a745; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer;"/>
+                    </h:panelGroup>
                 </h:panelGroup>
+
 
                 <!-- Message -->
                 <h:panelGroup id="messagePanel">

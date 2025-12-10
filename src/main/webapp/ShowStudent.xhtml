@@ -224,7 +224,7 @@
                                     <f:selectItem itemLabel="--Select--" itemValue="" />
                                     <f:selectItems value="#{updateCDIBean.divisionList}" var="d"
                                                    itemValue="#{d.divId}" itemLabel="#{d.divName}" />
-                                    <f:ajax execute="@this" listener="#{updateCDIBean.loadStudents}" render="studentPanel" />
+                                    <f:ajax execute="@this" listener="#{updateCDIBean.showStudent()}" render="studentPanel" />
                                 </h:selectOneMenu>
                             </div>
                         </h:panelGroup>

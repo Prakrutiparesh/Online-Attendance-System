@@ -812,20 +812,22 @@ public class AdminBean implements AdminBeanLocal {
             List<AttendanceSummary> list = query.getResultList();
 
             if (list.isEmpty()) {
-                throw new IllegalArgumentException("No summary found for Student ID: " + studId + " and Subject ID: " + subId);
+                // Improved message without breaking flow
+                System.out.println("No summary found yet for Student ID: " + studId + " and Subject ID: " + subId + ". It will be created on first attendance mark.");
+                return null; // Pehli baar attendance ke liye null return
             }
 
             return list.get(0);
 
         } catch (IllegalArgumentException e) {
             System.err.println("Validation error in findSummaryByStudentAndSubject(): " + e.getMessage());
-            throw e;
+            throw e; // Maintain current behavior
         } catch (Exception e) {
             System.err.println("Unexpected error in findSummaryByStudentAndSubject(): " + e.getMessage());
             throw new RuntimeException("Error finding summary by student and subject: " + e.getMessage());
         }
     }
-    
+
     @Override
     public Collection<AttendanceSummary> getAllSummaries() {
         try {

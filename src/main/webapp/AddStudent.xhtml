@@ -64,6 +64,7 @@
                                        itemValue="#{c.courseId}" itemLabel="#{c.courseName}" />
                         <!-- Load Semesters on Course Change -->
                         <f:ajax listener="#{adminCDIBean.loadSemesters}" render="semPanel divPanel" execute="@this" />
+
                     </h:selectOneMenu>
                     <h:message for="course" style="color:red;" />
                 </div>
@@ -82,6 +83,8 @@
                                 <f:selectItems value="#{adminCDIBean.semesterList}" var="s"
                                                itemValue="#{s.semId}" itemLabel="#{s.semName}" />
                                 <f:ajax listener="#{adminCDIBean.loadDivisions}" render="divPanel" execute="@this" />
+
+
                             </h:selectOneMenu>
                             <h:message for="sem" style="color:red;" />
                         </div>

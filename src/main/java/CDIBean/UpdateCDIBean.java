@@ -11,18 +11,22 @@ import Entity.Subject;
 import Entity.Users;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.Map;
+import java.io.Serializable;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.context.ExternalContext;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 @Named("updateCDIBean")
 @ViewScoped
@@ -148,11 +152,41 @@ public class UpdateCDIBean implements Serializable {
 
             for (Student st : studentList) {
                 AttendanceSummary summary = abl.findSummaryByStudentAndSubject(st.getStudId(), updateSubId);
-                studentSummaryMap.put(st.getStudId(), summary);
+                if (summary != null) {
+                    studentSummaryMap.put(st.getStudId(), summary);
+                } else {
+                    studentSummaryMap.put(st.getStudId(), null); // Ya ek empty placeholder
+                }
             }
+
         }
 
         filteredStudentList = new ArrayList<>(studentList);
+    }
+
+    public void showStudent() {
+        System.out.println("selectedCourseId = " + selectedCourseId);
+        System.out.println("selectedSemId = " + selectedSemId);
+        System.out.println("selectedStudentDivId = " + selectedStudentDivId);
+
+        if (selectedCourseId != null && selectedCourseId > 0
+                && selectedSemId != null && selectedSemId > 0
+                && selectedStudentDivId != null && selectedStudentDivId > 0) {
+
+            studentList = abl.getStudentsByCourseSemDiv(selectedCourseId, selectedSemId, selectedStudentDivId);
+
+            System.out.println("Loaded students: " + studentList.size());
+        } else {
+            studentList = new ArrayList<>();
+            System.out.println("Waiting for valid selection...");
+        }
+        for (Student st : studentList) {
+            System.out.println("Stud: " + st.getStudId() + " | "
+                    + "Course: " + st.getCourse().getCourseName() + " | "
+                    + "Sem: " + st.getSemester().getSemName() + " | "
+                    + "Div: " + st.getDivision().getDivName());
+        }
+
     }
 
     public void loadDivisions() {
@@ -217,13 +251,13 @@ public class UpdateCDIBean implements Serializable {
 
     public void updateStudent() {
         abl.updateStudent(updateStudId, updateStudName, updateStudRoll, selectedCourseId, selectedSemId, selectedStudentDivId);
-        loadStudents();
+        showStudent();
         showUpdateForm = false;
     }
 
     public void deleteStudent(Integer studId) {
         abl.deleteStudent(studId, selectedCourseId, selectedSemId, selectedStudentDivId);
-        loadStudents();
+        showStudent();
     }
 
     public void editDivision(Integer divId, String divName) {
@@ -341,6 +375,61 @@ public class UpdateCDIBean implements Serializable {
         fc.getExternalContext().getFlash().put("subId", updateSubId);
 
         return "studentAttendance?faces-redirect=true";
+    }
+
+    public void exportAttendanceToExcel() {
+        try {
+            // Workbook & Sheet
+            XSSFWorkbook workbook = new XSSFWorkbook();
+            XSSFSheet sheet = workbook.createSheet("Attendance Report");
+
+            // Header Row
+            Row header = sheet.createRow(0);
+            header.createCell(0).setCellValue("Roll No");
+            header.createCell(1).setCellValue("Name");
+            header.createCell(2).setCellValue("Total Present");
+            header.createCell(3).setCellValue("Total Absent");
+            header.createCell(4).setCellValue("Average (%)");
+
+            // Data Rows
+            int rowCount = 1;
+            for (Student stud : filteredStudentList) {
+                Row row = sheet.createRow(rowCount++);
+                row.createCell(0).setCellValue(stud.getRollNo());
+                row.createCell(1).setCellValue(stud.getStudentName());
+
+                AttendanceSummary summary = studentSummaryMap.get(stud.getStudId());
+                if (summary != null) {
+                    row.createCell(2).setCellValue(summary.getTotalPresent());
+                    row.createCell(3).setCellValue(summary.getTotalAbsent());
+                    row.createCell(4).setCellValue(summary.getAvgAttendance());
+                } else {
+                    row.createCell(2).setCellValue(0);
+                    row.createCell(3).setCellValue(0);
+                    row.createCell(4).setCellValue(0);
+                }
+            }
+
+            // Auto-size columns
+            for (int i = 0; i < 5; i++) {
+                sheet.autoSizeColumn(i);
+            }
+
+            // Write to response
+            FacesContext fc = FacesContext.getCurrentInstance();
+            ExternalContext ec = fc.getExternalContext();
+            ec.responseReset();
+            ec.setResponseContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            ec.setResponseHeader("Content-Disposition", "attachment; filename=Attendance_Report.xlsx");
+
+            workbook.write(ec.getResponseOutputStream());
+            workbook.close();
+            fc.responseComplete();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            message = "Error exporting Excel: " + e.getMessage();
+        }
     }
 
     // --- Getters & Setters ---
