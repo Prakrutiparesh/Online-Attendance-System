@@ -11,155 +11,244 @@
     <h:head>
         <title>Facelet Title</title>
         <style>
-            /* ======== Container  Card ======== */
+            /* Main styling based on the reference design */
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: "Poppins", sans-serif;
+                background: #f8f9fa;
+                color: #0a2342;
+            }
+
+            /* Main container */
             .form-container {
-                max-width: 980px;
+                max-width: 1200px;
                 margin: 40px auto;
                 padding: 30px;
                 background: #ffffff;
-                border-radius: 16px;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.12);
-                border: 1px solid #e0e0e0;
+                border-radius: 14px;
+                border: 1px solid rgba(0, 0, 0, 0.06);
+                box-shadow: 0 8px 28px rgba(0, 65, 200, 0.10);
             }
 
             h3 {
-                color: #007bff;
                 text-align: center;
-                margin-bottom: 30px;
-                font-size: 22px;
                 font-weight: 700;
+                margin-bottom: 30px;
+                padding-bottom: 20px;
+                border-bottom: 2px solid #eef4ff;
+                color: #34495e;
+                font-size: 26px;
             }
 
-            /* ======== Form Rows ======== */
+            /* Form Rows */
             .form-row {
                 display: flex;
                 flex-wrap: wrap;
                 gap: 25px;
-                justify-content: flex-start;
+                justify-content: center;
                 margin-bottom: 20px;
             }
 
             .form-group {
-                display: flex;
-                flex-direction: column;
+                flex: 1;
                 min-width: 200px;
+                max-width: 250px;
+                text-align: center;
             }
 
             label {
+                display: block;
                 font-weight: 600;
-                margin-bottom: 8px;
-                color: #333;
+                margin-bottom: 10px;
+                color: #34495e;
+                font-size: 15px;
             }
 
             select, input[type="text"], input[type="date"] {
+                width: 100%;
                 padding: 10px 12px;
-                border-radius: 8px;
-                border: 1px solid #ccc;
                 font-size: 14px;
-                outline: none;
-                transition: all 0.2s;
+                border-radius: 8px;
+                border: 2px solid #d6e1ff;
+                background: #ffffff;
+                transition: .3s;
+                box-sizing: border-box;
+                height: 42px;
             }
 
             select:focus, input[type="text"]:focus, input[type="date"]:focus {
-                border-color: #007bff;
-                box-shadow: 0 0 8px rgba(0,123,255,0.2);
-            }
-
-            /* ======== Back Link ======== */
-            .back-link {
-                display: inline-block;
-                margin-bottom: 25px;
-                padding: 8px 16px;
-                background: #0a2342;
-                color: #fff;
-                border-radius: 8px;
-                text-decoration: none;
-                font-size: 14px;
-                font-weight: 600;
-                transition: 0.3s;
-            }
-
-            .back-link:hover {
-                background: #07305a;
-            }
-
-            /* ======== Search Bar ======== */
-            .search-bar {
-                display: flex;
-                justify-content: flex-end;
-                margin-bottom: 15px;
-            }
-
-            .search-bar input {
-                width: 280px;
-                padding: 8px 12px;
-                border-radius: 8px;
-                border: 1px solid #ccc;
-                font-size: 14px;
+                border-color: #004bcc;
+                box-shadow: 0 0 6px rgba(0, 97, 255, 0.35);
                 outline: none;
             }
 
-            .search-bar input:focus {
-                border-color: #007bff;
-                box-shadow: 0 0 5px rgba(0,123,255,0.3);
+            /* Button styling */
+            .load-btn {
+                background: #0061ff;
+                color: white;
+                border: none;
+                padding: 10px 24px;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 15px;
+                font-weight: 600;
+                transition: 0.25s ease;
+                height: 42px;
+                min-width: 180px;
             }
 
-            /* ======== Table ======== */
+            .load-btn:hover {
+                background: #004bcc;
+            }
+
+            /* Date info section */
+            .date-info {
+                background: #e5edff;
+                padding: 12px 20px;
+                border-radius: 8px;
+                margin: 15px 0;
+                border-left: 4px solid #0061ff;
+                font-size: 15px;
+                color: #0a2342;
+            }
+
+            .date-info strong {
+                color: #004bcc;
+                margin-right: 5px;
+            }
+
+            /* Table */
             table {
                 width: 100%;
                 border-collapse: collapse;
-                border-radius: 12px;
+                margin: 15px 0;
+                border-radius: 10px;
                 overflow: hidden;
                 box-shadow: 0 5px 15px rgba(0,0,0,0.05);
             }
 
-            th, td {
-                padding: 14px;
-                text-align: center;
-                font-size: 14px;
-                color: #333;
-            }
-
             th {
-                background: #007bff;
-                color: #fff;
+                background: #f1f5f9;
+                color: #34495e;
+                padding: 18px;
+                text-align: left;
+                border-bottom: 2px solid #e2e8f0;
                 font-weight: 600;
+                font-size: 15px;
             }
 
-            tr:nth-child(even) {
-                background: #f9f9f9;
+            th:first-child {
+                border-radius: 10px 0 0 0;
+            }
+
+            th:last-child {
+                border-radius: 0 10px 0 0;
+            }
+
+            td {
+                padding: 16px;
+                border-bottom: 1px solid #e2e8f0;
+                color: #0a2342;
+                font-size: 14px;
+            }
+
+            tr {
+                background: #ffffff;
+                transition: .25s ease;
             }
 
             tr:hover {
-                background: #e6f0ff;
-                transition: 0.3s;
+                background: #e5edff;
             }
 
-            /* ======== Message ======== */
-            #messagePanel h:outputText {
+            /* Status badges */
+            .status-badge {
+                padding: 6px 16px;
+                border-radius: 20px;
+                font-size: 13px;
                 font-weight: 600;
-                margin-top: 15px;
-                display: block;
+                text-transform: capitalize;
+                display: inline-block;
+                min-width: 80px;
+                text-align: center;
             }
 
-            /* ======== Responsive ======== */
+            .present {
+                background: #d1f7c4;
+                color: #0e7c0e;
+                border: 1px solid #a8e6a3;
+            }
+
+            .absent {
+                background: #ffeaea;
+                color: #d32f2f;
+                border: 1px solid #ffb3b3;
+            }
+
+            /* Message */
+            .messages {
+                margin-top: 20px;
+                padding: 15px;
+                background: #fff5f5;
+                border: 1px solid #ffcccc;
+                border-radius: 8px;
+                color: #ff4d4d;
+                font-weight: 600;
+                text-align: center;
+            }
+
+            /* Responsive */
             @media (max-width: 768px) {
+                .form-container {
+                    padding: 20px;
+                    margin: 20px auto;
+                }
+
+                .form-group {
+                    min-width: 100%;
+                    max-width: 100%;
+                }
+
                 .form-row {
                     flex-direction: column;
-                    gap: 15px;
+                    gap: 20px;
                 }
 
-                select, input[type="text"], input[type="date"] {
+                .load-btn {
                     width: 100%;
+                    min-width: auto;
                 }
 
-                .search-bar {
-                    justify-content: center;
+                th, td {
+                    padding: 12px;
                 }
             }
-        </style>
 
+            /* For larger screens - adjust dropdowns */
+            @media (min-width: 769px) and (max-width: 1200px) {
+                .form-group {
+                    min-width: 180px;
+                    max-width: 220px;
+                }
+            }
+
+            /* Animations */
+            @keyframes fadeIn {
+                from {
+                    opacity:0;
+                }
+                to {
+                    opacity:1;
+                }
+            }
+
+            .form-container {
+                animation: fadeIn .4s ease-in-out;
+            }
+        </style>
     </h:head>
+
     <h:body>
         <h:form id="viewForm">
 
@@ -232,7 +321,6 @@
 
                 <div class="form-row">
                     <!-- Date Picker -->
-                    <!-- Date Picker में AJAX जोड़ें -->
                     <div class="form-group">
                         <label>Select Date</label>
                         <h:inputText id="selectedDate" value="#{updateCDIBean.selectedDate}" pt:type="date">
@@ -243,11 +331,10 @@
                         </h:inputText>
                     </div>
 
-
                     <!-- Load Attendance Button -->
                     <div class="form-group" style="margin-top: 30px;">
                         <h:commandButton value="Load Attendance"
-                                         style="padding:10px 18px; background:#007bff; color:white; border-radius: 8px;"
+                                         styleClass="load-btn"
                                          action="#{updateCDIBean.loadDateWiseAttendance}">
                             <f:ajax render="dateAttendancePanel messages" />
                         </h:commandButton>
@@ -258,8 +345,8 @@
                 <h:panelGroup id="dateAttendancePanel">
                     <h:panelGroup rendered="#{not empty updateCDIBean.dateWiseAttendanceList}">
                         <!-- Display selected date -->
-                        <div style="margin: 10px 0; padding: 8px; background: #f0f0f0; border-radius: 4px;">
-                            <strong>Selected Date:</strong> #{updateCDIBean.selectedDate}
+                        <div class="date-info">
+                            <strong>Selected Date:</strong> #{updateCDIBean.selectedDate} |
                             <strong>Total Records:</strong> #{fn:length(updateCDIBean.dateWiseAttendanceList)}
                         </div>
 
@@ -275,9 +362,7 @@
                                     <td>#{att.student.studentName}</td>
                                     <td>#{att.student.rollNo}</td>
                                     <td>
-                                        <span style="padding:6px 12px; border-radius:6px;
-                                              background: #{att.status eq 'present' ? 'green' : 'red'};
-                                              color:white; font-weight:bold;">
+                                        <span class="status-badge #{att.status eq 'present' ? 'present' : 'absent'}">
                                             #{att.status}
                                         </span>
                                     </td>
@@ -289,9 +374,8 @@
             </div>
 
             <!-- Messages -->
-            <h:messages id="messages" style="color: red; font-weight: bold;" />
+            <h:messages id="messages" styleClass="messages" globalOnly="false" />
 
         </h:form>
-
     </h:body>
 </html>

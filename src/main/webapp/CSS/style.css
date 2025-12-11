@@ -1,14 +1,11 @@
 body {
+    margin: 0;
     font-family: 'Poppins', sans-serif;
-    background: #f4f4f4;
+    background: #e8f0fe;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    /*    min-height: 100vh;
-        align-items: flex-start;
-        padding-top: 40px;
-        padding-bottom: 40px;*/
     margin: 0;
 }
 
@@ -61,20 +58,21 @@ input[type="date"].selected-date {
 
 
 .btn {
-    background-color: #cddc39; /* lime green */
+    background-color: #3b82f6;
     color: #fff;
-    padding: 12px;
+    padding: 12px 0;
     width: 105%;
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    font-weight: 500;
-    margin-top: 10px;
-    font-size: 20px;
+    font-size: 16px;
+    font-weight: 600;
+    transition: background-color 0.3s;
+
 }
 
 .btn:hover {
-    background-color: #b0ca2d;
+    background-color: #2563eb;
 }
 
 .login-link {
@@ -84,7 +82,7 @@ input[type="date"].selected-date {
 }
 
 .login-link a {
-    color: #cddc39;
+    color: #3b82f6;
     text-decoration: none;
     font-weight: 500;
     font-size: 15px;
@@ -123,29 +121,32 @@ input[type="date"].selected-date {
 
 /* Smaller Buttons */
 .btn-login {
-    background-color: #cddc39;
+    background-color: #3b82f6;
     color: #fff;
-    padding: 10px 0px;
+    padding: 10px;
     width: 100%;
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    font-weight: 500;
-    font-size: 16px; /* smaller */
+    font-weight: 600;
+    font-size: 16px;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+
 }
 
 /* Hover Effect */
 .btn-login:hover {
-    background-color: #b0ca2d;
+    background-color: #2563eb;
 }
 
 /* Reset Button Style */
 .reset-btn {
-    background: #777 !important;
+    background: #6b7280;
 }
 
 .reset-btn:hover {
-    background: #5a5a5a !important;
+    background: #4b5563;
 }
 .form-container2{
     background: white;
@@ -158,4 +159,3 @@ input[type="date"].selected-date {
     padding-bottom: 35px;
 
 }
-
