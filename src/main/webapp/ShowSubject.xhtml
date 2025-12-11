@@ -8,141 +8,317 @@
         <title>Course-wise Subject Management</title>
 
         <style>
-            /* GLOBAL */
             body {
                 margin: 0;
                 padding: 0;
                 font-family: "Poppins", sans-serif;
-                background: #eef4ff;
+                background: #f8f9fa;
                 color: #0a2342;
             }
 
-            /* CARD */
+            /* Main container */
+            .container {
+                max-width: 1000px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+
+            /* Card styling */
             .card {
-                max-width: 800px;
-                margin: 40px auto;
                 background: #ffffff;
-                padding: 40px;
                 border-radius: 14px;
                 border: 1px solid rgba(0, 0, 0, 0.06);
                 box-shadow: 0 8px 28px rgba(0, 65, 200, 0.10);
+                padding: 30px;
                 animation: fadeIn .4s ease-in-out;
             }
 
-            h2 {
+            th {
+                background: #f1f5f9;
+                color: #34495e;
+                padding: 15px;
+                text-align: left;
+                border-bottom: 2px solid #e2e8f0;
+                font-weight: 600;
+            }
+
+            .title {
                 text-align: center;
-                font-size: 26px;
                 font-weight: 700;
-                color: #004bcc;
-                margin-bottom: 20px;
+                margin-bottom: 25px;
+                padding-bottom: 15px;
+                border-bottom: 2px solid #eef4ff;
+                color: #34495e;
+                margin: 0;
+                font-size: 24px;
             }
 
-            /* SELECT */
-            .menu {
-                width: 220px;
-                padding: 12px;
-                font-size: 16px;
+            /* Select section */
+            .select-section {
+                background: #f8faff;
+                padding: 20px;
                 border-radius: 10px;
-                border: 2px solid #d6e1ff;
-                background: #ffffff;
-                transition: .3s;
-            }
-            .menu:focus {
-                border-color: #004bcc;
-                box-shadow: 0 0 6px rgba(0, 97, 255, 0.35);
+                margin-bottom: 25px;
+                border: 1px solid #d6e1ff;
             }
 
-            /* FLEX */
             .form-row {
                 display: flex;
                 justify-content: center;
                 gap: 40px;
-                margin-bottom: 25px;
+                margin-bottom: 20px;
             }
 
-            /* TABLE */
-            table {
+            .form-row div {
+                text-align: center;
+                width: 300px; /* यह line add करें */
+            }
+
+
+            h3 {
+                color: #34495e;
+                margin-bottom: 8px;
+                font-size: 16px;
+            }
+
+            .select-box {
                 width: 100%;
-                border-collapse: collapse;
+                min-width: 250px; /* यह line add करें */
+                padding: 12px;
+                font-size: 16px;
+                border-radius: 8px;
+                border: 2px solid #d6e1ff;
+                background: #ffffff;
+                transition: .3s;
+            }
+
+            .select-box:focus {
+                border-color: #004bcc;
+                box-shadow: 0 0 6px rgba(0, 97, 255, 0.35);
+                outline: none;
+            }
+
+            /* Table section */
+            .table-section {
                 margin-top: 20px;
             }
-            th {
-                background: #004bcc;
-                color: #fff;
-                padding: 14px;
-            }
-            td {
-                background: #ffffff;
-                padding: 14px;
-                border: 1px solid #d9e2f7;
-            }
-            tr:hover td {
-                background: #e5edff;
-                transition: .25s;
+
+            .table-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 15px;
             }
 
-            /* BUTTONS */
-            input[type="submit"],
-            button,
+            .table-title {
+                font-size: 18px;
+                font-weight: 600;
+                color: #004bcc;
+            }
+
+            .count-badge {
+                background: #4da6ff;
+                color: white;
+                padding: 5px 15px;
+                border-radius: 20px;
+                font-size: 14px;
+            }
+
+            .modern-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 10px;
+            }
+
+            .modern-table th:first-child {
+                border-radius: 8px 0 0 0;
+            }
+
+            .modern-table th:last-child {
+                border-radius: 0 8px 0 0;
+            }
+
+            .modern-table td {
+                padding: 15px;
+                border-bottom: 1px solid #e2e8f0;
+                color: #0a2342;
+            }
+
+            .modern-table tbody tr {
+                background: #ffffff;
+                transition: .25s ease;
+            }
+
+            .modern-table tbody tr:hover {
+                background: #e5edff;
+            }
+
+            /* Action buttons */
+            .action-btns {
+                display: flex;
+                gap: 10px;
+                white-space: nowrap;
+            }
+
             .btn {
                 border: none;
-                padding: 10px 20px;
-                border-radius: 8px;
+                padding: 8px 16px;
+                border-radius: 6px;
                 cursor: pointer;
                 font-size: 14px;
                 font-weight: 600;
-                transition: .25s;
+                transition: 0.25s ease;
                 color: #fff;
-                margin-right: 8px;
+                min-width: 80px;
             }
-            .update-btn,
+
+            .update-btn {
+                background: #4da6ff;
+                color: white;
+            }
+
+            .update-btn:hover {
+                background: #1a73e8;
+            }
+
+            .delete-btn {
+                background: #ff4d4d;
+                color: white;
+            }
+
+            .delete-btn:hover {
+                background: #cc0000;
+            }
+
             .save-btn {
                 background: #0061ff;
             }
-            .update-btn:hover,
+
             .save-btn:hover {
                 background: #004bcc;
             }
-            .delete-btn {
-                background: #ff3b30;
-            }
-            .delete-btn:hover {
-                background: #d62b23;
-            }
+
             .cancel-btn {
                 background: #9aa9c4;
             }
 
-            /* POPUP */
+            .cancel-btn:hover {
+                background: #7f8c8d;
+            }
+
+            /* Simple not found message */
+            .not-found {
+                text-align: center;
+                padding: 30px;
+                color: #61708c;
+                background: #f8faff;
+                border-radius: 8px;
+                margin: 20px 0;
+                border: 1px solid #d6e1ff;
+                font-size: 16px;
+            }
+
+            /* Popup */
             .popup-overlay {
                 position: fixed;
-                inset: 0;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
                 background: rgba(0,0,0,0.45);
                 display: flex;
                 justify-content: center;
                 align-items: center;
+                z-index: 1000;
             }
+
             .popup-box {
                 background: #ffffff;
-                padding: 28px;
-                width: 430px;
+                padding: 30px;
+                width: 90%;
+                max-width: 450px;
                 border-radius: 14px;
                 box-shadow: 0 10px 35px rgba(0,0,0,0.15);
                 animation: slideUp .3s ease;
             }
-            .popup-input {
-                width: 100%;
-                padding: 13px;
-                border-radius: 8px;
-                border: 2px solid #d6e1ff;
-                margin-bottom: 14px;
-            }
 
-            .btn-container {
+            .popup-title {
+                font-size: 22px;
+                font-weight: 700;
+                color: #004bcc;
+                margin-bottom: 25px;
                 text-align: center;
             }
 
-            /* ANIMATIONS */
+            .form-group {
+                margin-bottom: 20px;
+            }
+
+            .form-label {
+                display: block;
+                font-weight: 600;
+                margin-bottom: 8px;
+                color: #0a2342;
+            }
+
+            .popup-input {
+                width: 100%;
+                padding: 12px;
+                border-radius: 8px;
+                border: 2px solid #d6e1ff;
+                font-size: 14px;
+                box-sizing: border-box;
+            }
+
+            .popup-input:focus {
+                border-color: #004bcc;
+                box-shadow: 0 0 5px rgba(0,97,255,0.25);
+                outline: none;
+            }
+
+            input[readonly] {
+                background: #f5f7fb;
+                color: #61708c;
+            }
+
+            .popup-buttons {
+                display: flex;
+                gap: 10px;
+                margin-top: 25px;
+            }
+
+            .popup-buttons .btn {
+                flex: 1;
+                padding: 12px;
+            }
+
+            /* Responsive */
+            @media (max-width: 768px) {
+                .container {
+                    padding: 15px;
+                }
+
+                .card {
+                    padding: 20px;
+                }
+
+                .form-row {
+                    flex-direction: column;
+                    gap: 20px;
+                    align-items: center;
+                }
+
+                .form-row div {
+                    width: 100%; /* Mobile पर full width */
+                    max-width: 400px;
+                }
+
+                .select-box {
+                    min-width: auto;
+                    width: 100%;
+                }
+            }
+
             @keyframes fadeIn {
                 from {
                     opacity:0;
@@ -151,102 +327,117 @@
                     opacity:1;
                 }
             }
+
             @keyframes slideUp {
                 from {
-                    transform:translateY(25px);
+                    transform: translateY(25px);
                     opacity:0;
                 }
                 to {
-                    transform:translateY(0);
+                    transform: translateY(0);
                     opacity:1;
                 }
             }
-
         </style>
     </h:head>
 
     <h:body>
 
-        <div class="card">
+        <div class="container">
+            <div class="card">
 
-            <h:form id="subjectForm">
+                <h2 class="title">Subject List</h2>
 
-                <h2>Course And Semester Selection</h2>
-
-                <div class="form-row">
-                    <!-- Course -->
-                    <div>
-                        <h3 style="text-align:center; margin-bottom:8px;">Course</h3>
-                        <h:selectOneMenu value="#{updateCDIBean.selectedCourseId}" styleClass="menu">
-                            <f:selectItem itemLabel="--Select--" itemValue="" />
-                            <f:selectItems value="#{updateCDIBean.courseList}" var="c"
-                                           itemValue="#{c.courseId}" itemLabel="#{c.courseName}" />
-                            <f:ajax listener="#{updateCDIBean.loadSemesters()}" render="semesterPanel subjectPanel" />
-                        </h:selectOneMenu>
-                    </div>
-
-                    <!-- Semester -->
-                    <h:panelGroup id="semesterPanel">
-                        <h:panelGroup rendered="#{not empty updateCDIBean.semesterList}">
+                <h:form id="subjectForm">
+                    <div class="select-section">
+                        <div class="form-row">
+                            <!-- Course -->
                             <div>
-                                <h3 style="text-align:center; margin-bottom:8px;">Semester</h3>
-                                <h:selectOneMenu value="#{updateCDIBean.selectedSemId}" styleClass="menu">
-                                    <f:selectItem itemLabel="--Select--" itemValue="" />
-                                    <f:selectItems value="#{updateCDIBean.semesterList}" var="s"
-                                                   itemValue="#{s.semId}" itemLabel="#{s.semName}" />
-                                    <f:ajax listener="#{updateCDIBean.loadSubjects()}" render="subjectPanel" />
+                                <h3>Course</h3>
+                                <h:selectOneMenu value="#{updateCDIBean.selectedCourseId}" styleClass="select-box">
+                                    <f:selectItem itemLabel="-- Select --" itemValue="" />
+                                    <f:selectItems value="#{updateCDIBean.courseList}" var="c"
+                                                   itemValue="#{c.courseId}" itemLabel="#{c.courseName}" />
+                                    <f:ajax listener="#{updateCDIBean.loadSemesters()}" render="semesterPanel subjectPanel" />
                                 </h:selectOneMenu>
                             </div>
+
+                            <!-- Semester -->
+                            <h:panelGroup id="semesterPanel">
+                                <h:panelGroup rendered="#{not empty updateCDIBean.semesterList}">
+                                    <div>
+                                        <h3>Semester</h3>
+                                        <h:selectOneMenu value="#{updateCDIBean.selectedSemId}" styleClass="select-box">
+                                            <f:selectItem itemLabel="-- Select --" itemValue="" />
+                                            <f:selectItems value="#{updateCDIBean.semesterList}" var="s"
+                                                           itemValue="#{s.semId}" itemLabel="#{s.semName}" />
+                                            <f:ajax listener="#{updateCDIBean.loadSubjects()}" render="subjectPanel" />
+                                        </h:selectOneMenu>
+                                    </div>
+                                </h:panelGroup>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+
+                    <!-- SUBJECT TABLE -->
+                    <h:panelGroup id="subjectPanel">
+                        <h:panelGroup rendered="#{not empty updateCDIBean.subjectList}">
+                            <div class="table-section">
+                                <div class="table-header">
+                                    <div class="table-title">Subjects List</div>
+                                    <div class="count-badge">
+                                        #{updateCDIBean.subjectList.size()} Subjects
+                                    </div>
+                                </div>
+
+                                <table class="modern-table">
+                                    <thead>
+
+                                    </thead>
+                                    <tbody>
+                                        <h:dataTable id="subjectTable"
+                                                     value="#{updateCDIBean.subjectList}" var="sub"
+                                                     styleClass="modern-table">
+
+                                            <h:column>
+                                                <f:facet name="header">ID</f:facet>
+                                                    #{sub.subId}
+                                            </h:column>
+
+                                            <h:column>
+                                                <f:facet name="header">Subject Name</f:facet>
+                                                    #{sub.subName}
+                                            </h:column>
+
+                                            <h:column>
+                                                <f:facet name="header">Actions</f:facet>
+                                                <div class="action-btns">
+                                                    <h:commandButton value="Update" styleClass="btn update-btn"
+                                                                     action="#{updateCDIBean.editSubject(sub.subId, sub.subName)}">
+                                                        <f:ajax execute="@this" render=":updateForm" />
+                                                    </h:commandButton>
+
+                                                    <h:commandButton value="Delete" styleClass="btn delete-btn"
+                                                                     action="#{updateCDIBean.deleteSubject(sub.subId)}">
+                                                        <f:ajax execute="@form" render="@form" />
+                                                    </h:commandButton>
+                                                </div>
+                                            </h:column>
+                                        </h:dataTable>
+                                    </tbody>
+                                </table>
+                            </div>
                         </h:panelGroup>
-                    </h:panelGroup>
-                </div>
 
-                <!-- SUBJECT TABLE -->
-                <h:panelGroup id="subjectPanel">
-
-                    <h:panelGroup rendered="#{not empty updateCDIBean.subjectList}">
-                        <h2>Subjects</h2>
-
-                        <h:dataTable value="#{updateCDIBean.subjectList}" var="sub">
-                            <h:column>
-                                <f:facet name="header">ID</f:facet>
-                                    #{sub.subId}
-                            </h:column>
-
-                            <h:column>
-                                <f:facet name="header">Name</f:facet>
-                                    #{sub.subName}
-                            </h:column>
-
-                            <h:column>
-                                <f:facet name="header">Action</f:facet>
-
-                                <h:commandButton value="Update" styleClass="update-btn"
-                                                 action="#{updateCDIBean.editSubject(sub.subId, sub.subName)}">
-                                    <f:ajax execute="@this" render=":updateForm" />
-                                </h:commandButton>
-
-                                <h:commandButton value="Delete" styleClass="delete-btn"
-                                                 action="#{updateCDIBean.deleteSubject(sub.subId)}">
-                                    <f:ajax execute="@form" render="@form" />
-                                </h:commandButton>
-
-                            </h:column>
-
-                        </h:dataTable>
+                        <h:panelGroup rendered="#{empty updateCDIBean.subjectList and not empty updateCDIBean.selectedSemId}">
+                            <div class="not-found">
+                                No Subjects Found
+                            </div>
+                        </h:panelGroup>
 
                     </h:panelGroup>
-
-                    <h:panelGroup rendered="#{empty updateCDIBean.subjectList}">
-                        <h3 style="text-align:center; color:#777; margin-top:20px;">
-                            No Subjects Found
-                        </h3>
-                    </h:panelGroup>
-
-                </h:panelGroup>
-
-            </h:form>
-
+                </h:form>
+            </div>
         </div>
 
         <!-- UPDATE POPUP -->
@@ -254,41 +445,43 @@
             <h:panelGroup rendered="#{updateCDIBean.showUpdateForm}">
                 <div class="popup-overlay">
                     <div class="popup-box">
-
-                        <h2>Update Subject</h2>
+                        <h3 class="popup-title">Update Subject</h3>
 
                         <h:form id="updatePopupForm">
+                            <div class="form-group">
+                                <label class="form-label">Subject ID</label>
+                                <h:inputText readonly="true"
+                                             value="#{updateCDIBean.updateSubId}"
+                                             styleClass="popup-input"/>
+                            </div>
 
-                            <div style="text-align:left;">Subject ID</div>
-                            <h:inputText readonly="true"
-                                         value="#{updateCDIBean.updateSubId}"
-                                         styleClass="popup-input"/>
+                            <div class="form-group">
+                                <label class="form-label">Subject Name</label>
+                                <h:inputText value="#{updateCDIBean.updateSubName}"
+                                             styleClass="popup-input"
+                                             required="true"
+                                             requiredMessage="Subject name is required"/>
+                            </div>
 
-                            <div style="text-align:left;">Subject Name</div>
-                            <h:inputText value="#{updateCDIBean.updateSubName}"
-                                         styleClass="popup-input"/>
-
-                            <div class="btn-container">
-                                <h:commandButton value="Save Update" styleClass="save-btn"
+                            <div class="popup-buttons">
+                                <h:commandButton value="Save Changes"
+                                                 styleClass="btn save-btn"
                                                  action="#{updateCDIBean.saveUpdate()}">
                                     <f:ajax execute="@form"
                                             render=":subjectForm:subjectPanel :updateForm" />
                                 </h:commandButton>
 
-                                <h:commandButton value="Cancel" styleClass="cancel-btn"
+                                <h:commandButton value="Cancel"
+                                                 styleClass="btn cancel-btn"
                                                  action="#{updateCDIBean.cancelPopup()}">
                                     <f:ajax render=":updateForm" />
                                 </h:commandButton>
-
                             </div>
-
                         </h:form>
-
                     </div>
                 </div>
             </h:panelGroup>
         </h:panelGroup>
 
     </h:body>
-
 </html>

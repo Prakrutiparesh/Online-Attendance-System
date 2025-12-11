@@ -2,7 +2,8 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
     <h:head>
         <title>Show Semesters</title>
@@ -11,46 +12,67 @@
                 margin: 0;
                 padding: 0;
                 font-family: "Poppins", sans-serif;
-                background: #eef4ff;
+                background: #f8f9fa;
                 color: #0a2342;
             }
 
+            /* Main container */
+            .container {
+                max-width: 1000px;
+                margin: 0 auto;
+                padding: 20px;
+
+            }
+
+            /* Card styling */
             .card {
-                max-width: 700px;
-                margin: 40px auto;
                 background: #ffffff;
-                padding: 40px;
                 border-radius: 14px;
                 border: 1px solid rgba(0, 0, 0, 0.06);
                 box-shadow: 0 8px 28px rgba(0, 65, 200, 0.10);
+                padding: 30px;
                 animation: fadeIn .4s ease-in-out;
             }
-
-
+            th{
+                background: #f1f5f9;
+                color: #34495e;
+                padding: 15px;
+                text-align: left;
+                border-bottom: 2px solid #e2e8f0;
+                font-weight: 600;
+            }
             .title {
                 text-align: center;
-                font-size: 26px;
                 font-weight: 700;
-                color: #004bcc;
-                margin-bottom: 35px;
-            }
-
-            .select-row {
-                display: flex;
-                justify-content: space-between;
-                gap: 22px;
                 margin-bottom: 25px;
+                padding-bottom: 15px;
+                border-bottom: 2px solid #eef4ff;
+                color: #34495e;
+                margin: 0;
+                font-size: 24px;
             }
 
-            .select-item {
-                width: 50%;
+            /* Select section */
+            .select-section {
+                background: #f8faff;
+                padding: 20px;
+                border-radius: 10px;
+                margin-bottom: 25px;
+                border: 1px solid #d6e1ff;
+            }
+
+            .select-label {
+                display: block;
+                font-weight: 600;
+                margin-bottom: 10px;
+                color: #004bcc;
             }
 
             .select-box {
                 width: 100%;
-                padding: 14px;
+                padding: 12px;
                 font-size: 16px;
-                border-radius: 10px;
+                border-radius: 8px;
                 border: 2px solid #d6e1ff;
                 background: #ffffff;
                 transition: .3s;
@@ -59,107 +81,243 @@
             .select-box:focus {
                 border-color: #004bcc;
                 box-shadow: 0 0 6px rgba(0, 97, 255, 0.35);
+                outline: none;
+            }
+
+            /* Table section */
+            .table-section {
+                margin-top: 20px;
+            }
+
+            .table-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 15px;
+            }
+
+            .table-title {
+                font-size: 18px;
+                font-weight: 600;
+                color: #004bcc;
+            }
+
+            .count-badge {
+                background: #4da6ff;
+                color: white;
+                padding: 5px 15px;
+                border-radius: 20px;
+                font-size: 14px;
             }
 
             .modern-table {
                 width: 100%;
-                border-collapse: separate;
-                border-spacing: 0 10px;
-                margin-top: 20px;
+                border-collapse: collapse;
+                margin-top: 10px;
+            }
+
+            .modern-table thead {
+                /*background: #004bcc;*/
             }
 
             .modern-table th {
-                background: #004bcc;
-                color: #fff;
-                padding: 14px;
+                /*color: #fff;*/
+                padding: 15px;
                 text-align: left;
-                border-radius: 10px 10px 0 0;
+                font-weight: 600;
+            }
+
+            .modern-table th:first-child {
+                border-radius: 8px 0 0 0;
+            }
+
+            .modern-table th:last-child {
+                border-radius: 0 8px 0 0;
             }
 
             .modern-table td {
-                background: #ffffff;
-                padding: 14px;
-                border-bottom: 1px solid #d9e2f7;
+                padding: 15px;
+                border-bottom: 1px solid #e2e8f0;
+                color: #0a2342;
             }
 
-            .modern-table tbody tr:hover td {
-                background: #e5edff;
+            .modern-table tbody tr {
+                background: #ffffff;
                 transition: .25s ease;
             }
 
+            .modern-table tbody tr:hover {
+                background: #e5edff;
+            }
+
+            /* Action buttons */
+            .action-btns {
+                display: flex;
+                gap: 10px;
+                white-space: nowrap;
+            }
 
             .btn {
                 border: none;
-                padding: 10px 20px;
-                border-radius: 8px;
+                padding: 8px 16px;
+                border-radius: 6px;
                 cursor: pointer;
                 font-size: 14px;
                 font-weight: 600;
                 transition: 0.25s ease;
                 color: #fff;
+                min-width: 80px;
             }
 
-            .update-btn,
+            .update-btn {
+                background: #4da6ff;
+                color: white;
+            }
+
+            .update-btn:hover {
+                background: #1a73e8;
+            }
+
+            .delete-btn {
+                background: #ff4d4d;
+                color: white;
+            }
+
+            .delete-btn:hover {
+                background: #cc0000;
+            }
+
             .save-btn {
                 background: #0061ff;
             }
-            .update-btn:hover,
+
             .save-btn:hover {
                 background: #004bcc;
             }
 
-            .delete-btn {
-                background: #ff3b30;
-            }
-            .delete-btn:hover {
-                background: #d62b23;
-            }
-
             .cancel-btn {
                 background: #9aa9c4;
-                margin-left: 10px;
             }
 
-            .action-btns {
-                display: flex;
-                gap: 12px;
+            .cancel-btn:hover {
+                background: #7f8c8d;
             }
 
-            .empty-text {
+            /* Simple not found message */
+            .not-found {
                 text-align: center;
-                padding: 20px;
-                font-size: 17px;
+                padding: 30px;
                 color: #61708c;
+                background: #f8faff;
+                border-radius: 8px;
+                margin: 20px 0;
+                border: 1px solid #d6e1ff;
+                font-size: 16px;
             }
 
+            /* Popup */
             .popup-overlay {
                 position: fixed;
-                inset: 0;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
                 background: rgba(0,0,0,0.45);
                 display: flex;
                 justify-content: center;
                 align-items: center;
+                z-index: 1000;
             }
 
             .popup-box {
                 background: #ffffff;
-                padding: 28px;
-                width: 430px;
+                padding: 30px;
+                width: 90%;
+                max-width: 450px;
                 border-radius: 14px;
                 box-shadow: 0 10px 35px rgba(0,0,0,0.15);
                 animation: slideUp .3s ease;
             }
 
+            .popup-title {
+                font-size: 22px;
+                font-weight: 700;
+                color: #004bcc;
+                margin-bottom: 25px;
+                text-align: center;
+            }
+
+            .form-group {
+                margin-bottom: 20px;
+            }
+
+            .form-label {
+                display: block;
+                font-weight: 600;
+                margin-bottom: 8px;
+                color: #0a2342;
+            }
+
             .popup-input {
                 width: 100%;
-                padding: 13px;
+                padding: 12px;
                 border-radius: 8px;
                 border: 2px solid #d6e1ff;
-                margin-bottom: 14px;
+                font-size: 14px;
+                box-sizing: border-box;
             }
+
             .popup-input:focus {
                 border-color: #004bcc;
                 box-shadow: 0 0 5px rgba(0,97,255,0.25);
+                outline: none;
+            }
+
+            input[readonly] {
+                background: #f5f7fb;
+                color: #61708c;
+            }
+
+            .popup-buttons {
+                display: flex;
+                gap: 10px;
+                margin-top: 25px;
+            }
+
+            .popup-buttons .btn {
+                flex: 1;
+                padding: 12px;
+            }
+
+            /* Responsive */
+            @media (max-width: 768px) {
+                .container {
+                    padding: 15px;
+                }
+
+                .card {
+                    padding: 20px;
+                }
+
+                .table-header {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 10px;
+                }
+
+                .modern-table {
+                    display: block;
+                    overflow-x: auto;
+                }
+
+                .action-btns {
+                    flex-direction: column;
+                    gap: 5px;
+                }
+
+                .popup-buttons {
+                    flex-direction: column;
+                }
             }
 
             @keyframes fadeIn {
@@ -170,6 +328,7 @@
                     opacity:1;
                 }
             }
+
             @keyframes slideUp {
                 from {
                     transform: translateY(25px);
@@ -181,7 +340,6 @@
                 }
             }
         </style>
-        <!--<link href="CSS/ShowSemester.css" rel="stylesheet" type="text/css"/>-->
     </h:head>
 
     <h:body>
@@ -189,66 +347,74 @@
         <div class="container">
             <div class="card">
 
-                <h2 class="title">Select Course</h2>
+                <h2 class="title">Semester List</h2>
 
                 <h:form id="courseForm">
-
-                    <h:selectOneMenu value="#{updateCDIBean.selectedCourseId}"
-                                     styleClass="select-box">
-                        <f:selectItem itemLabel="--Select Course--" itemValue="" />
-                        <f:selectItems value="#{updateCDIBean.courseList}" var="c"
-                                       itemValue="#{c.courseId}" itemLabel="#{c.courseName}" />
-                        <f:ajax listener="#{updateCDIBean.loadSemesters()}"
-                                render="semesterPanel" />
-                    </h:selectOneMenu>
+                    <div class="select-section">
+                        <label class="select-label">Select Course</label>
+                        <h:selectOneMenu value="#{updateCDIBean.selectedCourseId}"
+                                         styleClass="select-box">
+                            <f:selectItem itemLabel="-- Select Course --" itemValue="" />
+                            <f:selectItems value="#{updateCDIBean.courseList}" var="c"
+                                           itemValue="#{c.courseId}" itemLabel="#{c.courseName}" />
+                            <f:ajax listener="#{updateCDIBean.loadSemesters()}"
+                                    render="semesterPanel" />
+                        </h:selectOneMenu>
+                    </div>
 
                     <h:panelGroup id="semesterPanel">
-
+                        <!-- Jab course select kiya hai aur semesters hai -->
                         <h:panelGroup rendered="#{not empty updateCDIBean.semesterList}">
-                            <h:dataTable id="semesterTable"
-                                         value="#{updateCDIBean.semesterList}" var="s"
-                                         styleClass="modern-table">
-
-                                <h:column>
-                                    <f:facet name="header">Semester ID</f:facet>
-                                        #{s.semId}
-                                </h:column>
-
-                                <h:column>
-                                    <f:facet name="header">Semester Name</f:facet>
-                                        #{s.semName}
-                                </h:column>
-
-                                <h:column>
-                                    <f:facet name="header">Actions</f:facet>
-
-                                    <div class="action-btns">
-                                        <h:commandButton value="Update"
-                                                         styleClass="btn update-btn"
-                                                         action="#{updateCDIBean.editSemester(s.semId, s.semName)}">
-                                            <f:ajax execute="@this" render=":updateForm" />
-                                        </h:commandButton>
-
-                                        <h:commandButton value="Delete"
-                                                         styleClass="btn delete-btn"
-                                                         action="#{updateCDIBean.deleteSemester(s.semId)}">
-                                            <f:ajax execute="@this" render=":courseForm:semesterPanel" />
-                                        </h:commandButton>
-
+                            <div class="table-section">
+                                <div class="table-header">
+                                    <div class="table-title">Semesters List</div>
+                                    <div class="count-badge">
+                                        #{updateCDIBean.semesterList.size()} Semesters
                                     </div>
+                                </div>
 
-                                </h:column>
+                                <table class="modern-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Semester ID</th>
+                                            <th>Semester Name</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <ui:repeat value="#{updateCDIBean.semesterList}" var="s">
+                                            <tr>
+                                                <td>#{s.semId}</td>
+                                                <td>#{s.semName}</td>
+                                                <td>
+                                                    <div class="action-btns">
+                                                        <h:commandButton value="Update"
+                                                                         styleClass="btn update-btn"
+                                                                         action="#{updateCDIBean.editSemester(s.semId, s.semName)}">
+                                                            <f:ajax execute="@this" render=":updateForm" />
+                                                        </h:commandButton>
 
-
-                            </h:dataTable>
+                                                        <h:commandButton value="Delete"
+                                                                         styleClass="btn delete-btn"
+                                                                         action="#{updateCDIBean.deleteSemester(s.semId)}">
+                                                            <f:ajax execute="@this" render=":courseForm:semesterPanel" />
+                                                        </h:commandButton>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </ui:repeat>
+                                    </tbody>
+                                </table>
+                            </div>
                         </h:panelGroup>
 
-                        <h:panelGroup rendered="#{empty updateCDIBean.semesterList}">
-                            <p class="empty-text">No Semesters Found</p>
+                        <!-- Jab course select kiya lekin semesters nahi hai -->
+                        <h:panelGroup rendered="#{empty updateCDIBean.semesterList and not empty updateCDIBean.selectedCourseId}">
+                            <div class="not-found">
+                                No semesters found for this course
+                            </div>
                         </h:panelGroup>
-
                     </h:panelGroup>
-
                 </h:form>
 
             </div>
@@ -258,24 +424,28 @@
         <!-- Popup Section -->
         <h:panelGroup id="updateForm">
             <h:panelGroup rendered="#{updateCDIBean.showUpdateForm}">
-
                 <div class="popup-overlay">
                     <div class="popup-box">
-
-                        <h2 class="title">Update Semester</h2>
+                        <h3 class="popup-title">Update Semester</h3>
 
                         <h:form id="updatePopupForm">
+                            <div class="form-group">
+                                <label class="form-label">Semester ID</label>
+                                <h:inputText readonly="true"
+                                             value="#{updateCDIBean.updateSemId}"
+                                             styleClass="popup-input" />
+                            </div>
 
-                            <h:inputText readonly="true"
-                                         value="#{updateCDIBean.updateSemId}"
-                                         styleClass="popup-input" />
+                            <div class="form-group">
+                                <label class="form-label">Semester Name</label>
+                                <h:inputText value="#{updateCDIBean.updateSemName}"
+                                             styleClass="popup-input"
+                                             required="true"
+                                             requiredMessage="Semester name is required" />
+                            </div>
 
-                            <h:inputText value="#{updateCDIBean.updateSemName}"
-                                         styleClass="popup-input" />
-
-                            <div class="btn-container">
-
-                                <h:commandButton value="Save Update"
+                            <div class="popup-buttons">
+                                <h:commandButton value="Save Changes"
                                                  styleClass="btn save-btn"
                                                  action="#{updateCDIBean.updateSemester()}">
                                     <f:ajax execute="@form"
@@ -284,17 +454,13 @@
 
                                 <h:commandButton value="Cancel"
                                                  styleClass="btn cancel-btn"
-                                                 action="#{updateCDIBean.cancelUpdate()}">
+                                                 action="#{updateCDIBean.cancelPopup()}">
                                     <f:ajax execute="@this" render=":updateForm" />
                                 </h:commandButton>
-
                             </div>
-
                         </h:form>
-
                     </div>
                 </div>
-
             </h:panelGroup>
         </h:panelGroup>
 

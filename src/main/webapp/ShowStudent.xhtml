@@ -12,7 +12,7 @@
                 margin: 0;
                 padding: 0;
                 font-family: "Poppins", sans-serif;
-                background: #eef4ff;
+                background: #f8f9fa;
                 color: #0a2342;
             }
 
@@ -65,15 +65,18 @@
                 margin-top: 18px;
             }
             th {
-                background: #004bcc;
-                color: #fff;
+                background: #f1f5f9;
+                color: #34495e;
                 padding: 12px;
                 font-size: 15px;
+                font-weight: 600;
+                border-bottom: 2px solid #e2e8f0;
             }
             td {
                 padding: 13px;
-                border: 1px solid #d9e2f7;
+                border-bottom: 1px solid #e2e8f0;
                 font-size: 15px;
+                color: #0a2342;
             }
             tr:hover td {
                 background: #e5edff;
@@ -83,42 +86,53 @@
             /* BUTTONS */
             .update-btn,
             .save-btn {
-                background: #0061ff;
-                padding: 9px 14px;
+                padding: 8px 16px;
                 margin-right: 6px;
-                border-radius: 8px;
-                color: #fff;
+                border-radius: 6px;
                 border: none;
                 font-size: 14px;
                 font-weight: 600;
                 cursor: pointer;
+                transition: 0.25s ease;
+                min-width: 80px;
+                background: #4da6ff;
+                color: white;
             }
             .update-btn:hover,
             .save-btn:hover {
-                background: #004bcc;
+                background: #1a73e8;
             }
 
             .delete-btn {
-                background: #ff3b30;
-                padding: 9px 14px;
-                border-radius: 8px;
-                color: #fff;
+                background: #ff4d4d;
+                color: white;
+                padding: 8px 16px;
+                border-radius: 6px;
                 border: none;
                 font-size: 14px;
                 font-weight: 600;
                 cursor: pointer;
+                transition: 0.25s ease;
+                min-width: 80px;
             }
             .delete-btn:hover {
-                background: #d62b23;
+                background: #cc0000;
             }
 
             .cancel-btn {
                 background: #9aa9c4;
-                padding: 9px 14px;
-                border-radius: 8px;
+                padding: 8px 16px;
+                border-radius: 6px;
                 color: #fff;
                 cursor: pointer;
                 border: none;
+                font-size: 14px;
+                font-weight: 600;
+                transition: 0.25s ease;
+                min-width: 80px;
+            }
+            .cancel-btn:hover {
+                background: #7f8c8d;
             }
 
             /* POPUP */
@@ -132,10 +146,12 @@
             }
             .popup-box {
                 background: #ffffff;
-                padding: 28px;
-                width: 420px;
+                padding: 30px;
+                width: 90%;
+                max-width: 450px;
                 border-radius: 14px;
                 box-shadow: 0 10px 35px rgba(0,0,0,0.15);
+                animation: slideUp .3s ease;
             }
 
             .popup-input {
@@ -143,8 +159,47 @@
                 padding: 12px;
                 border-radius: 8px;
                 border: 2px solid #d6e1ff;
-                margin-bottom: 18px;
+                margin-bottom: 20px;
+                font-size: 14px;
+                box-sizing: border-box;
             }
+            .popup-input:focus {
+                border-color: #004bcc;
+                box-shadow: 0 0 5px rgba(0,97,255,0.25);
+                outline: none;
+            }
+
+            .popup-title {
+                font-size: 22px;
+                font-weight: 700;
+                color: #004bcc;
+                margin-bottom: 25px;
+                text-align: center;
+            }
+
+            .form-group {
+                margin-bottom: 20px;
+            }
+
+            .form-label {
+                display: block;
+                font-weight: 600;
+                margin-bottom: 8px;
+                color: #0a2342;
+                font-size: 14px;
+            }
+
+            .popup-buttons {
+                display: flex;
+                gap: 10px;
+                margin-top: 25px;
+            }
+
+            .popup-buttons .btn {
+                flex: 1;
+                padding: 12px;
+            }
+
             .btn-container {
                 text-align: center;
                 margin-top: 10px;
@@ -165,6 +220,7 @@
                 border-radius: 10px;
                 border: 2px solid #d6e1ff;
                 transition: .3s;
+                background: #ffffff;
             }
             .menu:focus {
                 border-color: #004bcc;
@@ -177,6 +233,76 @@
                 margin-bottom: 25px;
             }
 
+            /* Simple not found message */
+            .not-found {
+                text-align: center;
+                padding: 30px;
+                color: #61708c;
+                background: #f8faff;
+                border-radius: 8px;
+                margin: 20px 0;
+                border: 1px solid #d6e1ff;
+                font-size: 16px;
+            }
+
+            /* Action buttons */
+            .action-btns {
+                display: flex;
+                gap: 10px;
+                white-space: nowrap;
+            }
+
+            /* Responsive */
+            @media (max-width: 768px) {
+                .card {
+                    padding: 20px;
+                }
+
+                .form-row {
+                    flex-direction: column;
+                    gap: 20px;
+                    align-items: center;
+                }
+
+                .menu {
+                    width: 100%;
+                    max-width: 400px;
+                }
+
+                table {
+                    display: block;
+                    overflow-x: auto;
+                }
+
+                .action-btns {
+                    flex-direction: column;
+                    gap: 5px;
+                }
+
+                .popup-buttons {
+                    flex-direction: column;
+                }
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity:0;
+                }
+                to {
+                    opacity:1;
+                }
+            }
+
+            @keyframes slideUp {
+                from {
+                    transform: translateY(25px);
+                    opacity:0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity:1;
+                }
+            }
         </style>
     </h:head>
 
@@ -255,28 +381,28 @@
 
                             <h:column>
                                 <f:facet name="header">Actions</f:facet>
+                                <div class="action-btns">
+                                    <h:commandButton value="Update"
+                                                     styleClass="update-btn"
+                                                     action="#{updateCDIBean.editStudent(st.studId, st.studentName, st.rollNo)}">
+                                        <f:ajax execute="@this" render=":updateForm" />
+                                    </h:commandButton>
 
-                                <h:commandButton value="Update"
-                                                 styleClass="update-btn"
-                                                 action="#{updateCDIBean.editStudent(st.studId, st.studentName, st.rollNo)}">
-                                    <f:ajax execute="@this" render=":updateForm" />
-                                </h:commandButton>
-
-                                <h:commandButton value="Delete"
-                                                 styleClass="delete-btn"
-                                                 action="#{updateCDIBean.deleteStudent(st.studId)}">
-                                    <f:ajax execute="@form" render="@form" />
-                                </h:commandButton>
-
+                                    <h:commandButton value="Delete"
+                                                     styleClass="delete-btn"
+                                                     action="#{updateCDIBean.deleteStudent(st.studId)}">
+                                        <f:ajax execute="@form" render="@form" />
+                                    </h:commandButton>
+                                </div>
                             </h:column>
 
                         </h:dataTable>
                     </h:panelGroup>
 
                     <h:panelGroup rendered="#{empty updateCDIBean.studentList}">
-                        <h3 style="text-align:center; color:#777; margin-top:20px;">
+                        <div class="not-found">
                             No Students Found
-                        </h3>
+                        </div>
                     </h:panelGroup>
                 </h:panelGroup>
 
@@ -289,18 +415,25 @@
             <h:panelGroup rendered="#{updateCDIBean.showUpdateForm}">
                 <div class="popup-overlay">
                     <div class="popup-box">
-
-                        <h2>Update</h2>
+                        <h3 class="popup-title">Update Student</h3>
 
                         <h:form id="updatePopupForm">
+                            <div class="form-group">
+                                <label class="form-label">Student ID</label>
+                                <h:inputText readonly="true" value="#{updateCDIBean.updateStudId}" class="popup-input"/>
+                            </div>
 
-                            <h:inputText readonly="true" value="#{updateCDIBean.updateStudId}" class="popup-input"/>
+                            <div class="form-group">
+                                <label class="form-label">Student Name</label>
+                                <h:inputText value="#{updateCDIBean.updateStudName}" class="popup-input"/>
+                            </div>
 
-                            <h:inputText value="#{updateCDIBean.updateStudName}" class="popup-input"/>
+                            <div class="form-group">
+                                <label class="form-label">Roll Number</label>
+                                <h:inputText value="#{updateCDIBean.updateStudRoll}" class="popup-input"/>
+                            </div>
 
-                            <h:inputText value="#{updateCDIBean.updateStudRoll}" class="popup-input"/>
-
-                            <div class="btn-container">
+                            <div class="popup-buttons">
                                 <h:commandButton value="Save Update"
                                                  styleClass="save-btn"
                                                  action="#{updateCDIBean.saveUpdate()}">
@@ -314,9 +447,7 @@
                                     <f:ajax execute="@this" render=":updateForm" />
                                 </h:commandButton>
                             </div>
-
                         </h:form>
-
                     </div>
                 </div>
             </h:panelGroup>
