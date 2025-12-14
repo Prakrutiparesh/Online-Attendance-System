@@ -25,6 +25,7 @@ import java.util.Map;
 import java.io.Serializable;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.context.ExternalContext;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -81,6 +82,38 @@ public class UpdateCDIBean implements Serializable {
     private Map<Integer, String> attendanceStatusMap = new HashMap<>();
 
     private Integer selectedSubId;
+    // Date Range
+    private Date fromDate;
+    private Date toDate;
+
+// Result List
+    private Collection<Attendance> dateRangeAttendanceList = new ArrayList<>();
+
+// Getters & Setters
+    public Date getFromDate() {
+        return fromDate;
+    }
+
+    public void setFromDate(Date fromDate) {
+        this.fromDate = fromDate;
+    }
+
+    public Date getToDate() {
+        return toDate;
+    }
+
+    public void setToDate(Date toDate) {
+        this.toDate = toDate;
+    }
+
+    public Collection<Attendance> getDateRangeAttendanceList() {
+        return dateRangeAttendanceList;
+    }
+
+    public void setDateRangeAttendanceList(Collection<Attendance> dateRangeAttendanceList) {
+        this.dateRangeAttendanceList = dateRangeAttendanceList;
+    }
+
     private Collection<Attendance> dateWiseAttendanceList;
     private Date selectedDate; // java.util.Date
 
@@ -132,6 +165,67 @@ public class UpdateCDIBean implements Serializable {
             e.printStackTrace();
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error loading attendance: " + e.getMessage(), null));
+        }
+    }
+
+    public void loadDateRangeAttendance() {
+        try {
+
+            if (fromDate == null || toDate == null) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_WARN,
+                                "Please select From Date and To Date!", null));
+                return;
+            }
+
+            if (toDate.before(fromDate)) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_WARN,
+                                "To Date cannot be before From Date!", null));
+                return;
+            }
+
+            if (selectedCourseId == null || selectedCourseId == -1
+                    || selectedSemId == null || selectedSemId == -1
+                    || selectedStudentDivId == null || selectedStudentDivId == -1
+                    || updateSubId == null || updateSubId == -1) {
+
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_WARN,
+                                "Please select Course, Semester, Division and Subject.", null));
+                return;
+            }
+
+            // Clear old data
+            dateRangeAttendanceList = new ArrayList<>();
+
+            java.sql.Date sqlFromDate = new java.sql.Date(fromDate.getTime());
+            java.sql.Date sqlToDate = new java.sql.Date(toDate.getTime());
+
+            System.out.println("From Date: " + sqlFromDate);
+            System.out.println("To Date: " + sqlToDate);
+
+            dateRangeAttendanceList = abl.getAttendanceBetweenDates(
+                    selectedCourseId,
+                    selectedSemId,
+                    selectedStudentDivId,
+                    updateSubId,
+                    sqlFromDate,
+                    sqlToDate
+            );
+
+            if (dateRangeAttendanceList.isEmpty()) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage("No attendance found for selected date range."));
+            } else {
+                System.out.println("Total Records: " + dateRangeAttendanceList.size());
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Error loading attendance: " + e.getMessage(), null));
         }
     }
 
@@ -533,6 +627,173 @@ public class UpdateCDIBean implements Serializable {
         } catch (Exception e) {
             e.printStackTrace();
             message = "Error exporting Excel: " + e.getMessage();
+        }
+    }
+
+    public void exportDateWiseAttendanceToExcel() {
+        try {
+            // Create workbook and sheet
+            XSSFWorkbook workbook = new XSSFWorkbook();
+            XSSFSheet sheet = workbook.createSheet("Date_Wise_Attendance");
+
+            // Create header row
+            Row header = sheet.createRow(0);
+            header.createCell(0).setCellValue("Date");
+            header.createCell(1).setCellValue("Roll No");
+            header.createCell(2).setCellValue("Student Name");
+            header.createCell(3).setCellValue("Status");
+
+            // Format date for filename
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
+            String formattedDate = sdf.format(selectedDate);
+
+            // Add data rows
+            int rowCount = 1;
+            for (Attendance att : dateWiseAttendanceList) {
+                Row row = sheet.createRow(rowCount++);
+
+                // Date
+                Cell dateCell = row.createCell(0);
+                dateCell.setCellValue(sdf.format(att.getAttendanceDate()));
+
+                // Roll No
+                row.createCell(1).setCellValue(att.getStudent().getRollNo());
+
+                // Student Name
+                row.createCell(2).setCellValue(att.getStudent().getStudentName());
+
+                // Status
+                row.createCell(3).setCellValue(att.getStatus());
+            }
+
+            // Auto-size columns
+            for (int i = 0; i < 4; i++) {
+                sheet.autoSizeColumn(i);
+            }
+
+            // Write to response
+            FacesContext fc = FacesContext.getCurrentInstance();
+            ExternalContext ec = fc.getExternalContext();
+
+            ec.responseReset();
+            ec.setResponseContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            ec.setResponseHeader("Content-Disposition", "attachment; filename=Date_Wise_Attendance_" + formattedDate + ".xlsx");
+
+            workbook.write(ec.getResponseOutputStream());
+            workbook.close();
+            fc.responseComplete();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    "Error exporting Excel: " + e.getMessage(), null);
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        }
+    }
+
+    public void exportDateRangeAttendanceToExcel() {
+        try {
+            // Check if there is data to export
+            if (dateRangeAttendanceList == null || dateRangeAttendanceList.isEmpty()) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_WARN,
+                                "No attendance data available to export!", null));
+                return;
+            }
+
+            // Check if dates are selected
+            if (fromDate == null || toDate == null) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_WARN,
+                                "Please select From Date and To Date!", null));
+                return;
+            }
+
+            // Create workbook and sheet
+            XSSFWorkbook workbook = new XSSFWorkbook();
+            XSSFSheet sheet = workbook.createSheet("Date_Range_Attendance");
+
+            // Format dates for filename and display
+            SimpleDateFormat sdfDisplay = new SimpleDateFormat("dd-MMM-yyyy");
+            SimpleDateFormat sdfFile = new SimpleDateFormat("dd_MMM_yyyy");
+
+            String fromDateStr = sdfDisplay.format(fromDate);
+            String toDateStr = sdfDisplay.format(toDate);
+            String fileNameDate = sdfFile.format(fromDate) + "_to_" + sdfFile.format(toDate);
+
+            // Create header row
+            Row header = sheet.createRow(0);
+            header.createCell(0).setCellValue("Date");
+            header.createCell(1).setCellValue("Roll No");
+            header.createCell(2).setCellValue("Student Name");
+            header.createCell(3).setCellValue("Status");
+
+            // Add date range info as second row
+            Row infoRow = sheet.createRow(1);
+            infoRow.createCell(0).setCellValue("Date Range: " + fromDateStr + " to " + toDateStr);
+            infoRow.createCell(1).setCellValue("Total Records: " + dateRangeAttendanceList.size());
+
+            // Add data rows starting from row 3
+            int rowCount = 3;
+            for (Attendance att : dateRangeAttendanceList) {
+                Row row = sheet.createRow(rowCount++);
+
+                // Date
+                Cell dateCell = row.createCell(0);
+                dateCell.setCellValue(sdfDisplay.format(att.getAttendanceDate()));
+
+                // Roll No
+                row.createCell(1).setCellValue(att.getStudent().getRollNo());
+
+                // Student Name
+                row.createCell(2).setCellValue(att.getStudent().getStudentName());
+
+                // Status
+                row.createCell(3).setCellValue(att.getStatus());
+            }
+
+            // Add summary at the end
+            Row summaryRow = sheet.createRow(rowCount + 1);
+            summaryRow.createCell(0).setCellValue("Summary:");
+
+            // Calculate present and absent counts
+            long presentCount = dateRangeAttendanceList.stream()
+                    .filter(att -> "present".equalsIgnoreCase(att.getStatus()))
+                    .count();
+            long absentCount = dateRangeAttendanceList.stream()
+                    .filter(att -> "absent".equalsIgnoreCase(att.getStatus()))
+                    .count();
+
+            summaryRow.createCell(1).setCellValue("Present: " + presentCount);
+            summaryRow.createCell(2).setCellValue("Absent: " + absentCount);
+
+            double total = dateRangeAttendanceList.size();
+            double percentage = (total > 0) ? (presentCount / total) * 100 : 0;
+            summaryRow.createCell(3).setCellValue("Attendance %: " + String.format("%.2f", percentage) + "%");
+
+            // Auto-size columns
+            for (int i = 0; i < 4; i++) {
+                sheet.autoSizeColumn(i);
+            }
+
+            // Write to response
+            FacesContext fc = FacesContext.getCurrentInstance();
+            ExternalContext ec = fc.getExternalContext();
+
+            ec.responseReset();
+            ec.setResponseContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            ec.setResponseHeader("Content-Disposition",
+                    "attachment; filename=Date_Range_Attendance_" + fileNameDate + ".xlsx");
+
+            workbook.write(ec.getResponseOutputStream());
+            workbook.close();
+            fc.responseComplete();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    "Error exporting Excel: " + e.getMessage(), null);
+            FacesContext.getCurrentInstance().addMessage(null, msg);
         }
     }
 

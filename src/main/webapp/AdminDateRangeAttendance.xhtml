@@ -9,7 +9,7 @@
 
 
     <h:head>
-        <title>Date Wise Attendance</title>
+        <title>Date Range Attendance</title>
         <style>
             /* Main styling based on the reference design */
             body {
@@ -98,30 +98,9 @@
                 min-width: 180px;
             }
 
-
-
             .load-btn:hover {
                 background: #004bcc;
             }
-
-            .export-btn {
-                background: #0061ff;
-                color: white;
-                border: none;
-                padding: 10px 20px; /* Reduced padding */
-                border-radius: 8px;
-                cursor: pointer;
-                font-size: 14px; /* Slightly smaller */
-                font-weight: 600;
-                transition: 0.25s ease;
-                margin-top: 20px;
-                height: 42px; /* Same as dropdowns */
-            }
-
-            .export-btn:hover {
-                background: #004bcc;
-            }
-
 
             /* Date info section */
             .date-info {
@@ -236,7 +215,7 @@
                     gap: 20px;
                 }
 
-                .load-btn, .export-btn {
+                .load-btn {
                     width: 100%;
                     min-width: auto;
                 }
@@ -267,8 +246,23 @@
             .form-container {
                 animation: fadeIn .4s ease-in-out;
             }
+            .export-btn {
+                background: #0061ff;
+                color: white;
+                border: none;
+                padding: 10px 20px; /* Reduced padding */
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 14px; /* Slightly smaller */
+                font-weight: 600;
+                transition: 0.25s ease;
+                margin-top: 20px;
+                height: 42px; /* Same as dropdowns */
+            }
 
-            /* Export button container */
+            .export-btn:hover {
+                background: #004bcc;
+            }
             .export-container {
                 text-align: left;
                 margin-top: 20px;
@@ -278,7 +272,7 @@
     </h:head>
 
     <h:body>
-        <h:form id="viewForm">
+        <h:form id="dateRangeForm">
 
             <!-- ======== COURSE / SEM / DIV / SUB DROPDOWNS ======== -->
             <div class="form-container">
@@ -292,7 +286,7 @@
                             <f:selectItem itemLabel="--Select--" itemValue="-1"/>
                             <f:selectItems value="#{updateCDIBean.courseList}" var="c" 
                                            itemValue="#{c.courseId}" itemLabel="#{c.courseName}"/>
-                            <f:ajax listener="#{updateCDIBean.loadSemesters}" render="semesterPanel divisionPanel subjectPanel dateAttendancePanel"/>
+                            <f:ajax listener="#{updateCDIBean.loadSemesters}" render="semesterPanel divisionPanel subjectPanel dateRangeAttendancePanel"/>
                         </h:selectOneMenu>
                     </div>
 
@@ -305,7 +299,7 @@
                                     <f:selectItem itemLabel="--Select--" itemValue="-1"/>
                                     <f:selectItems value="#{updateCDIBean.semesterList}" var="s"
                                                    itemValue="#{s.semId}" itemLabel="#{s.semName}"/>
-                                    <f:ajax listener="#{updateCDIBean.loadSubjects}" render="subjectPanel divisionPanel dateAttendancePanel"/>
+                                    <f:ajax listener="#{updateCDIBean.loadSubjects}" render="subjectPanel divisionPanel dateRangeAttendancePanel"/>
                                 </h:selectOneMenu>
                             </div>
                         </h:panelGroup>
@@ -320,7 +314,7 @@
                                     <f:selectItem itemLabel="--Select--" itemValue="-1"/>
                                     <f:selectItems value="#{updateCDIBean.subjectList}" var="sub"
                                                    itemValue="#{sub.subId}" itemLabel="#{sub.subName}"/>
-                                    <f:ajax listener="#{updateCDIBean.loadDivisions}" render="divisionPanel dateAttendancePanel"/>
+                                    <f:ajax listener="#{updateCDIBean.loadDivisions}" render="divisionPanel dateRangeAttendancePanel"/>
                                 </h:selectOneMenu>
                             </div>
                         </h:panelGroup>
@@ -335,7 +329,7 @@
                                     <f:selectItem itemLabel="--Select--" itemValue="-1"/>
                                     <f:selectItems value="#{updateCDIBean.divisionList}" var="d"
                                                    itemValue="#{d.divId}" itemLabel="#{d.divName}"/>
-                                    <f:ajax listener="#{updateCDIBean.clearAttendanceData}" render="dateAttendancePanel"/>
+                                    <f:ajax listener="#{updateCDIBean.clearDateRangeAttendanceData}" render="dateRangeAttendancePanel"/>
                                 </h:selectOneMenu>
                             </div>
                         </h:panelGroup>
@@ -343,19 +337,24 @@
                 </div>
             </div>
 
-            <!-- ======== DATE WISE ATTENDANCE ======== -->
+            <!-- ======== DATE RANGE ATTENDANCE ======== -->
             <div class="form-container" style="margin-top: 30px;">
-                <h3>Date Wise Attendance</h3>
+                <h3>Date Range Attendance</h3>
 
                 <div class="form-row">
-                    <!-- Date Picker -->
+                    <!-- From Date Picker -->
                     <div class="form-group">
-                        <label>Select Date</label>
-                        <h:inputText id="selectedDate" value="#{updateCDIBean.selectedDate}" pt:type="date">
+                        <label>From Date</label>
+                        <h:inputText id="fromDate" value="#{updateCDIBean.fromDate}" pt:type="date">
                             <f:convertDateTime pattern="yyyy-MM-dd" />
-                            <f:ajax event="change" 
-                                    listener="#{updateCDIBean.clearAttendanceData}"
-                                    render="dateAttendancePanel messages" />
+                        </h:inputText>
+                    </div>
+
+                    <!-- To Date Picker -->
+                    <div class="form-group">
+                        <label>To Date</label>
+                        <h:inputText id="toDate" value="#{updateCDIBean.toDate}" pt:type="date">
+                            <f:convertDateTime pattern="yyyy-MM-dd" />
                         </h:inputText>
                     </div>
 
@@ -363,37 +362,44 @@
                     <div class="form-group" style="margin-top: 30px;">
                         <h:commandButton value="Load Attendance"
                                          styleClass="load-btn"
-                                         action="#{updateCDIBean.loadDateWiseAttendance}">
-                            <f:ajax render="dateAttendancePanel messages" />
+                                         action="#{updateCDIBean.loadDateRangeAttendance}">
+                            <f:ajax execute="@form" render="dateRangeAttendancePanel messages" />
                         </h:commandButton>
                     </div>
                 </div>
 
                 <!-- Result Table -->
-                <h:panelGroup id="dateAttendancePanel">
-                    <h:panelGroup rendered="#{not empty updateCDIBean.dateWiseAttendanceList}">
-                        <!-- Display selected date -->
+                <h:panelGroup id="dateRangeAttendancePanel">
+                    <h:panelGroup rendered="#{not empty updateCDIBean.dateRangeAttendanceList}">
+                        <!-- Display selected date range -->
                         <div class="date-info">
-                            <strong>Selected Date:</strong> 
-                            <h:outputText value="#{updateCDIBean.selectedDate}">
+                            <strong>Date Range:</strong> 
+                            <h:outputText value="#{updateCDIBean.fromDate}">
+                                <f:convertDateTime pattern="dd-MMM-yyyy" />
+                            </h:outputText>
+                            to 
+                            <h:outputText value="#{updateCDIBean.toDate}">
                                 <f:convertDateTime pattern="dd-MMM-yyyy" />
                             </h:outputText>
                             | 
-                            <strong>Total Records:</strong> #{fn:length(updateCDIBean.dateWiseAttendanceList)}
+                            <strong>Total Records:</strong> #{fn:length(updateCDIBean.dateRangeAttendanceList)}
                         </div>
-
-                        <!-- Export to Excel Button -->
-
 
                         <table>
                             <tr>
+                                <th>Date</th>
                                 <th>Student Name</th>
                                 <th>Roll No</th>
                                 <th>Status</th>
                             </tr>
 
-                            <ui:repeat value="#{updateCDIBean.dateWiseAttendanceList}" var="att">
+                            <ui:repeat value="#{updateCDIBean.dateRangeAttendanceList}" var="att">
                                 <tr>
+                                    <td>
+                                        <h:outputText value="#{att.attendanceDate}">
+                                            <f:convertDateTime pattern="dd-MMM-yyyy" timeZone="Asia/Kolkata"/>
+                                        </h:outputText>
+                                    </td>
                                     <td>#{att.student.studentName}</td>
                                     <td>#{att.student.rollNo}</td>
                                     <td>
@@ -404,10 +410,15 @@
                                 </tr>
                             </ui:repeat>
                         </table>
-                        <div class="export-container">
-                            <h:commandButton value="Export to Excel" 
-                                             action="#{updateCDIBean.exportDateWiseAttendanceToExcel}" 
-                                             styleClass="export-btn"/>
+                        <h:commandButton value="Export to Excel" 
+                                         action="#{updateCDIBean.exportDateRangeAttendanceToExcel()}" 
+                                         styleClass="export-btn"/>
+                    </h:panelGroup>
+
+                    <!-- No Data Message -->
+                    <h:panelGroup rendered="#{empty updateCDIBean.dateRangeAttendanceList and updateCDIBean.fromDate != null and updateCDIBean.toDate != null}">
+                        <div class="date-info" style="background: #fff5f5; border-left: 4px solid #ff4d4d;">
+                            No attendance records found for the selected date range.
                         </div>
                     </h:panelGroup>
                 </h:panelGroup>

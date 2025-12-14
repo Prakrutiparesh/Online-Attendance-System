@@ -50,18 +50,15 @@
 
 
 
-                <!-- 🔹 Student Dropdown -->
-                <p:submenu label="Student" icon="pi pi-id-card">
-                    <p:menuitem value="Add Student" icon="pi pi-plus" onclick="loadPage('AddStudent.jsf')" />
+                <p:submenu label="Student" icon="pi pi-users">
+                    <p:menuitem value="Add Student" icon="pi pi-user-plus" onclick="loadPage('AddStudent.jsf')" />
 
-                    <p:menuitem value="Student List" icon="pi pi-id-card" onclick="loadPage('ShowStudent.jsf')" />
-                    <p:menuitem value="Student Attendance" icon="pi pi-plus" onclick="loadPage('AdminShowAttendance.jsf')" />
+                    <p:menuitem value="Student List" icon="pi pi-table" onclick="loadPage('ShowStudent.jsf')" />
+                    <p:menuitem value="Student Attendance" icon="pi pi-check-square" onclick="loadPage('AdminShowAttendance.jsf')" />
 
-                    <p:menuitem value="Date Wise Attendance" icon="pi pi-plus" onclick="loadPage('dateWiseAttendance.jsf')" />
-
+                    <p:menuitem value="Date Wise Attendance" icon="pi pi-calendar" onclick="loadPage('dateWiseAttendance.jsf')" />
+                    <p:menuitem value="Date Range Wise" icon="pi pi-clock"  onclick="loadPage('AdminDateRangeAttendance.jsf')" />
                 </p:submenu>
-
-
 
             </p:panelMenu>
 

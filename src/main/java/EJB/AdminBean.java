@@ -20,6 +20,7 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.security.enterprise.identitystore.Pbkdf2PasswordHash;
 import java.util.ArrayList;
@@ -993,4 +994,47 @@ public class AdminBean implements AdminBeanLocal {
             return new ArrayList<>();
         }
     }
+
+    @Override
+    public Collection<Attendance> getAttendanceBetweenDates(
+            int courseId,
+            int semId,
+            int divId,
+            int subId,
+            java.sql.Date fromDate,
+            java.sql.Date toDate) {
+
+        try {
+            String nativeSql = "SELECT a.* FROM attendance a "
+                    + "INNER JOIN course c ON a.course_id = c.course_id "
+                    + "INNER JOIN semester s ON a.sem_id = s.sem_id "
+                    + "INNER JOIN division d ON a.div_id = d.div_id "
+                    + "INNER JOIN subject sub ON a.sub_id = sub.sub_id "
+                    + "WHERE a.course_id = ? "
+                    + "AND a.sem_id = ? "
+                    + "AND a.div_id = ? "
+                    + "AND a.sub_id = ? "
+                    + "AND DATE(a.attendance_date) >= ? "
+                    + "AND DATE(a.attendance_date) <= ? "
+                    + "ORDER BY a.attendance_date";
+
+            System.out.println("Executing Native SQL Date Range Query");
+            System.out.println("From: " + fromDate + " To: " + toDate);
+
+            Query nativeQuery = em.createNativeQuery(nativeSql, Attendance.class);
+            nativeQuery.setParameter(1, courseId);
+            nativeQuery.setParameter(2, semId);
+            nativeQuery.setParameter(3, divId);
+            nativeQuery.setParameter(4, subId);
+            nativeQuery.setParameter(5, fromDate);
+            nativeQuery.setParameter(6, toDate);
+
+            return nativeQuery.getResultList();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
 }

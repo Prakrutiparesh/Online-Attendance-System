@@ -112,4 +112,12 @@ public interface AdminBeanLocal {
 
     public Collection<Attendance> getAttendanceByDate(int courseId, int semId, int divId, int subId, java.sql.Date date);
 
+    public Collection<Attendance> getAttendanceBetweenDates(
+            int courseId,
+            int semId,
+            int divId,
+            int subId,
+            java.sql.Date fromDate,
+            java.sql.Date toDate);
+
 }

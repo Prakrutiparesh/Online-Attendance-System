@@ -1,4 +1,4 @@
-<!--date wise attendnace from faculty panel-->
+<?xml version="1.0" encoding="UTF-8"?>
 <ui:composition template="facultyTemplate.xhtml"
                 xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
@@ -7,7 +7,8 @@
                 xmlns:fn="http://java.sun.com/jsp/jstl/functions"
                 xmlns:pt="jakarta.faces.passthrough">
 
-    <ui:define name="title">Date-Wise Attendance</ui:define>
+    <ui:define name="title">Date Range Attendance</ui:define>
+    <!--date Range wise attendance from faculty panel-->
 
     <ui:define name="content">
         <style>
@@ -134,13 +135,30 @@
 
             .date-input-wrapper {
                 display: flex;
-                align-items: center;
-                gap: 10px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
                 background: white;
-                padding: 12px 20px;
+                padding: 15px 20px;
                 border-radius: 12px;
                 box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
                 border: 1px solid #e2e8f0;
+                min-width: 200px;
+            }
+
+            .date-input-wrapper label {
+                font-weight: 600;
+                color: #475569;
+                font-size: 13px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .date-input-group {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                width: 100%;
             }
 
             .calendar-icon {
@@ -155,7 +173,8 @@
                 font-weight: 500;
                 color: #2c3e50;
                 background: transparent;
-                width: 180px;
+                width: 100%;
+                flex: 1;
             }
 
             /* Load Button */
@@ -170,6 +189,7 @@
                 cursor: pointer;
                 transition: all 0.3s ease;
                 box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+                margin-top: 20px;
             }
 
             .load-btn:hover {
@@ -318,108 +338,9 @@
                 background: #5a6fda;
             }
 
-            /* Messages */
-            .message-panel {
-                margin-top: 20px;
-                padding: 15px;
-                border-radius: 12px;
-                text-align: center;
-                font-weight: 600;
-            }
-
-            .error-message {
-                background: rgba(244, 67, 54, 0.1);
-                color: #F44336;
-                border: 1px solid rgba(244, 67, 54, 0.2);
-            }
-
-            .success-message {
-                background: rgba(76, 175, 80, 0.1);
-                color: #4CAF50;
-                border: 1px solid rgba(76, 175, 80, 0.2);
-            }
-
-            .info-message {
-                background: rgba(102, 126, 234, 0.1);
-                color: #667eea;
-                border: 1px solid rgba(102, 126, 234, 0.2);
-            }
-
-            /* Responsive Design */
-            @media (max-width: 768px) {
-                .datewise-container {
-                    padding: 0 15px;
-                }
-
-                .form-container {
-                    padding: 25px;
-                }
-
-                .form-row {
-                    grid-template-columns: 1fr;
-                    gap: 20px;
-                }
-
-                .date-wrapper {
-                    flex-direction: column;
-                    gap: 15px;
-                }
-
-                .date-input-wrapper {
-                    width: 100%;
-                    max-width: 300px;
-                }
-
-                .attendance-table {
-                    display: block;
-                    overflow-x: auto;
-                }
-
-                .page-title {
-                    font-size: 26px;
-                }
-
-                .back-home {
-                    position: relative;
-                    margin-bottom: 20px;
-                    display: inline-block;
-                    right: auto;
-                    top: auto;
-                }
-
-                .summary-card {
-                    flex-direction: column;
-                    gap: 20px;
-                }
-            }
-
-            @media (max-width: 480px) {
-                .form-container {
-                    padding: 20px;
-                }
-
-                .page-title {
-                    font-size: 22px;
-                }
-
-                .attendance-table th,
-                .attendance-table td {
-                    padding: 12px 8px;
-                    font-size: 13px;
-                }
-
-                .load-btn {
-                    padding: 12px 24px;
-                    font-size: 14px;
-                }
-
-                .summary-value {
-                    font-size: 24px;
-                }
-            }
-            /* Validation Messages Styling */
-            .validation-container {
-                margin: 20px 0;
+            /* Messages Panel - UNDER Date Range Section */
+            .messages-panel {
+                margin: 15px 0;
                 padding: 0;
             }
 
@@ -495,6 +416,79 @@
                 align-items: center;
                 gap: 5px;
             }
+
+            /* Responsive Design */
+            @media (max-width: 768px) {
+                .datewise-container {
+                    padding: 0 15px;
+                }
+
+                .form-container {
+                    padding: 25px;
+                }
+
+                .form-row {
+                    grid-template-columns: 1fr;
+                    gap: 20px;
+                }
+
+                .date-wrapper {
+                    flex-direction: column;
+                    gap: 15px;
+                }
+
+                .date-input-wrapper {
+                    width: 100%;
+                    max-width: 300px;
+                }
+
+                .attendance-table {
+                    display: block;
+                    overflow-x: auto;
+                }
+
+                .page-title {
+                    font-size: 26px;
+                }
+
+                .back-home {
+                    position: relative;
+                    margin-bottom: 20px;
+                    display: inline-block;
+                    right: auto;
+                    top: auto;
+                }
+
+                .summary-card {
+                    flex-direction: column;
+                    gap: 20px;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .form-container {
+                    padding: 20px;
+                }
+
+                .page-title {
+                    font-size: 22px;
+                }
+
+                .attendance-table th,
+                .attendance-table td {
+                    padding: 12px 8px;
+                    font-size: 13px;
+                }
+
+                .load-btn {
+                    padding: 12px 24px;
+                    font-size: 14px;
+                }
+
+                .summary-value {
+                    font-size: 24px;
+                }
+            }
             .export-btn {
                 padding: 14px 30px;
                 font-size: 15px;
@@ -539,7 +533,7 @@
 
             <!-- Page Header -->
             <div class="datewise-header">
-                <h1 class="page-title">Date-Wise Attendance</h1>
+                <h1 class="page-title">Date Range Attendance</h1>
                 <p class="page-subtitle">View attendance records filtered by specific dates</p>
             </div>
 
@@ -560,7 +554,7 @@
                                 <f:selectItems value="#{updateCDIBean.courseList}" var="c"
                                                itemValue="#{c.courseId}" itemLabel="#{c.courseName}" />
                                 <f:ajax listener="#{updateCDIBean.loadSemesters}"
-                                        render="semesterPanel divisionPanel subjectPanel dateAttendancePanel"/>
+                                        render="semesterPanel divisionPanel subjectPanel messages"/>
                             </h:selectOneMenu>
                         </div>
 
@@ -574,7 +568,7 @@
                                         <f:selectItems value="#{updateCDIBean.semesterList}" var="s"
                                                        itemValue="#{s.semId}" itemLabel="#{s.semName}" />
                                         <f:ajax listener="#{updateCDIBean.loadSubjects}"
-                                                render="subjectPanel divisionPanel dateAttendancePanel"/>
+                                                render="subjectPanel divisionPanel messages"/>
                                     </h:selectOneMenu>
                                 </div>
                             </h:panelGroup>
@@ -590,7 +584,7 @@
                                         <f:selectItems value="#{updateCDIBean.subjectList}" var="sub"
                                                        itemValue="#{sub.subId}" itemLabel="#{sub.subName}" />
                                         <f:ajax listener="#{updateCDIBean.loadDivisions}"
-                                                render="divisionPanel dateAttendancePanel"/>
+                                                render="divisionPanel messages"/>
                                     </h:selectOneMenu>
                                 </div>
                             </h:panelGroup>
@@ -606,52 +600,98 @@
                                         <f:selectItems value="#{updateCDIBean.divisionList}" var="d"
                                                        itemValue="#{d.divId}" itemLabel="#{d.divName}" />
                                         <f:ajax listener="#{updateCDIBean.clearAttendanceData}"
-                                                render="dateAttendancePanel"/>
+                                                render="dateAttendancePanel messages"/>
                                     </h:selectOneMenu>
                                 </div>
                             </h:panelGroup>
                         </h:panelGroup>
                     </div>
 
-                    <!-- Date Selection Section -->
-                    <!-- Date Selection Section -->
+                    <!-- Date Range Section -->
                     <div class="date-selection">
-                        <h3 class="section-title">Select Date</h3>
+                        <h3 class="section-title">Select Date Range</h3>
+
                         <div class="date-wrapper">
+                            <!-- From Date -->
                             <div class="date-input-wrapper">
-                                <span class="calendar-icon">📅</span>
-                                <!-- Corrected Date Picker with type="date" -->
-                                <h:inputText id="selectedDate" 
-                                             value="#{updateCDIBean.selectedDate}" 
-                                             styleClass="date-input"
-                                             pt:type="date">
-                                    <f:convertDateTime pattern="yyyy-MM-dd" />
-                                    <f:ajax event="change" 
-                                            listener="#{updateCDIBean.clearAttendanceData}"
-                                            render="dateAttendancePanel messages"/>
-                                </h:inputText>
+                                <label>From Date</label>
+                                <div class="date-input-group">
+                                    <span class="calendar-icon">📅</span>
+                                    <h:inputText id="fromDate"
+                                                 value="#{updateCDIBean.fromDate}"
+                                                 styleClass="date-input"
+                                                 pt:type="date">
+                                        <f:convertDateTime pattern="yyyy-MM-dd"/>
+                                    </h:inputText>
+                                </div>
                             </div>
-                            <h:commandButton value="Load Attendance" 
-                                             styleClass="load-btn"
-                                             action="#{updateCDIBean.loadDateWiseAttendance}">
-                                <f:ajax render="dateAttendancePanel messages" />
-                            </h:commandButton>
+
+                            <!-- To Date -->
+                            <div class="date-input-wrapper">
+                                <label>To Date</label>
+                                <div class="date-input-group">
+                                    <span class="calendar-icon">📅</span>
+                                    <h:inputText id="toDate"
+                                                 value="#{updateCDIBean.toDate}"
+                                                 styleClass="date-input"
+                                                 pt:type="date">
+                                        <f:convertDateTime pattern="yyyy-MM-dd"/>
+                                    </h:inputText>
+                                </div>
+                            </div>
+
+                            <!-- Load Button -->
+                            <div class="date-input-wrapper" style="align-items: center; justify-content: center;">
+                                <h:commandButton value="Load Attendance"
+                                                 styleClass="load-btn"
+                                                 action="#{updateCDIBean.loadDateRangeAttendance}">
+                                    <f:ajax execute="@form"
+                                            render="dateAttendancePanel messages"/>
+                                </h:commandButton>
+                            </div>
                         </div>
+
+                        <!-- Messages Panel - Date Range के नीचे -->
+                        <h:panelGroup id="messages" styleClass="messages-panel">
+                            <ui:fragment rendered="#{facesContext.maximumSeverity != null}">
+                                <ui:repeat value="#{facesContext.messageList}" var="msg">
+                                    <div class="message-item 
+                                         #{msg.severity.toString() eq 'ERROR' ? 'error-item' : 
+                                           msg.severity.toString() eq 'WARN' ? 'warning-item' : 
+                                           'info-item'}">
+                                        <span class="message-icon">
+                                            #{msg.severity.toString() eq 'ERROR' ? '❌' : 
+                                              msg.severity.toString() eq 'WARN' ? '⚠️' : 'ℹ️'}
+                                        </span>
+                                        <span class="message-text">#{msg.summary}</span>
+                                    </div>
+                                </ui:repeat>
+                            </ui:fragment>
+                        </h:panelGroup>
                     </div>
+
                 </div>
 
-                <!-- Attendance Results Section -->
+                <!-- Attendance Results Section - Form Container के बाहर -->
                 <h:panelGroup id="dateAttendancePanel">
-                    <ui:fragment rendered="#{not empty updateCDIBean.dateWiseAttendanceList}">
+                    <ui:fragment rendered="#{not empty updateCDIBean.dateRangeAttendanceList}">
                         <div class="attendance-section">
-                            <h3 class="section-title">Attendance for Selected Date</h3>
+                            <h3 class="section-title">Attendance Details</h3>
 
                             <!-- Summary Card -->
                             <div class="summary-card">
                                 <div class="summary-item">
-                                    <div class="summary-label">Selected Date</div>
+                                    <div class="summary-label">From Date</div>
                                     <div class="summary-value">
-                                        <h:outputText value="#{updateCDIBean.selectedDate}">
+                                        <h:outputText value="#{updateCDIBean.fromDate}">
+                                            <f:convertDateTime pattern="dd-MMM-yyyy" />
+                                        </h:outputText>
+                                    </div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-label">To Date</div>
+                                    <div class="summary-value">
+                                        <h:outputText value="#{updateCDIBean.toDate}">
                                             <f:convertDateTime pattern="dd-MMM-yyyy" />
                                         </h:outputText>
                                     </div>
@@ -659,7 +699,7 @@
                                 <div class="summary-item">
                                     <div class="summary-label">Total Records</div>
                                     <div class="summary-value">
-                                        #{fn:length(updateCDIBean.dateWiseAttendanceList)}
+                                        #{fn:length(updateCDIBean.dateRangeAttendanceList)}
                                     </div>
                                 </div>
                             </div>
@@ -668,14 +708,20 @@
                             <table class="attendance-table">
                                 <thead>
                                     <tr>
+                                        <th>Date</th>
                                         <th>Student Name</th>
                                         <th>Roll Number</th>
-                                        <th>Attendance Status</th>
+                                        <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <ui:repeat value="#{updateCDIBean.dateWiseAttendanceList}" var="att">
+                                    <ui:repeat value="#{updateCDIBean.dateRangeAttendanceList}" var="att">
                                         <tr>
+                                            <td>
+                                                <h:outputText value="#{att.attendanceDate}">
+                                                    <f:convertDateTime pattern="dd-MMM-yyyy" timeZone="Asia/Kolkata"/>
+                                                </h:outputText>
+                                            </td>
                                             <td>#{att.student.studentName}</td>
                                             <td>#{att.student.rollNo}</td>
                                             <td>
@@ -690,54 +736,23 @@
                             <div class="export-section">
                                 <h:commandButton value="📊 Export to Excel" 
                                                  styleClass="export-btn"
-                                                 action="#{updateCDIBean.exportDateWiseAttendanceToExcel()}"/>
+                                                 action="#{updateCDIBean.exportDateRangeAttendanceToExcel()}"/>
                             </div>
                         </div>
                     </ui:fragment>
 
                     <!-- No Data Message -->
-                    <ui:fragment rendered="#{empty updateCDIBean.dateWiseAttendanceList and updateCDIBean.selectedDate != null}">
+                    <ui:fragment rendered="#{empty updateCDIBean.dateRangeAttendanceList and updateCDIBean.fromDate != null and updateCDIBean.toDate != null}">
                         <div class="no-data">
                             <div class="no-data-icon">📊</div>
-                            <p>No attendance records found for the selected date.</p>
+                            <p>No attendance records found for the selected date range.</p>
                             <p style="font-size: 14px; margin-top: 10px; color: #64748b;">
-                                Please ensure you have selected all required filters.
+                                Please ensure you have selected all required filters and date range.
                             </p>
                         </div>
                     </ui:fragment>
                 </h:panelGroup>
 
-                <!-- Messages Panel -->
-                <!-- Messages Panel with Better Styling -->
-                <h:panelGroup id="messages">
-                    <!-- JSF Faces Messages -->
-                    <!--                    <h:messages id="facesMessages" 
-                                                    globalOnly="false"
-                                                    showDetail="true"
-                                                    showSummary="true"
-                                                    errorClass="error-message"
-                                                    infoClass="info-message"
-                                                    warnClass="warning-message"
-                                                    fatalClass="error-message"/>-->
-
-                    <!-- Custom Validation Messages -->
-                    <ui:fragment rendered="#{facesContext.maximumSeverity != null}">
-                        <div class="validation-container">
-                            <ui:repeat value="#{facesContext.messageList}" var="msg">
-                                <div class="message-item 
-                                     #{msg.severity.toString() eq 'ERROR' ? 'error-item' : 
-                                       msg.severity.toString() eq 'WARN' ? 'warning-item' : 
-                                       'info-item'}">
-                                    <span class="message-icon">
-                                        #{msg.severity.toString() eq 'ERROR' ? '❌' : 
-                                          msg.severity.toString() eq 'WARN' ? '⚠️' : 'ℹ️'}
-                                    </span>
-                                    <span class="message-text">#{msg.summary}</span>
-                                </div>
-                            </ui:repeat>
-                        </div>
-                    </ui:fragment>
-                </h:panelGroup>
             </h:form>
         </div>
 
